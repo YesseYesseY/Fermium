@@ -1,0 +1,3 @@
+class APlayerState : public AInfo
+{
+};

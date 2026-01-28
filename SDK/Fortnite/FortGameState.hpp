@@ -1,3 +1,14 @@
+enum class EAthenaGamePhase : uint8
+{
+    None,
+    Setup,
+    Warmup,
+    Aircraft,
+    SafeZones,
+    EndGame,
+    Count
+};
+
 class AFortGameStateBase : public AGameState
 {
 };
@@ -18,6 +29,13 @@ class AFortGameStateAthena : public AFortGameStatePvP
 {
 public:
     PROP_REF_REFLECTION(FPlaylistPropertyArray, CurrentPlaylistInfo);
+    PROP_REF_REFLECTION(EAthenaGamePhase, GamePhase);
+
+    void OnRep_GamePhase(EAthenaGamePhase OldPhase)
+    {
+        static auto Func = ClassPrivate->GetFunction("OnRep_GamePhase");
+        ProcessEvent(Func, &OldPhase);
+    }
 
     void OnRep_CurrentPlaylistInfo()
     {
