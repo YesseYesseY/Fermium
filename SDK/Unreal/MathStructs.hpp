@@ -1,0 +1,29 @@
+struct FVector
+{
+    float X, Y, Z;
+
+    FVector(float x = 0, float y = 0, float z = 0) : X(x), Y(y), Z(z) { }
+};
+
+struct FRotator
+{
+    float Pitch, Yaw, Roll;
+
+    FRotator(float p = 0, float y = 0, float r = 0) : Pitch(p), Yaw(y), Roll(r) { }
+};
+
+struct FQuat
+{
+    float X, Y, Z, W;
+
+    FQuat(float x = 0, float y = 0, float z = 0, float w = 0) : X(x), Y(y), Z(z), W(w) { }
+};
+
+struct FTransform
+{
+    FQuat Rotation;
+    FVector Translation;
+    uint8 pad1[4];
+    FVector Scale3D;
+    uint8 pad2[4];
+};

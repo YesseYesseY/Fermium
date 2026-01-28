@@ -1,0 +1,3 @@
+class AInfo : public AActor
+{
+};

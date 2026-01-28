@@ -1,0 +1,4 @@
+class AActor : public UObject
+{
+
+};

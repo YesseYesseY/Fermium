@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="..">
+      <UniqueIdentifier>{61705900-4DFC-870B-B6AA-880BA255880B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\SDK">
+      <UniqueIdentifier>{D2E88776-BE8A-B24C-A745-C6A09386399D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\SDK\Unreal">
+      <UniqueIdentifier>{A8F2D15F-14B3-4D96-DDED-9613496D9272}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\minhook">
+      <UniqueIdentifier>{A5548101-910C-C34E-FA13-9CAAE6EA5D3F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\minhook\src">
+      <UniqueIdentifier>{3CDDD0D5-28AB-C4DB-113F-3502FDABA040}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\minhook\src\hde">
+      <UniqueIdentifier>{BCA850E1-A88C-1137-11ED-0B8AFDEFFBB8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\SDK\Unreal\Class.cpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SDK\Unreal\GameplayStatics.cpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SDK\Unreal\KismetSystemLibrary.cpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SDK\Unreal\Name.cpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SDK\Unreal\Object.cpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SDK\Unreal\Struct.cpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\minhook\src\buffer.c">
+      <Filter>..\minhook\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\minhook\src\hde\hde32.c">
+      <Filter>..\minhook\src\hde</Filter>
+    </ClCompile>
+    <ClCompile Include="..\minhook\src\hde\hde64.c">
+      <Filter>..\minhook\src\hde</Filter>
+    </ClCompile>
+    <ClCompile Include="..\minhook\src\hook.c">
+      <Filter>..\minhook\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\minhook\src\trampoline.c">
+      <Filter>..\minhook\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+</Project>
