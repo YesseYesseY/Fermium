@@ -9,6 +9,7 @@ class AFortGameMode : public AFortGameModeBase
 
 class AFortGameModeZone : public AFortGameMode
 {
+    PROP_REF_REFLECTION(TArray<struct FItemAndCount>, StartingItems);
 };
 
 class AFortGamePvPBase : public AFortGameModeZone

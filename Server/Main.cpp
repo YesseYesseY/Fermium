@@ -5,6 +5,7 @@
 #include <SDK.hpp>
 
 #include "Net.hpp"
+#include "Inventory.hpp"
 
 bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
 {
@@ -33,9 +34,9 @@ bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
     return false;
 }
 
-APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AController* NewPlayer, AActor* StartSpot)
+APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AFortPlayerControllerAthena* PlayerController, AActor* StartSpot)
 {
-    auto Pawn = GameMode->SpawnDefaultPawnAtTransform(NewPlayer, StartSpot->GetTransform());
+    auto Pawn = GameMode->SpawnDefaultPawnAtTransform(PlayerController, StartSpot->GetTransform());
 
     void (*ApplyCharacterCustomization)(UObject*, UObject*) = nullptr;
     if (!ApplyCharacterCustomization)
@@ -48,7 +49,7 @@ APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AController* NewPl
             ApplyCharacterCustomization = decltype(ApplyCharacterCustomization)(Addr);
     }
 
-    auto PlayerState = (AFortPlayerState*)NewPlayer->GetPlayerState();
+    auto PlayerState = (AFortPlayerState*)PlayerController->GetPlayerState();
 
     if (ApplyCharacterCustomization)
     {
@@ -59,6 +60,15 @@ APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AController* NewPl
     static auto AbilitySet = UObject::FindObject<UFortAbilitySet>(L"/Game/Abilities/Player/Generic/Traits/DefaultPlayer/GAS_DefaultPlayer.GAS_DefaultPlayer");
     AbilitySystemComponent->GiveAbilitySet(AbilitySet);
 
+    static auto ItemDef = UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Weapons/WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
+    Inventory::GiveItem(PlayerController, ItemDef, 1);
+    for (int i = 0; i < 5; i++)
+    {
+        auto thing = GameMode->GetStartingItems()[i];
+        Inventory::GiveItem(PlayerController, thing.Item, thing.Count);
+    }
+    Inventory::Update(PlayerController);
+
     return Pawn;
 }
 
@@ -67,7 +77,6 @@ void InternalServerTryActivateAbility(UAbilitySystemComponent* Component, FGamep
     FGameplayAbilitySpec* Spec = Component->FindAbilitySpecFromHandle(Handle);
     if (!Spec)
     {
-        MsgBox("uwu1");
         Component->ClientActivateAbilityFailed(Handle, PredictionKey.GetCurrent());
         return;
     }
@@ -75,7 +84,6 @@ void InternalServerTryActivateAbility(UAbilitySystemComponent* Component, FGamep
     auto AbilityToActivate = Spec->GetAbility();
     if (!AbilityToActivate)
     {
-        MsgBox("uwu2");
         Component->ClientActivateAbilityFailed(Handle, PredictionKey.GetCurrent());
         return;
     }
@@ -87,7 +95,6 @@ void InternalServerTryActivateAbility(UAbilitySystemComponent* Component, FGamep
     }
     else
     {
-        MsgBox("uwu3");
         Component->ClientActivateAbilityFailed(Handle, PredictionKey.GetCurrent());
         Spec->GetInputPressed() &= ~1;
 
@@ -112,6 +119,7 @@ DWORD MainThread(HMODULE Module)
     GameModeBR->VTableHook("ReadyToStartMatch", ReadyToStartMatchHook);
     GameModeBR->VTableHook("SpawnDefaultPawnFor", SpawnDefaultPawnForHook);
     FortPlayerControllerAthena->VTableReplace("ServerAcknowledgePossession", FortPlayerController);
+    FortPlayerControllerAthena->VTableHook("ServerExecuteInventoryItem", Inventory::ServerExecuteInventoryItem);
 
     Net::Init();
 

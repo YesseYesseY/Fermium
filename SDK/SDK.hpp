@@ -61,6 +61,10 @@ using namespace UC;
 #include "Fortnite/FortAbilitySet.hpp"
 #include "Unreal/AbilitySystemComponent.hpp"
 #include "Fortnite/FortPlayerState.hpp"
+#include "Fortnite/FortItemDefinition.hpp"
+#include "Fortnite/FortInventory.hpp"
+#include "Fortnite/FortPlayerController.hpp"
+#include "Fortnite/FortPawn.hpp"
 
 static void InitSDK(bool IsServer)
 {

@@ -284,12 +284,12 @@ namespace UC
 		inline const ArrayElementType& GetUnsafe(int32 Index) const { return Data[Index]; }
 
 	public:
-		inline void Reserve(int32 Count)
+		inline void Reserve(int32 Count, int32 ElemSize = ElementSize)
 		{
 			if (GetSlack() < Count)
 				MaxElements += Count; 
 			
-			Data = static_cast<ArrayElementType*>(FMemory::Realloc(Data, MaxElements * ElementSize, ElementAlign));
+			Data = static_cast<ArrayElementType*>(FMemory::Realloc(Data, MaxElements * ElemSize, ElementAlign));
 		}
 
 		inline void Add(const ArrayElementType& Element)
@@ -298,6 +298,16 @@ namespace UC
 				Reserve(3);
 
 			Data[NumElements] = Element;
+			NumElements++;
+		}
+
+		inline void AddCopy(const ArrayElementType* Element, int32 ElemSize)
+		{
+			if (GetSlack() <= 0)
+				Reserve(3, ElemSize);
+
+            std::memcpy((ArrayElementType*)(int64(Data) + (NumElements * ElemSize)), Element, ElemSize);
+			// Data[NumElements] = Element;
 			NumElements++;
 		}
 

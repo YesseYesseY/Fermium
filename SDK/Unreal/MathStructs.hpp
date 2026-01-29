@@ -27,3 +27,10 @@ struct FTransform
     FVector Scale3D;
     uint8 pad2[4];
 };
+
+struct FGuid
+{
+    uint32 A, B, C, D;
+
+    bool operator==(const FGuid& Other) { return A == Other.A && B == Other.B && C == Other.C && D == Other.D; }
+};
