@@ -4,7 +4,7 @@ class AFortGameModeBase : public AGameMode
 
 class AFortGameMode : public AFortGameModeBase
 {
-    PROP_REF_REFLECTION(bool, bWorldIsReady); // This is a bitfield but (hopefully) it's on the first bit on all builds
+    PROP_REF_REFLECTION(uint8, bWorldIsReady); // TODO Bitfields
 };
 
 class AFortGameModeZone : public AFortGameMode

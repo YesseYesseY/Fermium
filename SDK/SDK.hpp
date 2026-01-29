@@ -48,12 +48,21 @@ using namespace UC;
 #include "Unreal/NetDriver.hpp"
 #include "Unreal/Beacon.hpp"
 
+#include "Unreal/ActorComponent.hpp"
+
+#include "Unreal/FastArraySerializer.hpp"
+#include "Unreal/GameplayAbilitySpec.hpp"
+
 #include "Fortnite/PlaylistPropertyArray.hpp"
 
 #include "Fortnite/FortGameState.hpp"
 #include "Fortnite/FortGameMode.hpp"
 
-static void InitSDK()
+#include "Fortnite/FortAbilitySet.hpp"
+#include "Unreal/AbilitySystemComponent.hpp"
+#include "Fortnite/FortPlayerState.hpp"
+
+static void InitSDK(bool IsServer)
 {
     // FMemory::Realloc
     {
@@ -72,6 +81,12 @@ static void InitSDK()
     UStruct::Init();
     UClass::Init();
     UFunction::Init();
+
+    if (IsServer)
+    {
+        UAbilitySystemComponent::Init();
+        FFastArraySerializer::Init();
+    }
 
     MH_Initialize();
 }

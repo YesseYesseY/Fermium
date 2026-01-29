@@ -65,7 +65,7 @@ public: \
 
 #define STRUCT_PROP_REF_REFLECTION(Type, Name) \
 public: \
-    Type& Get##Name() \
+    Type& Get##Name() const \
     { \
         static int32 Offset = StaticStruct()->GetPropOffset(#Name); \
         return *(Type*)(int64(this) + Offset); \

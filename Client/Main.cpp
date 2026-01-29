@@ -38,7 +38,7 @@ DWORD MainThread(HMODULE Module)
     freopen_s(&Dummy, "CONOUT$", "w", stdout);
     freopen_s(&Dummy, "CONIN$", "r", stdin);
 
-    InitSDK();
+    InitSDK(false);
 
     auto Engine = UEngine::GetEngine();
     auto GameViewport = Engine->GetGameViewport();

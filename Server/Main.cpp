@@ -21,7 +21,7 @@ bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
 
         Net::Listen();
 
-        GameMode->GetbWorldIsReady() = true;
+        GameMode->GetbWorldIsReady() |= 1;
         GameMode->GetWarmupRequiredPlayerCount() = true;
     }
 
@@ -48,14 +48,52 @@ APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AController* NewPl
             ApplyCharacterCustomization = decltype(ApplyCharacterCustomization)(Addr);
     }
 
-    auto PlayerState = NewPlayer->GetPlayerState();
+    auto PlayerState = (AFortPlayerState*)NewPlayer->GetPlayerState();
 
     if (ApplyCharacterCustomization)
     {
         ApplyCharacterCustomization(PlayerState, Pawn);
     }
 
+    auto AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
+    static auto AbilitySet = UObject::FindObject<UFortAbilitySet>(L"/Game/Abilities/Player/Generic/Traits/DefaultPlayer/GAS_DefaultPlayer.GAS_DefaultPlayer");
+    AbilitySystemComponent->GiveAbilitySet(AbilitySet);
+
     return Pawn;
+}
+
+void InternalServerTryActivateAbility(UAbilitySystemComponent* Component, FGameplayAbilitySpecHandle Handle, bool InputPressed, const FPredictionKey& PredictionKey, void* TriggerEventData)
+{
+    FGameplayAbilitySpec* Spec = Component->FindAbilitySpecFromHandle(Handle);
+    if (!Spec)
+    {
+        MsgBox("uwu1");
+        Component->ClientActivateAbilityFailed(Handle, PredictionKey.GetCurrent());
+        return;
+    }
+
+    auto AbilityToActivate = Spec->GetAbility();
+    if (!AbilityToActivate)
+    {
+        MsgBox("uwu2");
+        Component->ClientActivateAbilityFailed(Handle, PredictionKey.GetCurrent());
+        return;
+    }
+
+    UObject* InstancedAbility = nullptr;
+    Spec->GetInputPressed() |= 1;
+    if (Component->InternalTryActivateAbility(Handle, PredictionKey, &InstancedAbility, nullptr, TriggerEventData))
+    {
+    }
+    else
+    {
+        MsgBox("uwu3");
+        Component->ClientActivateAbilityFailed(Handle, PredictionKey.GetCurrent());
+        Spec->GetInputPressed() &= ~1;
+
+        Component->GetActivatableAbilities().MarkArrayDirty();
+        return;
+    }
 }
 
 DWORD MainThread(HMODULE Module)
@@ -65,7 +103,7 @@ DWORD MainThread(HMODULE Module)
     freopen_s(&Dummy, "CONOUT$", "w", stdout);
     freopen_s(&Dummy, "CONIN$", "r", stdin);
 
-    InitSDK();
+    InitSDK(true);
 
     auto GameModeBR = UObject::FindClass(L"/Script/FortniteGame.FortGameModeAthena");
     auto FortGameMode = UObject::FindClass(L"/Script/FortniteGame.FortGameMode");
@@ -112,6 +150,16 @@ DWORD MainThread(HMODULE Module)
         }
         // *(bool*)(int64(GetModuleHandleW(NULL)) + 0x5A14019) = false; // GIsClient
         // *(bool*)(int64(GetModuleHandleW(NULL)) + 0x5A1401A) = true;  // GIsServer
+    }
+
+    // InternalServerTryActivateAbility
+    {
+        auto DefaultObj = UObject::FindObject(L"/Script/GameplayAbilities.Default__AbilitySystemComponent");
+        auto Func = UObject::FindFunction(L"/Script/GameplayAbilities.AbilitySystemComponent:ServerTryActivateAbility");
+        auto FuncIndex = Func->GetVTableIndex();
+        auto RealIdx = *Memcury::Scanner(DefaultObj->VTable[FuncIndex]).ScanFor({ 0xFF, 0x90 }).AbsoluteOffset(2).GetAs<int32*>();
+        auto ComponentAthena = UObject::FindClass(L"/Script/FortniteGame.FortAbilitySystemComponentAthena");
+        ComponentAthena->VTableHook(RealIdx / 8, InternalServerTryActivateAbility);
     }
 
     UWorld::GetWorld()->GetOwningGameInstance()->GetLocalPlayers().Remove(0);
