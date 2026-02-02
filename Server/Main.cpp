@@ -7,6 +7,7 @@
 #include "Net.hpp"
 #include "Inventory.hpp"
 
+bool (*ReadyToStartMatchOriginal)(AFortGameModeAthena* GameMode);
 bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
 {
     static bool Started = false;
@@ -14,7 +15,13 @@ bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
     {
         Started = true;
 
-        auto Playlist = UObject::FindObject(L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo");
+        auto Playlist = UObject::FindObject<UFortPlaylistAthena>(L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo");
+        if (Playlist->HasbSkipAircraft())
+        {
+            Playlist->GetbSkipAircraft() = true;
+            Playlist->GetbSkipWarmup() = true;
+        }
+
         auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
         GameState->GetCurrentPlaylistInfo().GetBasePlaylist() = Playlist;
         GameState->GetCurrentPlaylistInfo().GetPlaylistReplicationKey()++;
@@ -31,12 +38,14 @@ bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
         return true;
     }
 
-    return false;
+    return ReadyToStartMatchOriginal(GameMode);
 }
 
 APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AFortPlayerControllerAthena* PlayerController, AActor* StartSpot)
 {
-    auto Pawn = GameMode->SpawnDefaultPawnAtTransform(PlayerController, StartSpot->GetTransform());
+    auto translivesmatter = StartSpot->GetTransform();
+    translivesmatter.Translation = { 0, 0, 10000 };
+    auto Pawn = GameMode->SpawnDefaultPawnAtTransform(PlayerController, translivesmatter);
 
     void (*ApplyCharacterCustomization)(UObject*, UObject*) = nullptr;
     if (!ApplyCharacterCustomization)
@@ -57,7 +66,9 @@ APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AFortPlayerControl
     }
 
     auto AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
-    static auto AbilitySet = UObject::FindObject<UFortAbilitySet>(L"/Game/Abilities/Player/Generic/Traits/DefaultPlayer/GAS_DefaultPlayer.GAS_DefaultPlayer");
+
+    static auto AssetManager = UEngine::GetEngine()->GetAssetManager();
+    static auto AbilitySet = AssetManager->GetAthenaAbilitySet();
     AbilitySystemComponent->GiveAbilitySet(AbilitySet);
 
     static auto ItemDef = UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Weapons/WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
@@ -103,6 +114,10 @@ void InternalServerTryActivateAbility(UAbilitySystemComponent* Component, FGamep
     }
 }
 
+void ReturnHook()
+{
+}
+
 DWORD MainThread(HMODULE Module)
 {
     AllocConsole();
@@ -116,7 +131,7 @@ DWORD MainThread(HMODULE Module)
     auto FortGameMode = UObject::FindClass(L"/Script/FortniteGame.FortGameMode");
     auto FortPlayerControllerAthena = UObject::FindClass(L"/Script/FortniteGame.FortPlayerControllerAthena");
     auto FortPlayerController = UObject::FindClass(L"/Script/FortniteGame.FortPlayerController");
-    GameModeBR->VTableHook("ReadyToStartMatch", ReadyToStartMatchHook);
+    GameModeBR->VTableHook("ReadyToStartMatch", ReadyToStartMatchHook, &ReadyToStartMatchOriginal);
     GameModeBR->VTableHook("SpawnDefaultPawnFor", SpawnDefaultPawnForHook);
     FortPlayerControllerAthena->VTableReplace("ServerAcknowledgePossession", FortPlayerController);
     FortPlayerControllerAthena->VTableHook("ServerExecuteInventoryItem", Inventory::ServerExecuteInventoryItem);
@@ -169,6 +184,17 @@ DWORD MainThread(HMODULE Module)
         auto ComponentAthena = UObject::FindClass(L"/Script/FortniteGame.FortAbilitySystemComponentAthena");
         ComponentAthena->VTableHook(RealIdx / 8, InternalServerTryActivateAbility);
     }
+
+    // RequestExit
+    {
+        auto Addr = Memcury::Scanner::FindPattern("40 53 48 83 EC 30 80 3D ? ? ? ? ? 0F B6 D9 72 ? 48 8B 05 ? ? ? ? 4C 8D 44 24 ? 48 89 44 24 ? 41 B9 05 00 00 00 0F B6 C1 33 D2 89 44 24 ? 33 C9 48 8D 05 ? ? ? ? 48 89 44 24 ? E8 ? ? ? ? 48 8D 0D").Get();
+        if (Addr)
+        {
+            Hook::Function(Addr, ReturnHook);
+        }
+    }
+
+    UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogPackageLocalizationCache None");
 
     UWorld::GetWorld()->GetOwningGameInstance()->GetLocalPlayers().Remove(0);
     UKismetSystemLibrary::ExecuteConsoleCommand(L"open athena_terrain");

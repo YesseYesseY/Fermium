@@ -1,3 +1,5 @@
+class UFortAssetManager;
+
 class UEngine : public UObject
 {
     STATIC_CLASS(L"/Script/Engine.Engine");
@@ -13,4 +15,5 @@ class UEngine : public UObject
 
     PROP_REF_REFLECTION(UGameViewportClient*, GameViewport);
     PROP_REF_REFLECTION(UClass*, ConsoleClass);
+    PROP_REF_REFLECTION(UFortAssetManager*, AssetManager);
 };

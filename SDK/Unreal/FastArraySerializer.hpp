@@ -34,7 +34,7 @@ public:
     {
         Offset_IDCounter = 0x50;
         Offset_ArrayReplicationKey = Offset_IDCounter + 4;
-        Offset_CachedNumItems = Offset_ArrayReplicationKey + 0x50;
+        Offset_CachedNumItems = Offset_ArrayReplicationKey + 0x50 + (Size() <= 0xB0 ? 0 : 0x50);
         Offset_CachedNumItemsToConsiderForWriting = Offset_CachedNumItems + 4;
     }
 };

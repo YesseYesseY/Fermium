@@ -10,6 +10,17 @@
     inline constexpr bool  operator! (Enum  E)             { return !(__underlying_type(Enum))E; } \
     inline constexpr Enum  operator~ (Enum  E)             { return (Enum)~(__underlying_type(Enum))E; }
 
+#define PROP_REF_OFFSET(Type, Name) \
+private: \
+    static inline int32 Offset_##Name = -1; \
+public: \
+    Type& Get##Name() \
+    { \
+        return *(Type*)(int64(this) + Offset_##Name); \
+    }
+
+// CLASS
+
 #define STATIC_CLASS(Name) \
 public: \
     static UClass* StaticClass() \
@@ -25,21 +36,29 @@ public: \
         return Ret; \
     }
 
-#define PROP_REF_OFFSET(Type, Name) \
-private: \
-    static inline int32 Offset_##Name = -1; \
-public: \
-    Type& Get##Name() \
-    { \
-        return *(Type*)(int64(this) + Offset_##Name); \
-    }
-
 #define PROP_REF_REFLECTION(Type, Name) \
 public: \
     Type& Get##Name() \
     { \
         static int32 Offset = ClassPrivate->GetPropOffset(#Name); \
         return *(Type*)(int64(this) + Offset); \
+    }
+
+#define PROP_REF_REFLECTION_SAFE(Type, Name) \
+private: \
+    static inline int32 Offset_##Name = -1; \
+public: \
+    Type& Get##Name() \
+    { \
+        if (Offset_##Name == -1) \
+            Offset_##Name = ClassPrivate->GetPropOffset(#Name); \
+        return *(Type*)(int64(this) + Offset_##Name); \
+    } \
+    bool Has##Name() \
+    { \
+        if (Offset_##Name == -1) \
+            Offset_##Name = ClassPrivate->GetPropOffset(#Name); \
+        return Offset_##Name != -1; \
     }
 
 /// STRUCT

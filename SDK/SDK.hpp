@@ -27,6 +27,8 @@ using namespace UC;
 #include "Unreal/KismetMathLibrary.hpp"
 #include "Unreal/GameplayStatics.hpp"
 
+#include "Unreal/PtrTypes.hpp"
+
 #include "Unreal/Actor.hpp"
 #include "Unreal/Info.hpp"
 #include "Unreal/PlayerState.hpp"
@@ -53,6 +55,7 @@ using namespace UC;
 #include "Unreal/FastArraySerializer.hpp"
 #include "Unreal/GameplayAbilitySpec.hpp"
 
+#include "Fortnite/FortPlaylist.hpp"
 #include "Fortnite/PlaylistPropertyArray.hpp"
 
 #include "Fortnite/FortGameState.hpp"
@@ -65,6 +68,8 @@ using namespace UC;
 #include "Fortnite/FortInventory.hpp"
 #include "Fortnite/FortPlayerController.hpp"
 #include "Fortnite/FortPawn.hpp"
+
+#include "Fortnite/FortAssetManager.hpp"
 
 static void InitSDK(bool IsServer)
 {

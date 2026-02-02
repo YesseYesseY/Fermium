@@ -15,12 +15,12 @@ bool UWorldExecHook(UWorld* World, int64 a2, const wchar_t* Cmd, int64 a4)
     }
     else if (wcscmp(Cmd, L"testywesty") == 0)
     {
-        auto GameMode = World->GetAuthorityGameMode();
-        auto Playlist = UObject::FindObject(L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo");
-        auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
-        GameState->GetCurrentPlaylistInfo().GetBasePlaylist() = Playlist;
-        GameState->GetCurrentPlaylistInfo().GetPlaylistReplicationKey()++;
-        GameState->OnRep_CurrentPlaylistInfo();
+        // auto GameMode = World->GetAuthorityGameMode();
+        // auto Playlist = UObject::FindObject(L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo");
+        // auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
+        // GameState->GetCurrentPlaylistInfo().GetBasePlaylist() = Playlist;
+        // GameState->GetCurrentPlaylistInfo().GetPlaylistReplicationKey()++;
+        // GameState->OnRep_CurrentPlaylistInfo();
         // UKismetSystemLibrary::ExecuteConsoleCommand(L"fov 179");
 
         // auto ActorClass = UObject::FindClass(L"/Game/Building/ActorBlueprints/Prop/Prop_TirePile_02.Prop_TirePile_02_C");
@@ -57,6 +57,8 @@ DWORD MainThread(HMODULE Module)
             Hook::Function(Addr, UWorldExecHook, &UWorldExecOriginal);
         }
     }
+
+    while (!(GetAsyncKeyState(VK_F5) & 0x8000)) Sleep(100);
 
     UKismetSystemLibrary::ExecuteConsoleCommand(L"open 127.0.0.1");
 

@@ -25,6 +25,9 @@ public:
 
     void GiveAbility(UClass* AbilityClass)
     {
+        if (!AbilityClass)
+            return;
+
         auto Spec = FGameplayAbilitySpec::Create(AbilityClass);
         GiveAbil(this, Spec->GetHandle(), Spec);
         FMemory::Free(Spec);
@@ -32,6 +35,9 @@ public:
 
     void GiveAbilitySet(UFortAbilitySet* AbilitySet)
     {
+        if (!AbilitySet)
+            return;
+
         for (auto AbilityClass : AbilitySet->GetGameplayAbilities())
         {
             GiveAbility(AbilityClass);
