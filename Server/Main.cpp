@@ -9,17 +9,23 @@
 
 bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
 {
+    static auto StartClass = UObject::FindClass(L"/Script/FortniteGame.FortPlayerStartWarmup");
+    if (UGameplayStatics::GetNumActorsOfClass(StartClass) <= 0)
+        return false;
+
     static bool Started = false;
     if (!Started)
     {
         Started = true;
 
         auto Playlist = UObject::FindObject<UFortPlaylistAthena>(L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo");
+#if 0
         if (Playlist->HasbSkipAircraft())
         {
             Playlist->GetbSkipAircraft() = true;
             Playlist->GetbSkipWarmup() = true;
         }
+#endif
 
         auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
         GameState->GetCurrentPlaylistInfo().GetBasePlaylist() = Playlist;
@@ -43,7 +49,7 @@ bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
 APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AFortPlayerControllerAthena* PlayerController, AActor* StartSpot)
 {
     auto translivesmatter = StartSpot->GetTransform();
-    translivesmatter.Translation = { 0, 0, 10000 };
+    // translivesmatter.Translation = { 0, 0, 10000 };
     auto Pawn = GameMode->SpawnDefaultPawnAtTransform(PlayerController, translivesmatter);
 
     void (*ApplyCharacterCustomization)(UObject*, UObject*) = nullptr;
@@ -51,7 +57,7 @@ APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AFortPlayerControl
     {
         auto Addr = 
             Memcury::Scanner::FindStringRef(L"AFortPlayerState::ApplyCharacterCustomization - Failed initialization, using default parts. Player Controller: %s PlayerState: %s, HeroId: %s")
-            .ScanForAny({{ 0x48, 0x8B, 0xC4 }, { 0x48, 0x89, 0x54 }}, false).Get();
+            .ScanForAny({{ 0x48, 0x8B, 0xC4 }, { 0x48, 0x89, 0x54, 0x24, 0x10 }}, false).Get();
 
         if (Addr)
             ApplyCharacterCustomization = decltype(ApplyCharacterCustomization)(Addr);

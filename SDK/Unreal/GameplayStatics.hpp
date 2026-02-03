@@ -43,4 +43,25 @@ public:
         Default()->ProcessEvent(Func, &args);
         return (T*)args.Ret;
     }
+
+    template <typename T = AActor>
+    static TArray<T*> GetAllActorsOfClass(UClass* ActorClass)
+    {
+        static auto Func = StaticClass()->GetFunction("GetAllActorsOfClass");
+        struct {
+            UObject* WorldContext;
+            UClass* ActorClass;
+            TArray<T*> Ret;
+        } args { UWorld::GetWorld(), ActorClass };
+        Default()->ProcessEvent(Func, &args);
+        return args.Ret;
+    }
+
+    static int32 GetNumActorsOfClass(UClass* ActorClass)
+    {
+        auto Actors = GetAllActorsOfClass(ActorClass);
+        auto ret = Actors.Num();
+        Actors.Free();
+        return ret;
+    }
 };

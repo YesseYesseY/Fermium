@@ -23,6 +23,6 @@ public:
 
     static void Init()
     {
-        Offset_DefaultObject = StaticClass()->GetSize() - 0x108 - (EngineVersion >= 4.23f ? 0x10 : 0);
+        Offset_DefaultObject = StaticClass()->GetSize() - 0x108 - (EngineVersion >= 4.25f ? 0x10 : 0);
     }
 };
