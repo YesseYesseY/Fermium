@@ -1,5 +1,6 @@
 namespace Inventory
 {
+    // TODO Broken after 10.40(?)
     FFortItemEntry* FindItemEntry(AFortPlayerControllerAthena* PlayerController, const FGuid& ItemGuid)
     {
         auto& Entries = PlayerController->GetWorldInventory()->GetInventory().GetReplicatedEntries();

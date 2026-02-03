@@ -32,5 +32,11 @@ struct FGuid
 {
     uint32 A, B, C, D;
 
+    std::string ToString() const
+    {
+        return std::format("({}, {}, {}, {})", A, B, C, D);
+    }
+
+    bool operator==(FGuid& Other) { return A == Other.A && B == Other.B && C == Other.C && D == Other.D; }
     bool operator==(const FGuid& Other) { return A == Other.A && B == Other.B && C == Other.C && D == Other.D; }
 };

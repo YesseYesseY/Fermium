@@ -18,13 +18,28 @@ UFunction* UStruct::GetFunction(std::string Name)
 
 int32 UStruct::GetPropOffset(std::string Name)
 {
+    static bool UseFField = EngineVersion >= 4.25f;
+
     for (auto Struct = this; Struct; Struct = Struct->GetSuperStruct())
     {
-        for (auto Child = Struct->GetChildren(); Child; Child = Child->Next)
+        if (UseFField)
         {
-            if (Child->IsA(UProperty::StaticClass()) && Child->GetName() == Name)
+            for (auto Child = Struct->GetChildProperties(); Child; Child = Child->Next)
             {
-                return ((UProperty*)Child)->Offset;
+                if (Child->GetName() == Name)
+                {
+                    return ((FProperty*)Child)->Offset;
+                }
+            }
+        }
+        else
+        {
+            for (auto Child = Struct->GetChildren(); Child; Child = Child->Next)
+            {
+                if (Child->IsA(UProperty::StaticClass()) && Child->GetName() == Name)
+                {
+                    return ((UProperty*)Child)->Offset;
+                }
             }
         }
     }

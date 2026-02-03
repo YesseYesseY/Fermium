@@ -93,8 +93,17 @@ namespace Net
 
             if (!ServerReplicateActors)
             {
-                MsgBox("Failed to find ServerReplicateActors");
-                return;
+                auto Addr = Memcury::Scanner::FindStringRef(L"NET_PrepareReplication").ScanFor({ 0x4C, 0x8B, 0xDC }, false).Get();
+
+                if (Addr)
+                {
+                    ServerReplicateActors = decltype(ServerReplicateActors)(Addr);
+                }
+                else
+                {
+                    MsgBox("Failed to find ServerReplicateActors");
+                    return;
+                }
             }
         }
 

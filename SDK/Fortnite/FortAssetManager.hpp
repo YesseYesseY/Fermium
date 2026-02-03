@@ -9,13 +9,27 @@ class UFortGameData : public UObject
     PROP_REF_REFLECTION_SAFE(TSoftObjectPtr<UFortAbilitySet>, AthenaPlayerAbilitySet);
 };
 
+class UGameDataBR : public UObject
+{
+    PROP_REF_REFLECTION_SAFE(TSoftObjectPtr<UFortAbilitySet>, PlayerAbilitySetBR);
+};
+
 class UFortAssetManager : public UAssetManager
 {
     PROP_REF_REFLECTION_SAFE(UFortGameData*, GameData);
+    PROP_REF_REFLECTION_SAFE(UGameDataBR*, GameDataBR);
 
 public:
     UFortAbilitySet* GetAthenaAbilitySet()
     {
+        if (HasGameDataBR())
+        {
+            auto GameDataBR = GetGameDataBR();
+
+            if (GameDataBR && GameDataBR->HasPlayerAbilitySetBR())
+                return GameDataBR->GetPlayerAbilitySetBR().Get();
+        }
+
         if (!HasGameData())
             return nullptr;
 

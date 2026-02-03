@@ -10,3 +10,10 @@ public:
     uint8 BlueprintReplicationCondition;
     int32 Offset;
 };
+
+class FProperty : public FField
+{
+public:
+    uint8 pad3[0x14];
+    int32 Offset;
+};

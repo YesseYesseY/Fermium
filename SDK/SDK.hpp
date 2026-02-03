@@ -11,6 +11,9 @@ using namespace UC;
 
 #include "Unreal/Flags.hpp"
 
+extern inline float EngineVersion = -1.0f;
+extern inline float GameVersion = -1.0f;
+
 #include "Unreal/ObjectArray.hpp"
 #include "Unreal/Name.hpp"
 #include "Unreal/Object.hpp"
@@ -87,6 +90,11 @@ static void InitSDK(bool IsServer)
     }
 
     UObject::Init();
+
+    auto VerStr = UKismetSystemLibrary::GetEngineVersion();
+    EngineVersion = std::stof(VerStr);
+    GameVersion = std::stof(VerStr.substr(VerStr.find_last_of('-') + 1));
+
     UStruct::Init();
     UClass::Init();
     UFunction::Init();

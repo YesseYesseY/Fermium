@@ -7,7 +7,6 @@
 #include "Net.hpp"
 #include "Inventory.hpp"
 
-bool (*ReadyToStartMatchOriginal)(AFortGameModeAthena* GameMode);
 bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
 {
     static bool Started = false;
@@ -38,7 +37,7 @@ bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
         return true;
     }
 
-    return ReadyToStartMatchOriginal(GameMode);
+    return false;
 }
 
 APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AFortPlayerControllerAthena* PlayerController, AActor* StartSpot)
@@ -51,8 +50,8 @@ APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AFortPlayerControl
     if (!ApplyCharacterCustomization)
     {
         auto Addr = 
-            Memcury::Scanner::FindStringRef(L"AFortPlayerState::ApplyCharacterCustomization - Failed to find hero. Player Controller: %s PlayerState: %s, HeroId: %s")
-            .ScanFor({ 0x48, 0x8B, 0xC4 }, false).Get();
+            Memcury::Scanner::FindStringRef(L"AFortPlayerState::ApplyCharacterCustomization - Failed initialization, using default parts. Player Controller: %s PlayerState: %s, HeroId: %s")
+            .ScanForAny({{ 0x48, 0x8B, 0xC4 }, { 0x48, 0x89, 0x54 }}, false).Get();
 
         if (Addr)
             ApplyCharacterCustomization = decltype(ApplyCharacterCustomization)(Addr);
@@ -127,11 +126,12 @@ DWORD MainThread(HMODULE Module)
 
     InitSDK(true);
 
-    auto GameModeBR = UObject::FindClass(L"/Script/FortniteGame.FortGameModeAthena");
+    auto GameModeBR = UObject::FindClass(L"/Script/FortniteGame.FortGameModeBR");
+    if (!GameModeBR) GameModeBR = UObject::FindClass(L"/Script/FortniteGame.FortGameModeAthena");
     auto FortGameMode = UObject::FindClass(L"/Script/FortniteGame.FortGameMode");
     auto FortPlayerControllerAthena = UObject::FindClass(L"/Script/FortniteGame.FortPlayerControllerAthena");
     auto FortPlayerController = UObject::FindClass(L"/Script/FortniteGame.FortPlayerController");
-    GameModeBR->VTableHook("ReadyToStartMatch", ReadyToStartMatchHook, &ReadyToStartMatchOriginal);
+    GameModeBR->VTableHook("ReadyToStartMatch", ReadyToStartMatchHook);
     GameModeBR->VTableHook("SpawnDefaultPawnFor", SpawnDefaultPawnForHook);
     FortPlayerControllerAthena->VTableReplace("ServerAcknowledgePossession", FortPlayerController);
     FortPlayerControllerAthena->VTableHook("ServerExecuteInventoryItem", Inventory::ServerExecuteInventoryItem);
@@ -197,7 +197,9 @@ DWORD MainThread(HMODULE Module)
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogPackageLocalizationCache None");
 
     UWorld::GetWorld()->GetOwningGameInstance()->GetLocalPlayers().Remove(0);
-    UKismetSystemLibrary::ExecuteConsoleCommand(L"open athena_terrain");
+    if (GameVersion < 11.0f) UKismetSystemLibrary::ExecuteConsoleCommand(L"open Athena_Terrain");
+    else if (GameVersion < 19.0f) UKismetSystemLibrary::ExecuteConsoleCommand(L"open Apollo_Terrain");
+    else if (GameVersion < 20.0f) UKismetSystemLibrary::ExecuteConsoleCommand(L"open Artemis_Terrain");
 
     return 0;
 }

@@ -872,6 +872,20 @@ namespace Memcury
             return *this;
         }
 
+        auto ScanForAny(std::vector<std::vector<uint8_t>> opcodesToFind, bool forward = true, int toSkip = 0) -> Scanner
+        {
+            auto base = _address.Get();
+
+            for (auto thing : opcodesToFind)
+            {
+                ScanFor(thing, forward, toSkip);
+                if (base != _address.Get())
+                    return *this;
+            }
+
+            return *this;
+        }
+
         auto FindFunctionBoundary(bool forward = false) -> Scanner
         {
             const auto scanBytes = _address.GetAs<std::uint8_t*>();
