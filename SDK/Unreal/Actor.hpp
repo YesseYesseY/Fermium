@@ -8,4 +8,10 @@ public:
         ProcessEvent(Func, &Ret);
         return Ret;
     }
+
+    void K2_DestroyActor()
+    {
+        static auto Func = ClassPrivate->GetFunction("K2_DestroyActor");
+        ProcessEvent(Func);
+    }
 };

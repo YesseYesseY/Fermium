@@ -19,6 +19,8 @@ class AFortGameState : public AFortGameStateBase
 
 class AFortGameStateZone : public AFortGameState
 {
+public:
+    PROP_REF_REFLECTION(TArray<UClass*>, AllPlayerBuildableClasses);
 };
 
 class AFortGameStatePvP : public AFortGameStateZone

@@ -8,6 +8,7 @@ enum class ESpawnActorCollisionHandlingMethod : uint8
 };
 
 class AActor;
+class AFortGameStateAthena;
 
 class UGameplayStatics : public UObject
 {
@@ -64,4 +65,6 @@ public:
         Actors.Free();
         return ret;
     }
+
+    static AFortGameStateAthena* GetGameState();
 };

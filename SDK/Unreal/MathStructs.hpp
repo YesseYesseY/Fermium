@@ -30,11 +30,22 @@ struct FTransform
 
 struct FGuid
 {
+    static UObject* DefaultLib()
+    {
+        return UObject::FindObject(L"/Script/Engine.Default__KismetGuidLibrary");
+    }
+
     uint32 A, B, C, D;
 
     std::string ToString() const
     {
         return std::format("({}, {}, {}, {})", A, B, C, D);
+    }
+
+    void Regen()
+    {
+        static auto Func = UObject::FindFunction(L"/Script/Engine.KismetGuidLibrary:NewGuid");
+        DefaultLib()->ProcessEvent(Func, this);
     }
 
     bool operator==(FGuid& Other) { return A == Other.A && B == Other.B && C == Other.C && D == Other.D; }

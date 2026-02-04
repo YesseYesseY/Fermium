@@ -30,3 +30,14 @@ AActor* UGameplayStatics::FinishSpawningActor(AActor* Actor, const FTransform& S
     Default()->ProcessEvent(Func, &args);
     return args.Ret;
 }
+
+AFortGameStateAthena* UGameplayStatics::GetGameState()
+{
+    static auto Func = StaticClass()->GetFunction("GetGameState");
+    struct {
+        UObject* WorldContext;
+        AFortGameStateAthena* Ret;
+    } args { UWorld::GetWorld() };
+    Default()->ProcessEvent(Func, &args);
+    return args.Ret;
+}

@@ -1,4 +1,4 @@
-struct FFortItemEntry
+struct FFortItemEntry : public FFastArraySerializerItem
 {
     STATIC_STRUCT(FFortItemEntry, L"/Script/FortniteGame.FortItemEntry");
 

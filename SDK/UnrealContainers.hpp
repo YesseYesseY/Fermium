@@ -306,7 +306,7 @@ namespace UC
 			if (GetSlack() <= 0)
 				Reserve(3, ElemSize);
 
-            std::memcpy((ArrayElementType*)(int64(Data) + (NumElements * ElemSize)), Element, ElemSize);
+            memcpy((ArrayElementType*)(int64(Data) + (NumElements * ElemSize)), Element, ElemSize);
 			// Data[NumElements] = Element;
 			NumElements++;
 		}

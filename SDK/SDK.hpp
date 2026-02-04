@@ -65,6 +65,7 @@ extern inline float GameVersion = -1.0f;
 #include "Fortnite/FortGameMode.hpp"
 
 #include "Fortnite/FortAbilitySet.hpp"
+#include "Unreal/GameplayEffect.hpp"
 #include "Unreal/AbilitySystemComponent.hpp"
 #include "Fortnite/FortPlayerState.hpp"
 #include "Fortnite/FortItemDefinition.hpp"
@@ -72,7 +73,14 @@ extern inline float GameVersion = -1.0f;
 #include "Fortnite/FortPlayerController.hpp"
 #include "Fortnite/FortPawn.hpp"
 
+#include "Fortnite/FortKismetLibrary.hpp"
+
+#include "Fortnite/BuildingClassData.hpp"
+#include "Fortnite/BuildingActor.hpp"
+
 #include "Fortnite/FortAssetManager.hpp"
+
+#include "Fortnite/Festivus.hpp"
 
 static void InitSDK(bool IsServer)
 {

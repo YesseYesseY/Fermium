@@ -6,6 +6,7 @@
 
 #include "Net.hpp"
 #include "Inventory.hpp"
+#include "Building.hpp"
 
 bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
 {
@@ -83,6 +84,9 @@ APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AFortPlayerControl
         auto thing = GameMode->GetStartingItems()[i];
         Inventory::GiveItem(PlayerController, thing.Item, thing.Count);
     }
+    Inventory::GiveItem(PlayerController, UFortKismetLibrary::K2_GetResourceItemDefinition(EFortResourceType::Wood), 500);
+    Inventory::GiveItem(PlayerController, UFortKismetLibrary::K2_GetResourceItemDefinition(EFortResourceType::Stone), 500);
+    Inventory::GiveItem(PlayerController, UFortKismetLibrary::K2_GetResourceItemDefinition(EFortResourceType::Metal), 500);
     Inventory::Update(PlayerController);
 
     return Pawn;
@@ -119,6 +123,26 @@ void InternalServerTryActivateAbility(UAbilitySystemComponent* Component, FGamep
     }
 }
 
+void ServerCheat(AFortPlayerControllerAthena* PlayerController, const FString& FMsg)
+{
+    auto Msg = FMsg.ToWString();
+    if (Msg.starts_with(L"server "))
+    {
+        UKismetSystemLibrary::ExecuteConsoleCommand(Msg.substr(7).c_str());
+    }
+    else if (Msg == L"festivus")
+    {
+        auto Manager = UObject::FindFirstObjectOfClass<ABP_FestivusManager_C>(ABP_FestivusManager_C::StaticClass());
+        if (!Manager)
+        {
+            MsgBox("Didn't find FesstivusManager");
+            return;
+        }
+
+        Manager->ExecuteUbergraph(981);
+    }
+}
+
 void ReturnHook()
 {
 }
@@ -140,7 +164,9 @@ DWORD MainThread(HMODULE Module)
     GameModeBR->VTableHook("ReadyToStartMatch", ReadyToStartMatchHook);
     GameModeBR->VTableHook("SpawnDefaultPawnFor", SpawnDefaultPawnForHook);
     FortPlayerControllerAthena->VTableReplace("ServerAcknowledgePossession", FortPlayerController);
+    FortPlayerControllerAthena->VTableHook("ServerCheat", ServerCheat);
     FortPlayerControllerAthena->VTableHook("ServerExecuteInventoryItem", Inventory::ServerExecuteInventoryItem);
+    FortPlayerControllerAthena->VTableHook("ServerCreateBuildingActor", FCreateBuildingActorData::StaticStruct() ? (void*)Building::ServerCreateBuildingActorModern : (void*)Building::ServerCreateBuildingActor);
 
     Net::Init();
 
@@ -206,6 +232,12 @@ DWORD MainThread(HMODULE Module)
     if (GameVersion < 11.0f) UKismetSystemLibrary::ExecuteConsoleCommand(L"open Athena_Terrain");
     else if (GameVersion < 19.0f) UKismetSystemLibrary::ExecuteConsoleCommand(L"open Apollo_Terrain");
     else if (GameVersion < 20.0f) UKismetSystemLibrary::ExecuteConsoleCommand(L"open Artemis_Terrain");
+
+#if 0
+    while (!(GetAsyncKeyState(VK_F5) & 0x8000)) Sleep(100);
+
+    UObject::DumpObjects();
+#endif
 
     return 0;
 }
