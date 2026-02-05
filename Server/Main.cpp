@@ -9,58 +9,7 @@
 #include "Building.hpp"
 #include "GameMode.hpp"
 #include "Player.hpp"
-
-void InternalServerTryActivateAbility(UAbilitySystemComponent* Component, FGameplayAbilitySpecHandle Handle, bool InputPressed, const FPredictionKey& PredictionKey, void* TriggerEventData)
-{
-    FGameplayAbilitySpec* Spec = Component->FindAbilitySpecFromHandle(Handle);
-    if (!Spec)
-    {
-        Component->ClientActivateAbilityFailed(Handle, PredictionKey.GetCurrent());
-        return;
-    }
-
-    auto AbilityToActivate = Spec->GetAbility();
-    if (!AbilityToActivate)
-    {
-        Component->ClientActivateAbilityFailed(Handle, PredictionKey.GetCurrent());
-        return;
-    }
-
-    UObject* InstancedAbility = nullptr;
-    Spec->GetInputPressed() |= 1;
-    if (Component->InternalTryActivateAbility(Handle, PredictionKey, &InstancedAbility, nullptr, TriggerEventData))
-    {
-    }
-    else
-    {
-        Component->ClientActivateAbilityFailed(Handle, PredictionKey.GetCurrent());
-        Spec->GetInputPressed() &= ~1;
-
-        Component->GetActivatableAbilities().MarkArrayDirty();
-        return;
-    }
-}
-
-void ServerCheat(AFortPlayerControllerAthena* PlayerController, const FString& FMsg)
-{
-    auto Msg = FMsg.ToWString();
-    if (Msg.starts_with(L"server "))
-    {
-        UKismetSystemLibrary::ExecuteConsoleCommand(Msg.substr(7).c_str());
-    }
-    else if (Msg == L"festivus")
-    {
-        UObject::FindObject<ABuildingFoundation>(L"/Game/Athena/Maps/Athena_POI_Foundations.Athena_POI_Foundations:PersistentLevel.PleasentParkFestivus")->SetDynamicFoundationEnabled(true);
-        // auto Manager = UObject::FindFirstObjectOfClass<ABP_FestivusManager_C>(ABP_FestivusManager_C::StaticClass());
-        // if (!Manager)
-        // {
-        //     MsgBox("Didn't find FesstivusManager");
-        //     return;
-        // }
-
-        // Manager->ExecuteUbergraph(981);
-    }
-}
+#include "Abilities.hpp"
 
 void ReturnHook()
 {
@@ -75,19 +24,12 @@ DWORD MainThread(HMODULE Module)
 
     InitSDK(true);
 
-    auto FortPlayerControllerAthena = UObject::FindClass(L"/Script/FortniteGame.FortPlayerControllerAthena");
-    auto PlayerController = UObject::FindClass(L"/Script/Engine.PlayerController");
-    FortPlayerControllerAthena->VTableReplace("ServerAcknowledgePossession", PlayerController);
-    FortPlayerControllerAthena->VTableHook("ServerCheat", ServerCheat);
-    FortPlayerControllerAthena->VTableHook("ServerExecuteInventoryItem", Inventory::ServerExecuteInventoryItem);
-    FortPlayerControllerAthena->VTableHook("ServerCreateBuildingActor", FCreateBuildingActorData::StaticStruct() ? (void*)Building::ServerCreateBuildingActorModern : (void*)Building::ServerCreateBuildingActor);
-    FortPlayerControllerAthena->VTableHook("ServerBeginEditingBuildingActor", Building::ServerBeginEditingBuildingActor);
-    FortPlayerControllerAthena->VTableHook("ServerEndEditingBuildingActor", Building::ServerEndEditingBuildingActor);
-    FortPlayerControllerAthena->VTableHook("ServerEditBuildingActor", Building::ServerEditBuildingActor);
-
     Net::Init();
     GameMode::Init();
     Player::Init();
+    Inventory::Init();
+    Building::Init();
+    Abilities::Init();
 
     // GIsClient + GIsServer
     {
@@ -122,16 +64,6 @@ DWORD MainThread(HMODULE Module)
                 MsgBox("Couldn't find GIsClient + GIsServer");
             }
         }
-    }
-
-    // InternalServerTryActivateAbility
-    {
-        auto DefaultObj = UObject::FindObject(L"/Script/GameplayAbilities.Default__AbilitySystemComponent");
-        auto Func = UObject::FindFunction(L"/Script/GameplayAbilities.AbilitySystemComponent:ServerTryActivateAbility");
-        auto FuncIndex = Func->GetVTableIndex();
-        auto RealIdx = *Memcury::Scanner(DefaultObj->VTable[FuncIndex]).ScanFor({ 0xFF, 0x90 }).AbsoluteOffset(2).GetAs<int32*>();
-        auto ComponentAthena = UObject::FindClass(L"/Script/FortniteGame.FortAbilitySystemComponentAthena");
-        ComponentAthena->VTableHook(RealIdx / 8, InternalServerTryActivateAbility);
     }
 
     // RequestExit

@@ -10,6 +10,12 @@ public:
         static auto Func = ClassPrivate->GetFunction("ClientFailedToBeginEditingBuildingActor");
         ProcessEvent(Func, &BuildingActorToStopEditing);
     }
+
+    void EquipItemEntry(FFortItemEntry* ItemEntry)
+    {
+        auto Pawn = GetPawnAs<AFortPlayerPawn>(); 
+        Pawn->EquipWeaponDefinition(ItemEntry->GetItemDefinition(), ItemEntry->GetItemGuid());
+    }
 };
 
 class AFortPlayerControllerGameplay : public AFortPlayerController
@@ -26,6 +32,8 @@ class AFortPlayerControllerPvP : public AFortPlayerControllerZone
 
 class AFortPlayerControllerAthena : public AFortPlayerControllerPvP
 {
+    STATIC_CLASS(L"/Script/FortniteGame.FortPlayerControllerAthena");
+
 public:
     bool IsInAircraft()
     {

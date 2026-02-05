@@ -75,11 +75,12 @@ namespace GameMode
             { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/MetalItemData.MetalItemData"), 500 },
         };
 
+        auto Inventory = PlayerController->GetWorldInventory();
         for (auto thing : StartingItems)
         {
-            Inventory::GiveItem(PlayerController, thing.first, thing.second);
+            Inventory->GiveItem(thing.first, thing.second);
         }
-        Inventory::Update(PlayerController);
+        Inventory->Update();
     }
 
     void Init()

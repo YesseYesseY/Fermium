@@ -70,8 +70,8 @@ extern inline float GameVersion = -1.0f;
 #include "Fortnite/FortPlayerState.hpp"
 #include "Fortnite/FortItemDefinition.hpp"
 #include "Fortnite/FortInventory.hpp"
-#include "Fortnite/FortPlayerController.hpp"
 #include "Fortnite/FortPawn.hpp"
+#include "Fortnite/FortPlayerController.hpp"
 
 #include "Fortnite/FortKismetLibrary.hpp"
 

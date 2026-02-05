@@ -38,4 +38,53 @@ struct FFortItemList : FFastArraySerializer
 class AFortInventory : public AActor
 {
     PROP_REF_REFLECTION(FFortItemList, Inventory);
+
+    FFortItemEntry* FindItemEntry(const FGuid& ItemGuid)
+    {
+        auto& Entries = GetInventory().GetReplicatedEntries();
+        for (int i = 0; i < Entries.Num(); i++)
+        {
+            auto& Entry = Entries.Get(i, FFortItemEntry::Size());
+            if (Entry.GetItemGuid() == ItemGuid)
+            {
+                return &Entry;
+            }
+        }
+
+        return nullptr;
+    }
+
+    FFortItemEntry* FindItemEntry(UFortItemDefinition* ItemDef)
+    {
+        auto& Entries = GetInventory().GetReplicatedEntries();
+        for (int i = 0; i < Entries.Num(); i++)
+        {
+            auto& Entry = Entries.Get(i, FFortItemEntry::Size());
+            if (Entry.GetItemDefinition() == ItemDef)
+            {
+                return &Entry;
+            }
+        }
+
+        return nullptr;
+    }
+
+    void GiveItem(UFortItemDefinition* ItemDef, int32 Count)
+    {
+        if (Count <= 0 || !ItemDef)
+            return;
+
+        auto Item = (UFortWorldItem*)ItemDef->CreateTemporaryItemInstanceBP(Count);
+        auto& ItemEntry = Item->GetItemEntry();
+        if (!ItemEntry.GetItemGuid().IsValid())
+            ItemEntry.GetItemGuid().Regen();
+
+        GetInventory().GetReplicatedEntries().AddCopy(&ItemEntry, FFortItemEntry::Size());
+        GetInventory().GetItemInstances().Add(Item);
+    }
+
+    void Update()
+    {
+        GetInventory().MarkArrayDirty();
+    }
 };

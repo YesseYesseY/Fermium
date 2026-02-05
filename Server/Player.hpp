@@ -10,6 +10,15 @@ namespace Player
         PlayerController->ClientSetRotation(ClientRotation, false);
     }
 
+    void ServerCheat(AFortPlayerControllerAthena* PlayerController, const FString& FMsg)
+    {
+        auto Msg = FMsg.ToWString();
+        if (Msg.starts_with(L"server "))
+        {
+            UKismetSystemLibrary::ExecuteConsoleCommand(Msg.substr(7).c_str());
+        }
+    }
+
     void Init()
     {
         auto AircraftComponent = UObject::FindClass(L"/Script/FortniteGame.FortControllerComponent_Aircraft");
@@ -17,5 +26,10 @@ namespace Player
         {
             AircraftComponent->VTableHook("ServerAttemptAircraftJump", ServerAttemptAircraftJump);
         }
+
+        auto FortPlayerControllerAthena = AFortPlayerControllerAthena::StaticClass();
+        auto PlayerController = APlayerController::StaticClass();
+        FortPlayerControllerAthena->VTableReplace("ServerAcknowledgePossession", PlayerController);
+        FortPlayerControllerAthena->VTableHook("ServerCheat", ServerCheat);
     }
 }

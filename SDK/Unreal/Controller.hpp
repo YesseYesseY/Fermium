@@ -20,4 +20,10 @@ class AController : public AActor
         } args { NewRotation, bResetCamera };
         ProcessEvent(Func, &args);
     }
+
+    template <typename T>
+    T* GetPawnAs()
+    {
+        return (T*)GetPawn();
+    }
 };

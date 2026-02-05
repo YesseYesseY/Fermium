@@ -57,12 +57,12 @@ namespace Building
         BuildingActorToEdit->OnRep_EditingPlayer();
 
         static auto EditToolItemDef = UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/EditTool.EditTool");
-        if (auto ItemEntry = Inventory::FindItemEntry(PlayerController, EditToolItemDef))
+        if (auto ItemEntry = PlayerController->GetWorldInventory()->FindItemEntry(EditToolItemDef))
         {
             BuildingActorToEdit->GetEditingPlayer() = (AFortPlayerStateZone*)PlayerController->GetPlayerState();
             BuildingActorToEdit->OnRep_EditingPlayer();
 
-            Inventory::EquipItemEntry(PlayerController, ItemEntry);
+            PlayerController->EquipItemEntry(ItemEntry);
         }
         else
         {
@@ -79,5 +79,14 @@ namespace Building
     void ServerEditBuildingActor(AFortPlayerControllerAthena* PlayerController, ABuildingSMActor* BuildingActorToEdit, UClass* NewBuildingClass, int32 RotationIterations, bool bMirrored)
     {
         BuildingActorToEdit->ReplaceBuildingActor(NewBuildingClass, RotationIterations, bMirrored, PlayerController);
+    }
+
+    void Init()
+    {
+        auto PC = AFortPlayerControllerAthena::StaticClass();
+        PC->VTableHook("ServerCreateBuildingActor", FCreateBuildingActorData::StaticStruct() ? (void*)ServerCreateBuildingActorModern : (void*)ServerCreateBuildingActor);
+        PC->VTableHook("ServerBeginEditingBuildingActor", ServerBeginEditingBuildingActor);
+        PC->VTableHook("ServerEndEditingBuildingActor", ServerEndEditingBuildingActor);
+        PC->VTableHook("ServerEditBuildingActor", ServerEditBuildingActor);
     }
 }
