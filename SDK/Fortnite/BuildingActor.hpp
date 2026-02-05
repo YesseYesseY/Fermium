@@ -1,14 +1,15 @@
 class ABuildingActor : public AActor
 {
 public:
-    void InitializeBuildingActor(AFortPlayerController* SpawningController, bool bUsePlayerBuildAnimations)
+    void InitializeBuildingActor(AFortPlayerController* SpawningController, bool bUsePlayerBuildAnimations, ABuildingActor* ReplacedBuilding = nullptr)
     {
         static auto Func = ClassPrivate->GetFunction("InitializeKismetSpawnedBuildingActor");
         struct {
             ABuildingActor* BuildingOwner;
             AFortPlayerController* SpawningController;
             bool bUsePlayerBuildAnimations;
-        } args { this, SpawningController, bUsePlayerBuildAnimations };
+            ABuildingActor* ReplacedBuilding;
+        } args { this, SpawningController, bUsePlayerBuildAnimations, ReplacedBuilding };
         ProcessEvent(Func, &args);
     }
 };

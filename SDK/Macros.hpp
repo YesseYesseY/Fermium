@@ -63,13 +63,8 @@ public: \
 
 /// STRUCT
 
-#define STATIC_STRUCT(Type, Name) \
+#define STRUCT_UTILS(Type) \
 public: \
-    static UStruct* StaticStruct() \
-    { \
-        static UStruct* Ret = UObject::FindStruct(Name); \
-        return Ret; \
-    } \
     static int32 Size() \
     { \
         return StaticStruct()->GetSize(); \
@@ -81,6 +76,15 @@ public: \
         memset(Ret, 0, StructSize); \
         return Ret; \
     }
+
+#define STATIC_STRUCT(Type, Name) \
+public: \
+    static UStruct* StaticStruct() \
+    { \
+        static UStruct* Ret = UObject::FindStruct(Name); \
+        return Ret; \
+    } \
+    STRUCT_UTILS(Type)
 
 #define STRUCT_PROP_REF_REFLECTION(Type, Name) \
 public: \

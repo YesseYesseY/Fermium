@@ -18,6 +18,8 @@ public:
             return *Scanner.AbsoluteOffset(2).GetAs<int32*>() / 8;
         }
 
+        MsgBox("Failed to find VTableIndex for {}", GetFullName());
+
         return -1;
     }
 

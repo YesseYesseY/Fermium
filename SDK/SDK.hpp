@@ -101,6 +101,9 @@ static void InitSDK(bool IsServer)
     auto VerStr = UKismetSystemLibrary::GetEngineVersion();
     EngineVersion = std::stof(VerStr);
     GameVersion = std::stof(VerStr.substr(VerStr.find_last_of('-') + 1));
+    if (VerStr.starts_with("4.26.1"))
+        EngineVersion = 4.261f;
+    // MsgBox("{}\n{}", EngineVersion, GameVersion);
 
     UStruct::Init();
     UClass::Init();

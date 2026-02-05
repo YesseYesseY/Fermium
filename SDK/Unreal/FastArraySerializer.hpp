@@ -7,7 +7,13 @@ struct FFastArraySerializerItem
 
 struct FFastArraySerializer
 {
-    STATIC_STRUCT(FFastArraySerializer, L"/Script/Engine.FastArraySerializer")
+    static UStruct* StaticStruct()
+    {
+        static UStruct* Struct = 
+            EngineVersion >= 4.261f ? UObject::FindStruct(L"/Script/NetCore.FastArraySerializer") : UObject::FindStruct(L"/Script/Engine.FastArraySerializer");
+        return Struct;
+    }
+    STRUCT_UTILS(FFastArraySerializer);
 
 public:
     PROP_REF_OFFSET(int32, IDCounter);

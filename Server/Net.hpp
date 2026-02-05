@@ -67,7 +67,7 @@ namespace Net
     {
         // TickFlush
         {
-            auto Addr = Memcury::Scanner::FindStringRef(L"STAT_NetTickFlush").ScanFor({ 0x4C, 0x8B, 0xDC }, false).Get();
+            auto Addr = Memcury::Scanner::FindStringRef(L"STAT_NetTickFlush").ScanForAny({{ 0x4C, 0x8B, 0xDC }, { 0x48, 0x8B, 0xC4 }}, false).Get();
 
             if (!Addr)
             {
@@ -96,7 +96,14 @@ namespace Net
 
             if (!ServerReplicateActors)
             {
-                auto Addr = Memcury::Scanner::FindStringRef(L"NET_PrepareReplication").ScanFor({ 0x4C, 0x8B, 0xDC }, false).Get();
+                auto Scanner = Memcury::Scanner::FindStringRef(L"NET_PrepareReplication");
+
+                if (EngineVersion >= 4.261f)
+                    Scanner.ScanFor({ 0x48, 0x8B, 0xC4 }, false);
+                else
+                    Scanner.ScanFor({ 0x4C, 0x8B, 0xDC }, false);
+
+                auto Addr = Scanner.Get();
 
                 if (Addr)
                 {
@@ -114,7 +121,13 @@ namespace Net
         {
             auto GameSessionVTable = UObject::FindObject(L"/Script/Engine.Default__GameSession")->VTable;
 
-            auto ReturnToMainMenu = Memcury::Scanner::FindStringRef(L"Host has left the game.").ScanFor({ 0x48, 0x89, 0x5C }, false).GetAs<void*>();
+            auto ReturnToMainMenuScanner = Memcury::Scanner::FindStringRef(L"Host has left the game.");
+            if (EngineVersion >= 4.261f)
+                ReturnToMainMenuScanner.ScanFor({ 0x48, 0x8B, 0xC4 }, false);
+            else
+                ReturnToMainMenuScanner.ScanFor({ 0x48, 0x89, 0x5C }, false);
+            
+            auto ReturnToMainMenu = ReturnToMainMenuScanner.GetAs<void*>();
 
             for (int i = 0; i < 0x100; i++)
             {
@@ -130,9 +143,14 @@ namespace Net
         {
             auto IsDedicatedServer = UObject::FindFunction(L"/Script/Engine.KismetSystemLibrary.IsDedicatedServer")->GetExecFunc();
 
-            auto Addr = Memcury::Scanner(IsDedicatedServer)
+            auto Scanner = Memcury::Scanner(IsDedicatedServer)
                 .ScanFor({ 0xC3 }).ScanFor({ 0xE8 }, false).RelativeOffset(1)
-                .ScanFor({ 0xE8 }, true, 1).RelativeOffset(1).Get();
+                .ScanFor({ 0xE8 }, true, 1).RelativeOffset(1);
+
+            if (EngineVersion >= 4.261f)
+                Scanner.ScanFor({ 0xE9 }).RelativeOffset(1);
+
+            auto Addr = Scanner.Get();
 
             Hook::Function(Addr, GetNetModeHook);
         }
@@ -164,7 +182,10 @@ namespace Net
 
         // PauseBeaconRequests
         {
-            auto Addr = Memcury::Scanner::FindPattern("40 ? 48 83 EC 30 48 8B ? 84 D2 74 ? 80 3D").Get();
+            auto Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC 30 33 F6 48 8B F9 84 D2").Get();
+
+            if (!Addr) // 7.30 to 14.60
+                Addr = Memcury::Scanner::FindPattern("40 ? 48 83 EC 30 48 8B ? 84 D2 74 ? 80 3D").Get();
 
             if (!Addr) // 19.40
                 Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC 20 33 ED 48 8B F1 84 D2").Get();
@@ -180,7 +201,13 @@ namespace Net
 
         // UIpNetDriver::InitListen
         {
-            auto Addr = Memcury::Scanner::FindStringRef(L"%s IpNetDriver listening on port %i").ScanFor({ 0x48, 0x89, 0x5C }, false, 1).Get();
+            auto Scanner = Memcury::Scanner::FindStringRef(L"%s IpNetDriver listening on port %i");
+            if (EngineVersion >= 4.261f)
+                Scanner.ScanFor({ 0x4C, 0x8B, 0xDC }, false);
+            else
+                Scanner.ScanFor({ 0x48, 0x89, 0x5C }, false, 1);
+
+            auto Addr = Scanner.Get();
 
             if(!Addr)
             {

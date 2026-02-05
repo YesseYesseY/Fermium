@@ -13,18 +13,9 @@ bool UWorldExecHook(UWorld* World, int64 a2, const wchar_t* Cmd, int64 a4)
         PlayerController->GetCheatManager() = UGameplayStatics::SpawnObject(PlayerController->GetCheatClass(), PlayerController);
         return true;
     }
-    else if (wcscmp(Cmd, L"testywesty") == 0)
+    else if (wcscmp(Cmd, L"dumpobjects") == 0)
     {
-        // auto GameMode = World->GetAuthorityGameMode();
-        // auto Playlist = UObject::FindObject(L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo");
-        // auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
-        // GameState->GetCurrentPlaylistInfo().GetBasePlaylist() = Playlist;
-        // GameState->GetCurrentPlaylistInfo().GetPlaylistReplicationKey()++;
-        // GameState->OnRep_CurrentPlaylistInfo();
-        // UKismetSystemLibrary::ExecuteConsoleCommand(L"fov 179");
-
-        // auto ActorClass = UObject::FindClass(L"/Game/Building/ActorBlueprints/Prop/Prop_TirePile_02.Prop_TirePile_02_C");
-        // UGameplayStatics::SpawnActor(ActorClass, { 0, 0, 10000 });
+        UObject::DumpObjects();
         return true;
     }
 
@@ -46,7 +37,13 @@ DWORD MainThread(HMODULE Module)
 
     // UWorld::Exec
     {
-        auto Addr = Memcury::Scanner::FindStringRef(L"FLUSHPERSISTENTDEBUGLINES").ScanFor({ 0x48, 0x89, 0x5C }, false).Get();
+        auto Scanner = Memcury::Scanner::FindStringRef(L"FLUSHPERSISTENTDEBUGLINES");
+        if (EngineVersion >= 4.261f)
+            Scanner.ScanFor({ 0x48, 0x8B, 0xC4 }, false);
+        else
+            Scanner.ScanFor({ 0x48, 0x89, 0x5C }, false);
+
+        auto Addr = Scanner.Get();
 
         if (!Addr)
         {
