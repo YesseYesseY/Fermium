@@ -883,6 +883,8 @@ namespace Memcury
                     return *this;
             }
 
+            MessageBoxA(NULL, "ScanForAny failed all checks!", "Memcury", MB_OK);
+
             return *this;
         }
 

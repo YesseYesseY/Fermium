@@ -1,6 +1,6 @@
 # Fermium
 Semi-Universal fortnite server <br>
-Only tested on 7.30 so far, probably works on most UE4.22 to UE4.23 builds tho
+Tested on 7.30, 8.51, 10.40, 12.41, 14.60
 
 # Things used
 [UnrealContainers](https://github.com/Fischsalat/UnrealContainers)<br>

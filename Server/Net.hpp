@@ -5,6 +5,7 @@ namespace Net
     void (*PauseBeaconRequests)(UObject*, bool);
     bool (*InitListen)(UNetDriver*, UObject*, void*, bool, FString&);
     void (*SetWorld)(UNetDriver*, UWorld*);
+    int32 SetWorldIndex = -1;
 
     void (*TickFlushOriginal)(UNetDriver* NetDriver, float DeltaSeconds);
     void TickFlushHook(UNetDriver* NetDriver, float DeltaSeconds)
@@ -31,7 +32,7 @@ namespace Net
     {
         auto BeaconClass = UObject::FindClass(L"/Script/FortniteGame.FortOnlineBeaconHost");
         auto Beacon = UGameplayStatics::SpawnActor<AOnlineBeaconHost>(BeaconClass);
-        Beacon->GetListenPort() = 7776;
+        Beacon->GetListenPort() = 7776 + (EngineVersion >= 4.26f);
         if (!InitHost(Beacon))
         {
             MsgBox("Failed InitHost");
@@ -46,13 +47,16 @@ namespace Net
         NetDriver->GetNetDriverName() = UKismetStringLibrary::Conv_StringToName(L"GameNetDriver");
 
         auto Url = FURL::New();
-        Url->GetPort() = 7777;
+        Url->GetPort() = 7777 - (EngineVersion >= 4.26f);
         FString Error;
         if (!InitListen(NetDriver, World, Url, false, Error))
         {
             MsgBox("Failed InitListen");
             return;
         }
+
+        if (SetWorldIndex != -1)
+            SetWorld = decltype(SetWorld)(NetDriver->VTable[SetWorldIndex]);
 
         SetWorld(NetDriver, World);
         World->GetLevelCollections().Get(0, FLevelCollection::Size()).GetNetDriver() = NetDriver;
@@ -145,12 +149,25 @@ namespace Net
 
             InitHost = decltype(InitHost)(Addr.Get());
 
-            SetWorld = decltype(SetWorld)(Addr.ScanFor({ 0x48, 0x8B, 0xD0, 0xE8 }).AbsoluteOffset(3).RelativeOffset(1).Get());
+            if (EngineVersion >= 5.0f)
+            {
+            }
+            else if (EngineVersion >= 4.26f)
+            {
+                SetWorldIndex = *Addr.ScanFor({ 0xFF, 0x93 }).AbsoluteOffset(2).GetAs<int32*>() / 8;
+            }
+            else
+            {
+                SetWorld = decltype(SetWorld)(Addr.ScanFor({ 0x48, 0x8B, 0xD0, 0xE8 }).AbsoluteOffset(3).RelativeOffset(1).Get());
+            }
         }
 
         // PauseBeaconRequests
         {
-            auto Addr = Memcury::Scanner::FindPattern("40 53 48 83 EC 30 48 8B D9 84 D2 74 ? 80 3D").Get();
+            auto Addr = Memcury::Scanner::FindPattern("40 ? 48 83 EC 30 48 8B ? 84 D2 74 ? 80 3D").Get();
+
+            if (!Addr) // 19.40
+                Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC 20 33 ED 48 8B F1 84 D2").Get();
 
             if(!Addr)
             {

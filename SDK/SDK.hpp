@@ -86,7 +86,6 @@ static void InitSDK(bool IsServer)
 {
     // FMemory::Realloc
     {
-        // ScanFor bytes will probably change
         auto Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC 20 48 8B F1 41 8B D8 48 8B 0D").GetAs<void*>();
 
         if (!Addr) {
