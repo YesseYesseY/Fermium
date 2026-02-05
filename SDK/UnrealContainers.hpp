@@ -311,18 +311,17 @@ namespace UC
 			NumElements++;
 		}
 
-		inline bool Remove(int32 Index)
+		inline bool Remove(int32 Index, int32 ElemSize = ElementSize)
 		{
 			if (!IsValidIndex(Index))
 				return false;
 
-			NumElements--;
+            int32 ElemsToMove = NumElements - Index - 1;
+            memmove((ArrayElementType*)(int64(Data) + (Index * ElemSize)),
+                    (ArrayElementType*)(int64(Data) + ((Index + 1) * ElemSize)),
+                    ElemsToMove * ElemSize);
 
-			for (int i = Index; i < NumElements; i++)
-			{
-				/* NumElements was decremented, acessing i + 1 is safe */
-				Data[i] = Data[i + 1];
-			}
+            NumElements--;
 
 			return true;
 		}

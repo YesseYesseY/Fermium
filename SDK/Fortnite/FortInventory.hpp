@@ -4,6 +4,7 @@ struct FFortItemEntry : public FFastArraySerializerItem
 
     STRUCT_PROP_REF_REFLECTION(UFortItemDefinition*, ItemDefinition);
     STRUCT_PROP_REF_REFLECTION(FGuid, ItemGuid);
+    STRUCT_PROP_REF_REFLECTION(int32, Count);
 };
 
 class UFortItem : public UObject
@@ -39,6 +40,11 @@ class AFortInventory : public AActor
 {
     PROP_REF_REFLECTION(FFortItemList, Inventory);
 
+    int32 GetItemEntryIndex(FFortItemEntry* ItemEntry)
+    {
+        return (int32)((int64(ItemEntry) - int64(GetInventory().GetReplicatedEntries().GetData())) / FFortItemEntry::Size());
+    }
+
     FFortItemEntry* FindItemEntry(const FGuid& ItemGuid)
     {
         auto& Entries = GetInventory().GetReplicatedEntries();
@@ -69,6 +75,14 @@ class AFortInventory : public AActor
         return nullptr;
     }
 
+    void Update(FFortItemEntry* ItemEntry = nullptr)
+    {
+        if (ItemEntry)
+            GetInventory().MarkItemDirty(ItemEntry);
+        else
+            GetInventory().MarkArrayDirty();
+    }
+
     void GiveItem(UFortItemDefinition* ItemDef, int32 Count)
     {
         if (Count <= 0 || !ItemDef)
@@ -83,8 +97,24 @@ class AFortInventory : public AActor
         GetInventory().GetItemInstances().Add(Item);
     }
 
-    void Update()
+    void RemoveItem(FFortItemEntry* ItemEntry, int32 Count)
     {
-        GetInventory().MarkArrayDirty();
+        if (Count >= ItemEntry->GetCount())
+        {
+            auto Idx = GetItemEntryIndex(ItemEntry);
+            GetInventory().GetReplicatedEntries().Remove(Idx, FFortItemEntry::Size());
+            GetInventory().GetItemInstances().Remove(Idx);
+            Update();
+        }
+        else
+        {
+            ItemEntry->GetCount() -= Count;
+            Update(ItemEntry);
+        }
+    }
+
+    int32 Num()
+    {
+        return GetInventory().GetReplicatedEntries().Num();
     }
 };

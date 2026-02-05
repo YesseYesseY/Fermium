@@ -16,4 +16,30 @@ class UKismetMathLibrary : public UObject
         Default()->ProcessEvent(Func, &args);
         return args.Ret;
     }
+
+    static int32 FFloor(float A)
+    {
+        static auto Func = StaticClass()->GetFunction("FFloor");
+        struct
+        {
+            float A;
+            int32 R;
+        } args { A };
+        Default()->ProcessEvent(Func, &args);
+        return args.R;
+    }
+
+    static float Lerp(float A, float B, float Alpha)
+    {
+        static auto Func = StaticClass()->GetFunction("Lerp");
+        struct
+        {
+            float A;
+            float B;
+            float Alpha;
+            float R;
+        } args { A, B, Alpha };
+        Default()->ProcessEvent(Func, &args);
+        return args.R;
+    }
 };

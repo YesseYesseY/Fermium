@@ -46,7 +46,27 @@ namespace GameMode
         auto PlayerState = (AFortPlayerState*)PlayerController->GetPlayerState();
         PlayerState->ApplyCharacterCustomization(Pawn);
 
-        // TODO On earlier versions pickaxe doesn't get equipped unless you give it here
+        auto Inventory = PlayerController->GetWorldInventory();
+        if (Inventory->Num() == 0)
+        {
+            static std::vector<std::pair<UFortItemDefinition*, int32>> StartingItems = {
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/BuildingItemData_Wall.BuildingItemData_Wall"), 1 },
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/BuildingItemData_Floor.BuildingItemData_Floor"), 1 },
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/BuildingItemData_Stair_W.BuildingItemData_Stair_W"), 1 },
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/BuildingItemData_RoofS.BuildingItemData_RoofS"), 1 },
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/EditTool.EditTool"), 1 },
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Weapons/WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01"), 1 },
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/WoodItemData.WoodItemData"), 500 },
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/StoneItemData.StoneItemData"), 500 },
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/MetalItemData.MetalItemData"), 500 },
+            };
+
+            for (auto thing : StartingItems)
+            {
+                Inventory->GiveItem(thing.first, thing.second);
+            }
+            Inventory->Update();
+        }
 
         return Pawn;
     }
@@ -62,25 +82,6 @@ namespace GameMode
         auto PlayerState = (AFortPlayerState*)PlayerController->GetPlayerState();
         auto AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
         AbilitySystemComponent->GiveAbilitySet(AbilitySet);
-   
-        static std::vector<std::pair<UFortItemDefinition*, int32>> StartingItems = {
-            { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/BuildingItemData_Wall.BuildingItemData_Wall"), 1 },
-            { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/BuildingItemData_Floor.BuildingItemData_Floor"), 1 },
-            { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/BuildingItemData_Stair_W.BuildingItemData_Stair_W"), 1 },
-            { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/BuildingItemData_RoofS.BuildingItemData_RoofS"), 1 },
-            { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/EditTool.EditTool"), 1 },
-            { UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Weapons/WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01"), 1 },
-            { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/WoodItemData.WoodItemData"), 500 },
-            { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/StoneItemData.StoneItemData"), 500 },
-            { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/MetalItemData.MetalItemData"), 500 },
-        };
-
-        auto Inventory = PlayerController->GetWorldInventory();
-        for (auto thing : StartingItems)
-        {
-            Inventory->GiveItem(thing.first, thing.second);
-        }
-        Inventory->Update();
     }
 
     void Init()

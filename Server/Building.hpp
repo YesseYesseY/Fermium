@@ -34,6 +34,13 @@ namespace Building
         {
             auto Build = UGameplayStatics::SpawnActor<ABuildingSMActor>(BuildingClass, BuildLoc, BuildRot);
             Build->InitializeBuildingActor(PlayerController, true);
+
+            auto Inventory = PlayerController->GetWorldInventory();
+            if (auto ItemEntry = Inventory->FindItemEntry(UFortKismetLibrary::K2_GetResourceItemDefinition(Build->GetResourceType())))
+            {
+                Inventory->RemoveItem(ItemEntry, 10);
+            }
+
             return Build;
         }
 
@@ -81,6 +88,17 @@ namespace Building
         BuildingActorToEdit->ReplaceBuildingActor(NewBuildingClass, RotationIterations, bMirrored, PlayerController);
     }
 
+    void ServerRepairBuildingActor(AFortPlayerControllerAthena* PlayerController, ABuildingSMActor* BuildingActorToRepair)
+    {
+        auto Cost = UKismetMathLibrary::FFloor(UKismetMathLibrary::Lerp(7, 0, BuildingActorToRepair->GetHealthPercent()));
+        auto Inventory = PlayerController->GetWorldInventory();
+        if (auto Entry = Inventory->FindItemEntry(UFortKismetLibrary::K2_GetResourceItemDefinition(BuildingActorToRepair->GetResourceType())))
+        {
+            BuildingActorToRepair->RepairBuilding(PlayerController, Cost);
+            Inventory->RemoveItem(Entry, Cost);
+        }
+    }
+
     void Init()
     {
         auto PC = AFortPlayerControllerAthena::StaticClass();
@@ -88,5 +106,6 @@ namespace Building
         PC->VTableHook("ServerBeginEditingBuildingActor", ServerBeginEditingBuildingActor);
         PC->VTableHook("ServerEndEditingBuildingActor", ServerEndEditingBuildingActor);
         PC->VTableHook("ServerEditBuildingActor", ServerEditBuildingActor);
+        PC->VTableHook("ServerRepairBuildingActor", ServerRepairBuildingActor);
     }
 }

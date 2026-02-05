@@ -12,12 +12,21 @@ public:
         } args { this, SpawningController, bUsePlayerBuildAnimations, ReplacedBuilding };
         ProcessEvent(Func, &args);
     }
+
+    float GetHealthPercent()
+    {
+        static auto Func = ClassPrivate->GetFunction("GetHealthPercent");
+        float Ret;
+        ProcessEvent(Func, &Ret);
+        return Ret;
+    }
 };
 
 class ABuildingSMActor : public ABuildingActor
 {
 public:
     PROP_REF_REFLECTION(AFortPlayerStateZone*, EditingPlayer);
+    PROP_REF_REFLECTION(EFortResourceType, ResourceType);
 
     ABuildingSMActor* ReplaceBuildingActor(UClass* NewClass, int32 RotationIterations, bool bMirrored, AFortPlayerController* PlayerController)
     {
@@ -36,6 +45,16 @@ public:
     {
         static auto Func = ClassPrivate->GetFunction("OnRep_EditingPlayer");
         ProcessEvent(Func);
+    }
+
+    void RepairBuilding(AFortPlayerController* RepairingController, int32 ResourcesSpent)
+    {
+        static auto Func = ClassPrivate->GetFunction("RepairBuilding");
+        struct {
+            AFortPlayerController* RepairingController;
+            int32 ResourcesSpent;
+        } args { RepairingController, ResourcesSpent };
+        ProcessEvent(Func, &args);
     }
 };
 

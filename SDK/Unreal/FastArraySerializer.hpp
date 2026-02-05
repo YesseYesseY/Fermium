@@ -36,6 +36,19 @@ public:
         GetCachedNumItemsToConsiderForWriting() = -1;
     }
 
+    void MarkItemDirty(FFastArraySerializerItem* Item)
+    {
+        if (Item->ReplicationID == -1)
+        {
+            Item->ReplicationID = ++GetIDCounter();
+            if (GetIDCounter() == -1)
+                GetIDCounter()++;
+        }
+
+        Item->ReplicationKey++;
+        MarkArrayDirty();
+    }
+
     static void Init()
     {
         Offset_IDCounter = 0x50;
