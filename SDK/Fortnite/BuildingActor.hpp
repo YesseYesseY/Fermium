@@ -16,3 +16,12 @@ public:
 class ABuildingSMActor : public ABuildingActor
 {
 };
+
+class ABuildingFoundation : public ABuildingSMActor
+{
+public:
+    void SetDynamicFoundationEnabled(bool Enabled)
+    {
+    }
+    // TODO Hook SetDynamicFoundationEnabled
+};

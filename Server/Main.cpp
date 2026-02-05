@@ -132,14 +132,15 @@ void ServerCheat(AFortPlayerControllerAthena* PlayerController, const FString& F
     }
     else if (Msg == L"festivus")
     {
-        auto Manager = UObject::FindFirstObjectOfClass<ABP_FestivusManager_C>(ABP_FestivusManager_C::StaticClass());
-        if (!Manager)
-        {
-            MsgBox("Didn't find FesstivusManager");
-            return;
-        }
+        UObject::FindObject<ABuildingFoundation>(L"/Game/Athena/Maps/Athena_POI_Foundations.Athena_POI_Foundations:PersistentLevel.PleasentParkFestivus")->SetDynamicFoundationEnabled(true);
+        // auto Manager = UObject::FindFirstObjectOfClass<ABP_FestivusManager_C>(ABP_FestivusManager_C::StaticClass());
+        // if (!Manager)
+        // {
+        //     MsgBox("Didn't find FesstivusManager");
+        //     return;
+        // }
 
-        Manager->ExecuteUbergraph(981);
+        // Manager->ExecuteUbergraph(981);
     }
 }
 
@@ -188,23 +189,21 @@ DWORD MainThread(HMODULE Module)
         }
         else
         {
-            // Scanner.ScanFor({ 0xC6, 0x05 }, false);
-            // if (Scanner.Get() != StrBase)
-            // {
-            //     Scanner.ScanFor({ 0xC6, 0x05 }, false); // GIsServer
-            //     auto yes = Scanner.Get();
-            //     *(bool*)(Scanner.RelativeOffset(2).Get()) = true;
-            //     Scanner = Memcury::Scanner(yes);
-            //     Scanner.ScanFor({ 0xC6, 0x05 }, false); // GIsClient
-            //     *(bool*)(Scanner.RelativeOffset(2).Get()) = false;
-            // }
-            // else
+            Scanner.ScanFor({ 0xC6, 0x05 }, false);
+            if (Scanner.Get() != StrBase)
+            {
+                Scanner.ScanFor({ 0xC6, 0x05 }, false); // GIsServer
+                auto yes = Scanner.Get();
+                *(bool*)(Scanner.RelativeOffset(2).AbsoluteOffset(1).Get()) = true;
+                Scanner = Memcury::Scanner(yes);
+                Scanner.ScanFor({ 0xC6, 0x05 }, false); // GIsClient
+                *(bool*)(Scanner.RelativeOffset(2).AbsoluteOffset(1).Get()) = false;
+            }
+            else
             {
                 MsgBox("Couldn't find GIsClient + GIsServer");
             }
         }
-        // *(bool*)(int64(GetModuleHandleW(NULL)) + 0x5A14019) = false; // GIsClient
-        // *(bool*)(int64(GetModuleHandleW(NULL)) + 0x5A1401A) = true;  // GIsServer
     }
 
     // InternalServerTryActivateAbility

@@ -14,4 +14,16 @@ public:
         static auto Func = ClassPrivate->GetFunction("K2_DestroyActor");
         ProcessEvent(Func);
     }
+
+    void FlushNetDormancy()
+    {
+        static auto Func = ClassPrivate->GetFunction("FlushNetDormancy");
+        ProcessEvent(Func);
+    }
+
+    void ForceNetUpdate()
+    {
+        static auto Func = ClassPrivate->GetFunction("ForceNetUpdate");
+        ProcessEvent(Func);
+    }
 };
