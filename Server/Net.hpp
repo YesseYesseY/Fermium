@@ -45,7 +45,6 @@ namespace Net
         World->GetNetDriver() = NetDriver;
         NetDriver->GetNetDriverName() = UKismetStringLibrary::Conv_StringToName(L"GameNetDriver");
 
-        static auto UrlStruct = UObject::FindStruct(L"/Script/Engine.URL");
         auto Url = FURL::New();
         Url->GetPort() = 7777;
         FString Error;

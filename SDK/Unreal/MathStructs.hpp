@@ -42,6 +42,11 @@ struct FGuid
         return std::format("({}, {}, {}, {})", A, B, C, D);
     }
 
+    bool IsValid()
+    {
+        return A != 0 && B != 0 && C != 0 && D != 0;
+    }
+
     void Regen()
     {
         static auto Func = UObject::FindFunction(L"/Script/Engine.KismetGuidLibrary:NewGuid");

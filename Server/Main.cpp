@@ -35,8 +35,8 @@ bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
 
         Net::Listen();
 
+        GameMode->GetWarmupRequiredPlayerCount() = 1;
         GameMode->GetbWorldIsReady() |= 1;
-        GameMode->GetWarmupRequiredPlayerCount() = true;
     }
 
     if (GameMode->GetNumPlayers() > 0)
@@ -53,23 +53,7 @@ APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AFortPlayerControl
     // translivesmatter.Translation = { 0, 0, 10000 };
     auto Pawn = GameMode->SpawnDefaultPawnAtTransform(PlayerController, translivesmatter);
 
-    void (*ApplyCharacterCustomization)(UObject*, UObject*) = nullptr;
-    if (!ApplyCharacterCustomization)
-    {
-        auto Addr = 
-            Memcury::Scanner::FindStringRef(L"AFortPlayerState::ApplyCharacterCustomization - Failed initialization, using default parts. Player Controller: %s PlayerState: %s, HeroId: %s")
-            .ScanForAny({{ 0x48, 0x8B, 0xC4 }, { 0x48, 0x89, 0x54, 0x24, 0x10 }}, false).Get();
-
-        if (Addr)
-            ApplyCharacterCustomization = decltype(ApplyCharacterCustomization)(Addr);
-    }
-
     auto PlayerState = (AFortPlayerState*)PlayerController->GetPlayerState();
-
-    if (ApplyCharacterCustomization)
-    {
-        ApplyCharacterCustomization(PlayerState, Pawn);
-    }
 
     auto AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
 
@@ -88,6 +72,22 @@ APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AFortPlayerControl
     Inventory::GiveItem(PlayerController, UFortKismetLibrary::K2_GetResourceItemDefinition(EFortResourceType::Stone), 500);
     Inventory::GiveItem(PlayerController, UFortKismetLibrary::K2_GetResourceItemDefinition(EFortResourceType::Metal), 500);
     Inventory::Update(PlayerController);
+
+    void (*ApplyCharacterCustomization)(UObject*, UObject*) = nullptr;
+    if (!ApplyCharacterCustomization)
+    {
+        auto Addr = 
+            Memcury::Scanner::FindStringRef(L"AFortPlayerState::ApplyCharacterCustomization - Failed initialization, using default parts. Player Controller: %s PlayerState: %s, HeroId: %s")
+            .ScanForAny({{ 0x48, 0x8B, 0xC4 }, { 0x48, 0x89, 0x54, 0x24, 0x10 }}, false).Get();
+
+        if (Addr)
+            ApplyCharacterCustomization = decltype(ApplyCharacterCustomization)(Addr);
+    }
+
+    if (ApplyCharacterCustomization)
+    {
+        ApplyCharacterCustomization(PlayerState, Pawn);
+    }
 
     return Pawn;
 }
@@ -161,10 +161,10 @@ DWORD MainThread(HMODULE Module)
     if (!GameModeBR) GameModeBR = UObject::FindClass(L"/Script/FortniteGame.FortGameModeAthena");
     auto FortGameMode = UObject::FindClass(L"/Script/FortniteGame.FortGameMode");
     auto FortPlayerControllerAthena = UObject::FindClass(L"/Script/FortniteGame.FortPlayerControllerAthena");
-    auto FortPlayerController = UObject::FindClass(L"/Script/FortniteGame.FortPlayerController");
+    auto PlayerController = UObject::FindClass(L"/Script/Engine.PlayerController");
     GameModeBR->VTableHook("ReadyToStartMatch", ReadyToStartMatchHook);
     GameModeBR->VTableHook("SpawnDefaultPawnFor", SpawnDefaultPawnForHook);
-    FortPlayerControllerAthena->VTableReplace("ServerAcknowledgePossession", FortPlayerController);
+    FortPlayerControllerAthena->VTableReplace("ServerAcknowledgePossession", PlayerController);
     FortPlayerControllerAthena->VTableHook("ServerCheat", ServerCheat);
     FortPlayerControllerAthena->VTableHook("ServerExecuteInventoryItem", Inventory::ServerExecuteInventoryItem);
     FortPlayerControllerAthena->VTableHook("ServerCreateBuildingActor", FCreateBuildingActorData::StaticStruct() ? (void*)Building::ServerCreateBuildingActorModern : (void*)Building::ServerCreateBuildingActor);

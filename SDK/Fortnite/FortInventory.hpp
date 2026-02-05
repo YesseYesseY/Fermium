@@ -8,6 +8,14 @@ struct FFortItemEntry : public FFastArraySerializerItem
 
 class UFortItem : public UObject
 {
+public:
+    FGuid GetItemGuid()
+    {
+        static auto Func = ClassPrivate->GetFunction("GetItemGuid");
+        FGuid Ret;
+        ProcessEvent(Func, &Ret);
+        return Ret;
+    }
 };
 
 class UFortWorldItem : public UFortItem

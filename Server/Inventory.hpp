@@ -1,6 +1,5 @@
 namespace Inventory
 {
-    // TODO Broken after 10.40(?)
     FFortItemEntry* FindItemEntry(AFortPlayerControllerAthena* PlayerController, const FGuid& ItemGuid)
     {
         auto& Entries = PlayerController->GetWorldInventory()->GetInventory().GetReplicatedEntries();
@@ -23,7 +22,11 @@ namespace Inventory
 
         auto Inventory = PlayerController->GetWorldInventory();
         auto Item = (UFortWorldItem*)ItemDef->CreateTemporaryItemInstanceBP(Count);
-        Inventory->GetInventory().GetReplicatedEntries().AddCopy(&Item->GetItemEntry(), FFortItemEntry::Size());
+        auto& ItemEntry = Item->GetItemEntry();
+        if (!ItemEntry.GetItemGuid().IsValid()) // Why is this required on SDK-Less but with SDK it works without :((((((
+            ItemEntry.GetItemGuid().Regen();
+
+        Inventory->GetInventory().GetReplicatedEntries().AddCopy(&ItemEntry, FFortItemEntry::Size());
         Inventory->GetInventory().GetItemInstances().Add(Item);
     }
 
