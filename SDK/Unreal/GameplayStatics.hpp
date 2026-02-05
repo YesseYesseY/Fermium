@@ -9,6 +9,7 @@ enum class ESpawnActorCollisionHandlingMethod : uint8
 
 class AActor;
 class AFortGameStateAthena;
+class AFortGameModeAthena;
 
 class UGameplayStatics : public UObject
 {
@@ -67,5 +68,6 @@ public:
     }
 
     static AFortGameStateAthena* GetGameState();
+    static AFortGameModeAthena* GetGameMode();
     static void LoadStreamLevel(FName LevelName, bool bMakeVisibleAfterLoad = true, bool bShouldBlockOnLoad = false);
 };

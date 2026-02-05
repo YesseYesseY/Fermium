@@ -7,90 +7,8 @@
 #include "Net.hpp"
 #include "Inventory.hpp"
 #include "Building.hpp"
-
-bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
-{
-    static auto StartClass = UObject::FindClass(L"/Script/FortniteGame.FortPlayerStartWarmup");
-    if (UGameplayStatics::GetNumActorsOfClass(StartClass) <= 0)
-        return false;
-
-    static bool Started = false;
-    if (!Started)
-    {
-        Started = true;
-
-        auto Playlist = UObject::FindObject<UFortPlaylistAthena>(L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo");
-#if 0
-        if (Playlist->HasbSkipAircraft())
-        {
-            Playlist->GetbSkipAircraft() = true;
-            Playlist->GetbSkipWarmup() = true;
-        }
-#endif
-
-        auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
-        GameState->GetCurrentPlaylistInfo().GetBasePlaylist() = Playlist;
-        GameState->GetCurrentPlaylistInfo().GetPlaylistReplicationKey()++;
-        GameState->OnRep_CurrentPlaylistInfo();
-
-        Net::Listen();
-
-        GameMode->GetWarmupRequiredPlayerCount() = 1;
-        GameMode->GetbWorldIsReady() |= 1;
-    }
-
-    if (GameMode->GetNumPlayers() > 0)
-    {
-        return true;
-    }
-
-    return false;
-}
-
-APawn* SpawnDefaultPawnForHook(AFortGameModeAthena* GameMode, AFortPlayerControllerAthena* PlayerController, AActor* StartSpot)
-{
-    auto translivesmatter = StartSpot->GetTransform();
-    // translivesmatter.Translation = { 0, 0, 10000 };
-    auto Pawn = GameMode->SpawnDefaultPawnAtTransform(PlayerController, translivesmatter);
-
-    auto PlayerState = (AFortPlayerState*)PlayerController->GetPlayerState();
-
-    auto AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
-
-    static auto AssetManager = UEngine::GetEngine()->GetAssetManager();
-    static auto AbilitySet = AssetManager->GetAthenaAbilitySet();
-    AbilitySystemComponent->GiveAbilitySet(AbilitySet);
-
-    static auto ItemDef = UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Weapons/WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
-    Inventory::GiveItem(PlayerController, ItemDef, 1);
-    for (int i = 0; i < 5; i++)
-    {
-        auto thing = GameMode->GetStartingItems()[i];
-        Inventory::GiveItem(PlayerController, thing.Item, thing.Count);
-    }
-    Inventory::GiveItem(PlayerController, UFortKismetLibrary::K2_GetResourceItemDefinition(EFortResourceType::Wood), 500);
-    Inventory::GiveItem(PlayerController, UFortKismetLibrary::K2_GetResourceItemDefinition(EFortResourceType::Stone), 500);
-    Inventory::GiveItem(PlayerController, UFortKismetLibrary::K2_GetResourceItemDefinition(EFortResourceType::Metal), 500);
-    Inventory::Update(PlayerController);
-
-    void (*ApplyCharacterCustomization)(UObject*, UObject*) = nullptr;
-    if (!ApplyCharacterCustomization)
-    {
-        auto Addr = 
-            Memcury::Scanner::FindStringRef(L"AFortPlayerState::ApplyCharacterCustomization - Failed initialization, using default parts. Player Controller: %s PlayerState: %s, HeroId: %s")
-            .ScanForAny({{ 0x48, 0x8B, 0xC4 }, { 0x48, 0x89, 0x54, 0x24, 0x10 }}, false).Get();
-
-        if (Addr)
-            ApplyCharacterCustomization = decltype(ApplyCharacterCustomization)(Addr);
-    }
-
-    if (ApplyCharacterCustomization)
-    {
-        ApplyCharacterCustomization(PlayerState, Pawn);
-    }
-
-    return Pawn;
-}
+#include "GameMode.hpp"
+#include "Player.hpp"
 
 void InternalServerTryActivateAbility(UAbilitySystemComponent* Component, FGameplayAbilitySpecHandle Handle, bool InputPressed, const FPredictionKey& PredictionKey, void* TriggerEventData)
 {
@@ -157,19 +75,16 @@ DWORD MainThread(HMODULE Module)
 
     InitSDK(true);
 
-    auto GameModeBR = UObject::FindClass(L"/Script/FortniteGame.FortGameModeBR");
-    if (!GameModeBR) GameModeBR = UObject::FindClass(L"/Script/FortniteGame.FortGameModeAthena");
-    auto FortGameMode = UObject::FindClass(L"/Script/FortniteGame.FortGameMode");
     auto FortPlayerControllerAthena = UObject::FindClass(L"/Script/FortniteGame.FortPlayerControllerAthena");
     auto PlayerController = UObject::FindClass(L"/Script/Engine.PlayerController");
-    GameModeBR->VTableHook("ReadyToStartMatch", ReadyToStartMatchHook);
-    GameModeBR->VTableHook("SpawnDefaultPawnFor", SpawnDefaultPawnForHook);
     FortPlayerControllerAthena->VTableReplace("ServerAcknowledgePossession", PlayerController);
     FortPlayerControllerAthena->VTableHook("ServerCheat", ServerCheat);
     FortPlayerControllerAthena->VTableHook("ServerExecuteInventoryItem", Inventory::ServerExecuteInventoryItem);
     FortPlayerControllerAthena->VTableHook("ServerCreateBuildingActor", FCreateBuildingActorData::StaticStruct() ? (void*)Building::ServerCreateBuildingActorModern : (void*)Building::ServerCreateBuildingActor);
 
     Net::Init();
+    GameMode::Init();
+    Player::Init();
 
     // GIsClient + GIsServer
     {

@@ -24,6 +24,28 @@ class UFortWorldItemDefinition : public UFortItemDefinition
 {
 };
 
+class UFortWeaponItemDefinition : public UFortWorldItemDefinition
+{
+    STATIC_CLASS(L"/Script/FortniteGame.FortWeaponItemDefinition");
+};
+
+class UFortWeaponMeleeItemDefinition : public UFortWeaponItemDefinition
+{
+};
+
+class UFortAccountItemDefinition : public UFortItemDefinition
+{
+};
+
+class UAthenaCosmeticItemDefinition : public UFortAccountItemDefinition
+{
+};
+
+class UAthenaPickaxeItemDefinition : public UAthenaCosmeticItemDefinition
+{
+    PROP_REF_REFLECTION(UFortWeaponMeleeItemDefinition*, WeaponDefinition);
+};
+
 struct FItemAndCount
 {
     int32 Count;

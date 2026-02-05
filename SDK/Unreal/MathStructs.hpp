@@ -32,10 +32,16 @@ struct FGuid
 {
     static UObject* DefaultLib()
     {
-        return UObject::FindObject(L"/Script/Engine.Default__KismetGuidLibrary");
+        static auto Obj = UObject::FindObject(L"/Script/Engine.Default__KismetGuidLibrary");
+        return Obj;
     }
 
     uint32 A, B, C, D;
+
+    FGuid()
+        : A(0), B(0), C(0), D(0)
+    {
+    }
 
     std::string ToString() const
     {
@@ -55,4 +61,11 @@ struct FGuid
 
     bool operator==(FGuid& Other) { return A == Other.A && B == Other.B && C == Other.C && D == Other.D; }
     bool operator==(const FGuid& Other) { return A == Other.A && B == Other.B && C == Other.C && D == Other.D; }
+
+    static FGuid NewGuid()
+    {
+        FGuid Ret;
+        Ret.Regen();
+        return Ret;
+    }
 };
