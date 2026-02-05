@@ -81,6 +81,9 @@ DWORD MainThread(HMODULE Module)
     FortPlayerControllerAthena->VTableHook("ServerCheat", ServerCheat);
     FortPlayerControllerAthena->VTableHook("ServerExecuteInventoryItem", Inventory::ServerExecuteInventoryItem);
     FortPlayerControllerAthena->VTableHook("ServerCreateBuildingActor", FCreateBuildingActorData::StaticStruct() ? (void*)Building::ServerCreateBuildingActorModern : (void*)Building::ServerCreateBuildingActor);
+    FortPlayerControllerAthena->VTableHook("ServerBeginEditingBuildingActor", Building::ServerBeginEditingBuildingActor);
+    FortPlayerControllerAthena->VTableHook("ServerEndEditingBuildingActor", Building::ServerEndEditingBuildingActor);
+    FortPlayerControllerAthena->VTableHook("ServerEditBuildingActor", Building::ServerEditBuildingActor);
 
     Net::Init();
     GameMode::Init();

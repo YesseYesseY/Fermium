@@ -15,6 +15,21 @@ namespace Inventory
         return nullptr;
     }
 
+    FFortItemEntry* FindItemEntry(AFortPlayerControllerAthena* PlayerController, UFortItemDefinition* ItemDef)
+    {
+        auto& Entries = PlayerController->GetWorldInventory()->GetInventory().GetReplicatedEntries();
+        for (int i = 0; i < Entries.Num(); i++)
+        {
+            auto& Entry = Entries.Get(i, FFortItemEntry::Size());
+            if (Entry.GetItemDefinition() == ItemDef)
+            {
+                return &Entry;
+            }
+        }
+
+        return nullptr;
+    }
+
     void GiveItem(AFortPlayerControllerAthena* PlayerController, UFortItemDefinition* ItemDef, int32 Count)
     {
         if (Count <= 0 || !ItemDef)
@@ -35,6 +50,12 @@ namespace Inventory
         PlayerController->GetWorldInventory()->GetInventory().MarkArrayDirty();
     }
 
+    void EquipItemEntry(AFortPlayerControllerAthena* PlayerController, FFortItemEntry* ItemEntry)
+    {
+        auto Pawn = (AFortPlayerPawnAthena*)PlayerController->GetPawn(); 
+        Pawn->EquipWeaponDefinition(ItemEntry->GetItemDefinition(), ItemEntry->GetItemGuid());
+    }
+
     void ServerExecuteInventoryItem(AFortPlayerControllerAthena* PlayerController, const FGuid& ItemGuid)
     {
         if (PlayerController->IsInAircraft())
@@ -42,8 +63,7 @@ namespace Inventory
 
         if (auto ItemEntry = FindItemEntry(PlayerController, ItemGuid))
         {
-            auto Pawn = (AFortPlayerPawnAthena*)PlayerController->GetPawn(); 
-            Pawn->EquipWeaponDefinition(ItemEntry->GetItemDefinition(), ItemGuid);
+            EquipItemEntry(PlayerController, ItemEntry);
         }
     }
 

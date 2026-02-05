@@ -50,4 +50,34 @@ namespace Building
         static auto& BuildClasses = UGameplayStatics::GetGameState()->GetAllPlayerBuildableClasses();
         CreateBuildingActor(PlayerController, BuildClasses[CBD.GetBuildingClassHandle()], CBD.GetBuildLoc(), CBD.GetBuildRot(), CBD.GetbMirrored());
     }
+
+    void ServerBeginEditingBuildingActor(AFortPlayerControllerAthena* PlayerController, ABuildingSMActor* BuildingActorToEdit)
+    {
+        BuildingActorToEdit->GetEditingPlayer() = (AFortPlayerStateZone*)PlayerController->GetPlayerState();
+        BuildingActorToEdit->OnRep_EditingPlayer();
+
+        static auto EditToolItemDef = UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/EditTool.EditTool");
+        if (auto ItemEntry = Inventory::FindItemEntry(PlayerController, EditToolItemDef))
+        {
+            BuildingActorToEdit->GetEditingPlayer() = (AFortPlayerStateZone*)PlayerController->GetPlayerState();
+            BuildingActorToEdit->OnRep_EditingPlayer();
+
+            Inventory::EquipItemEntry(PlayerController, ItemEntry);
+        }
+        else
+        {
+            PlayerController->ClientFailedToBeginEditingBuildingActor(BuildingActorToEdit);
+        }
+    }
+
+    void ServerEndEditingBuildingActor(AFortPlayerControllerAthena* PlayerController, ABuildingSMActor* BuildingActorToStopEditing)
+    {
+        BuildingActorToStopEditing->GetEditingPlayer() = nullptr;
+        BuildingActorToStopEditing->OnRep_EditingPlayer();
+    }
+
+    void ServerEditBuildingActor(AFortPlayerControllerAthena* PlayerController, ABuildingSMActor* BuildingActorToEdit, UClass* NewBuildingClass, int32 RotationIterations, bool bMirrored)
+    {
+        BuildingActorToEdit->ReplaceBuildingActor(NewBuildingClass, RotationIterations, bMirrored, PlayerController);
+    }
 }

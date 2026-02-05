@@ -1,6 +1,15 @@
+class ABuildingSMActor;
+
 class AFortPlayerController : public APlayerController
 {
+public:
     PROP_REF_REFLECTION(AFortInventory*, WorldInventory);
+
+    void ClientFailedToBeginEditingBuildingActor(ABuildingSMActor* BuildingActorToStopEditing)
+    {
+        static auto Func = ClassPrivate->GetFunction("ClientFailedToBeginEditingBuildingActor");
+        ProcessEvent(Func, &BuildingActorToStopEditing);
+    }
 };
 
 class AFortPlayerControllerGameplay : public AFortPlayerController
