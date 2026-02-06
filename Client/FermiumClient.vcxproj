@@ -49,6 +49,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\SDK\Fortnite\FortPickup.cpp" />
     <ClCompile Include="..\SDK\Unreal\Class.cpp" />
     <ClCompile Include="..\SDK\Unreal\GameplayStatics.cpp" />
     <ClCompile Include="..\SDK\Unreal\KismetSystemLibrary.cpp" />

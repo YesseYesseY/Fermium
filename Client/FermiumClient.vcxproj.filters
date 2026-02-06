@@ -7,6 +7,9 @@
     <Filter Include="..\SDK">
       <UniqueIdentifier>{D2E88776-BE8A-B24C-A745-C6A09386399D}</UniqueIdentifier>
     </Filter>
+    <Filter Include="..\SDK\Fortnite">
+      <UniqueIdentifier>{4C934E12-B81E-BCD6-C12F-3FCB2D3A18D7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="..\SDK\Unreal">
       <UniqueIdentifier>{A8F2D15F-14B3-4D96-DDED-9613496D9272}</UniqueIdentifier>
     </Filter>
@@ -21,6 +24,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\SDK\Fortnite\FortPickup.cpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClCompile>
     <ClCompile Include="..\SDK\Unreal\Class.cpp">
       <Filter>..\SDK\Unreal</Filter>
     </ClCompile>

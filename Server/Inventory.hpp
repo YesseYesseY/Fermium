@@ -11,9 +11,20 @@ namespace Inventory
         }
     }
 
+    void ServerAttemptInventoryDrop(AFortPlayerControllerAthena* PlayerController, const FGuid& ItemGuid, int32 Count)
+    {
+        auto Inventory = PlayerController->GetWorldInventory();
+        if (auto ItemEntry = Inventory->FindItemEntry(ItemGuid))
+        {
+            AFortPickup::SpawnFromItemDef(PlayerController->GetPawn()->GetActorLocation(), ItemEntry->GetItemDefinition(), Count);
+            Inventory->RemoveItem(ItemEntry, Count);
+        }
+    }
+
     void Init()
     {
         auto PC = AFortPlayerControllerAthena::StaticClass();
-        PC->VTableHook("ServerExecuteInventoryItem", Inventory::ServerExecuteInventoryItem);
+        PC->VTableHook("ServerExecuteInventoryItem", ServerExecuteInventoryItem);
+        PC->VTableHook("ServerAttemptInventoryDrop", ServerAttemptInventoryDrop);
     }
 }
