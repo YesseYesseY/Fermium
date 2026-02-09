@@ -10,7 +10,9 @@ class UStruct : public UField
     PROP_REF_OFFSET(int32, Size);
 
     UFunction* GetFunction(std::string Name);
+    void* GetProp(std::string Name);
     int32 GetPropOffset(std::string Name);
+    uint8 GetPropFieldMask(std::string Name);
 
     static void Init()
     {

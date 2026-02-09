@@ -44,6 +44,24 @@ public: \
         return *(Type*)(int64(this) + Offset); \
     }
 
+#define PROP_BIT_REFLECTION(Name) \
+public: \
+    void Set##Name(bool val) \
+    { \
+        static int32 Offset = ClassPrivate->GetPropOffset(#Name); \
+        static uint8 FieldMask = ClassPrivate->GetPropFieldMask(#Name); \
+        if (val) \
+            *(uint8*)(int64(this) + Offset) |= FieldMask; \
+        else \
+            *(uint8*)(int64(this) + Offset) &= ~FieldMask; \
+    } \
+    bool Get##Name() \
+    {\
+        static int32 Offset = ClassPrivate->GetPropOffset(#Name); \
+        static uint8 FieldMask = ClassPrivate->GetPropFieldMask(#Name); \
+        return (*(uint8*)(int64(this) + Offset) & FieldMask) != 0; \
+    }
+
 #define PROP_REF_REFLECTION_SAFE(Type, Name) \
 private: \
     static inline int32 Offset_##Name = -1; \
@@ -92,4 +110,22 @@ public: \
     { \
         static int32 Offset = StaticStruct()->GetPropOffset(#Name); \
         return *(Type*)(int64(this) + Offset); \
+    }
+
+#define STRUCT_PROP_BIT_REFLECTION(Name) \
+public: \
+    void Set##Name(bool val) \
+    { \
+        static int32 Offset = StaticStruct()->GetPropOffset(#Name); \
+        static uint8 FieldMask = StaticStruct()->GetPropFieldMask(#Name); \
+        if (val) \
+            *(uint8*)(int64(this) + Offset) |= FieldMask; \
+        else \
+            *(uint8*)(int64(this) + Offset) &= ~FieldMask; \
+    } \
+    bool Get##Name() \
+    {\
+        static int32 Offset = StaticStruct()->GetPropOffset(#Name); \
+        static uint8 FieldMask = StaticStruct()->GetPropFieldMask(#Name); \
+        return (*(uint8*)(int64(this) + Offset) & FieldMask) != 0; \
     }

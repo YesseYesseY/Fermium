@@ -17,14 +17,14 @@ namespace Abilities
         }
     
         UObject* InstancedAbility = nullptr;
-        Spec->GetInputPressed() |= 1;
+        Spec->SetInputPressed(true);
         if (Component->InternalTryActivateAbility(Handle, PredictionKey, &InstancedAbility, nullptr, TriggerEventData))
         {
         }
         else
         {
             Component->ClientActivateAbilityFailed(Handle, PredictionKey.GetCurrent());
-            Spec->GetInputPressed() &= ~1;
+            Spec->SetInputPressed(false);
     
             Component->GetActivatableAbilities().MarkArrayDirty();
             return;

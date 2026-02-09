@@ -16,7 +16,7 @@ UFunction* UStruct::GetFunction(std::string Name)
     return nullptr;
 }
 
-int32 UStruct::GetPropOffset(std::string Name)
+void* UStruct::GetProp(std::string Name)
 {
     static bool UseFField = EngineVersion >= 4.25f;
 
@@ -28,7 +28,7 @@ int32 UStruct::GetPropOffset(std::string Name)
             {
                 if (Child->GetName() == Name)
                 {
-                    return ((FProperty*)Child)->Offset;
+                    return Child;
                 }
             }
         }
@@ -38,11 +38,37 @@ int32 UStruct::GetPropOffset(std::string Name)
             {
                 if (Child->IsA(UProperty::StaticClass()) && Child->GetName() == Name)
                 {
-                    return ((UProperty*)Child)->Offset;
+                    return Child;
                 }
             }
         }
     }
 
+    return nullptr;
+}
+
+int32 UStruct::GetPropOffset(std::string Name)
+{
+    static bool UseFField = EngineVersion >= 4.25f;
+
+    auto Prop = GetProp(Name);
+    if (!Prop)
+        return -1;
+
+    if (UseFField)
+        return ((FProperty*)Prop)->Offset;
+    else
+        return ((UProperty*)Prop)->Offset;
+
     return -1;
+}
+
+uint8 UStruct::GetPropFieldMask(std::string Name)
+{
+    auto Prop = GetProp(Name);
+    if (!Prop)
+        return 0xFF;
+
+    static int32 Offset = EngineVersion >= 4.25f ? 0x7B : (UProperty::StaticClass()->GetSize() + 3);
+    return *(uint8*)(int64(Prop) + Offset);
 }

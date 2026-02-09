@@ -13,7 +13,7 @@ struct FGameplayAbilitySpec : FFastArraySerializerItem
     STRUCT_PROP_REF_REFLECTION(UObject*, Ability);
     STRUCT_PROP_REF_REFLECTION(int32, Level);
     STRUCT_PROP_REF_REFLECTION(int32, InputID);
-    STRUCT_PROP_REF_REFLECTION(uint8, InputPressed);
+    STRUCT_PROP_BIT_REFLECTION(InputPressed);
 
     static FGameplayAbilitySpec* Create(UClass* AbilityClass)
     {

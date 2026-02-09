@@ -28,7 +28,7 @@ namespace GameMode
             Net::Listen();
     
             GameMode->GetWarmupRequiredPlayerCount() = 1;
-            GameMode->GetbWorldIsReady() |= 1;
+            GameMode->SetbWorldIsReady(true);
         }
     
         if (GameMode->GetNumPlayers() > 0)

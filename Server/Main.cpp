@@ -61,7 +61,20 @@ DWORD MainThread(HMODULE Module)
             }
             else
             {
-                MsgBox("Couldn't find GIsClient + GIsServer");
+                Scanner.ScanFor({ 0x88, 0x1D }, false);
+                if (Scanner.Get() != StrBase)
+                {
+                    Scanner.ScanFor({ 0x88, 0x1D }, false); // GIsServer
+                    auto yes = Scanner.Get();
+                    *(bool*)(Scanner.RelativeOffset(2).Get()) = true;
+                    Scanner = Memcury::Scanner(yes);
+                    Scanner.ScanFor({ 0x88, 0x1D }, false); // GIsClient
+                    *(bool*)(Scanner.RelativeOffset(2).Get()) = false;
+                }
+                else
+                {
+                    MsgBox("Couldn't find GIsClient + GIsServer");
+                }
             }
         }
     }
