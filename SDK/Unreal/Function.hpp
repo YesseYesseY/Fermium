@@ -7,13 +7,16 @@ class UFunction : public UStruct
 public:
     int32 GetVTableIndex()
     {
-        auto Base = (uintptr_t)GetExecFunc();
-        auto Scanner = Memcury::Scanner(Base);
-        Scanner.ScanFor({ 0xFF, 0x90 });
-        if (Scanner.Get() != Base)
+        auto Scanner = Memcury::Scanner(GetExecFunc());
+        int idx = -1;
+        Scanner.ScanForEither({{ 0xFF, 0x90 }, { 0xFF, 0x50 }}, true, 0, &idx);
+        if (idx != -1)
         {
             if (Memcury::Scanner::FindStringRef((GetWName() + L"_Validate")).IsValid())
-                Scanner.ScanFor({ 0xFF, 0x90 });
+                Scanner.ScanForEither({{ 0xFF, 0x90 }, { 0xFF, 0x50 }}, true, 0, &idx);
+
+            if (idx == 1)
+                return *Scanner.AbsoluteOffset(2).GetAs<int8*>() / 8;
 
             return *Scanner.AbsoluteOffset(2).GetAs<int32*>() / 8;
         }

@@ -38,12 +38,7 @@ DWORD MainThread(HMODULE Module)
     // UWorld::Exec
     {
         auto Scanner = Memcury::Scanner::FindStringRef(L"FLUSHPERSISTENTDEBUGLINES");
-        if (EngineVersion >= 4.261f)
-            Scanner.ScanFor({ 0x48, 0x8B, 0xC4 }, false);
-        else
-            Scanner.ScanFor({ 0x48, 0x89, 0x5C }, false);
-
-        auto Addr = Scanner.Get();
+        auto Addr = Scanner.ScanForEither({{ 0x48, 0x8B, 0xC4 }, { 0x48, 0x89, 0x5C }}, false).Get();
 
         if (!Addr)
         {

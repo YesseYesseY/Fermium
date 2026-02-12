@@ -98,12 +98,7 @@ namespace Net
             {
                 auto Scanner = Memcury::Scanner::FindStringRef(L"NET_PrepareReplication");
 
-                if (EngineVersion >= 4.261f)
-                    Scanner.ScanFor({ 0x48, 0x8B, 0xC4 }, false);
-                else
-                    Scanner.ScanFor({ 0x4C, 0x8B, 0xDC }, false);
-
-                auto Addr = Scanner.Get();
+                auto Addr = Scanner.ScanForEither({{ 0x48, 0x8B, 0xC4 }, { 0x4C, 0x8B, 0xDC }}, false).Get();
 
                 if (Addr)
                 {
@@ -122,13 +117,8 @@ namespace Net
             auto GameSessionVTable = UObject::FindObject(L"/Script/Engine.Default__GameSession")->VTable;
 
             auto ReturnToMainMenuScanner = Memcury::Scanner::FindStringRef(L"Host has left the game.");
-            if (EngineVersion >= 4.261f)
-                ReturnToMainMenuScanner.ScanFor({ 0x48, 0x8B, 0xC4 }, false);
-            else
-                ReturnToMainMenuScanner.ScanFor({ 0x48, 0x89, 0x5C }, false);
+            auto ReturnToMainMenu = ReturnToMainMenuScanner.ScanForEither({{ 0x48, 0x8B, 0xC4 }, { 0x48, 0x89, 0x5C }}, false).GetAs<void*>();
             
-            auto ReturnToMainMenu = ReturnToMainMenuScanner.GetAs<void*>();
-
             for (int i = 0; i < 0x100; i++)
             {
                 if (GameSessionVTable[i] == ReturnToMainMenu)

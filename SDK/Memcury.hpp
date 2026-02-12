@@ -852,8 +852,8 @@ namespace Memcury
 
                 for (int k = 0; k < opcodesToFind.size() && found; k++)
                 {
-                    if (opcodesToFind[k] == -1)
-                        continue;
+                    // if (opcodesToFind[k] == -1)
+                    //     continue;
                     found = opcodesToFind[k] == scanBytes[i + k];
                 }
 
@@ -863,6 +863,45 @@ namespace Memcury
                     if (toSkip != 0)
                     {
                         return ScanFor(opcodesToFind, forward, toSkip - 1);
+                    }
+
+                    break;
+                }
+            }
+
+            return *this;
+        }
+
+        auto ScanForEither(std::vector<std::vector<uint8_t>> opcodesToFindArr, bool forward = true, int toSkip = 0, int* foundIndex = nullptr) -> Scanner
+        {
+            const auto scanBytes = _address.GetAs<std::uint8_t*>();
+
+            for (auto i = (forward ? 1 : -1); forward ? (i < 2048) : (i > -2048); forward ? i++ : i--)
+            {
+                bool found = true;
+
+                int idx = 0;
+                for (; idx < opcodesToFindArr.size(); idx++)
+                {
+                    found = true;
+
+                    auto opcodesToFind = opcodesToFindArr[idx];
+                    for (int k = 0; k < opcodesToFind.size() && found; k++)
+                        found = opcodesToFind[k] == scanBytes[i + k];
+
+                    if (found)
+                        break;
+                }
+
+                if (found)
+                {
+                    if (foundIndex)
+                        *foundIndex = idx;
+                    _address = &scanBytes[i];
+
+                    if (toSkip != 0)
+                    {
+                        return ScanForEither(opcodesToFindArr, forward, toSkip - 1, foundIndex);
                     }
 
                     break;
