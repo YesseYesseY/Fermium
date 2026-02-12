@@ -56,9 +56,9 @@ namespace GameMode
                 { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/BuildingItemData_RoofS.BuildingItemData_RoofS"), 1 },
                 { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/Weapons/BuildingTools/EditTool.EditTool"), 1 },
                 { UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Weapons/WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01"), 1 },
-                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/WoodItemData.WoodItemData"), 500 },
-                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/StoneItemData.StoneItemData"), 500 },
-                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/MetalItemData.MetalItemData"), 500 },
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/WoodItemData.WoodItemData"), -1 },
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/StoneItemData.StoneItemData"), -1 },
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/MetalItemData.MetalItemData"), -1 },
             };
 
             for (auto thing : StartingItems)
@@ -67,6 +67,9 @@ namespace GameMode
             }
             Inventory->Update();
         }
+
+        if (GameVersion > 12.0f)
+            Pawn->SetbCanBeDamaged(false);
 
         return Pawn;
     }
