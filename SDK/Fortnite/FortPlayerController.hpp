@@ -11,10 +11,10 @@ public:
         ProcessEvent(Func, &BuildingActorToStopEditing);
     }
 
-    void EquipItemEntry(FFortItemEntry* ItemEntry)
+    AFortWeapon* EquipItemEntry(FFortItemEntry* ItemEntry)
     {
         auto Pawn = GetPawnAs<AFortPlayerPawn>(); 
-        Pawn->EquipWeaponDefinition(ItemEntry->GetItemDefinition(), ItemEntry->GetItemGuid());
+        return Pawn->EquipWeaponDefinition(ItemEntry->GetItemDefinition(), ItemEntry->GetItemGuid());
     }
 };
 

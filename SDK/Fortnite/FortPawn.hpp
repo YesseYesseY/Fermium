@@ -6,13 +6,14 @@ public:
     AFortWeapon* EquipWeaponDefinition(UFortItemDefinition* ItemDef, const FGuid& ItemEntryGuid)
     {
         static auto Func = ClassPrivate->GetFunction("EquipWeaponDefinition");
-        struct {
-            UFortItemDefinition* ItemDef;
-            FGuid ItemEntryGuid;
-            AFortWeapon* Ret;
-        } args { ItemDef, ItemEntryGuid };
-        ProcessEvent(Func, &args);
-        return args.Ret;
+        ARGS_NEW();
+        ARGS_PROP(UFortItemDefinition*, WeaponData, ItemDef);
+        ARGS_PROP(FGuid, ItemEntryGuid, ItemEntryGuid);
+        ARGS_PROP(bool, bDisableEquipAnimation, false);
+        ProcessEvent(Func, args);
+        ARGS_PROP_RET(AFortWeapon*, ReturnValue);
+        ARGS_FREE();
+        return Ret;
     }
 };
 

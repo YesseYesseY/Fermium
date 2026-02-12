@@ -140,11 +140,15 @@ public: \
 
 // FUNCTION ARGS
 
-#define ARGS_NEW() auto args = FMemory::Malloc(Func->GetSize());
+#define ARGS_NEW() \
+    static int32 FuncSize = Func->GetSize(); \
+    auto args = FMemory::Malloc(FuncSize); \
+    memset(args, 0, FuncSize);
 
 #define ARGS_PROP(Type, Name, Value) \
     static int32 Offset_##Name = Func->GetPropOffset(#Name); \
-    *(Type*)(int64(args) + Offset_##Name) = Value;
+    if (Offset_##Name != -1) \
+        *(Type*)(int64(args) + Offset_##Name) = Value;
 
 #define ARGS_PROP_COPY(Name, SrcPtr) \
     static int32 Offset_##Name = Func->GetPropOffset(#Name); \
