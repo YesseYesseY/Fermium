@@ -61,8 +61,41 @@ public:
 class ABuildingFoundation : public ABuildingSMActor
 {
 public:
+    PROP_BIT_REFLECTION(bFoundationEnabled);
+    PROP_REF_REFLECTION(uint8, DynamicFoundationType);
+
+    void OnRep_LevelToStream()
+    {
+        static auto Func = ClassPrivate->GetFunction("OnRep_LevelToStream");
+        ProcessEvent(Func);
+    }
+
+    // This gets insta returned if DynamicFoundationType is Static
+    void OnRep_FoundationEnabled()
+    {
+        static auto Func = ClassPrivate->GetFunction("OnRep_FoundationEnabled");
+        ProcessEvent(Func);
+    }
+
+    void OnRep_ServerStreamedInLevel()
+    {
+        static auto Func = ClassPrivate->GetFunction("OnRep_ServerStreamedInLevel");
+        ProcessEvent(Func);
+    }
+
     void SetDynamicFoundationEnabled(bool Enabled)
     {
+        FlushNetDormancy();
+        SetbFoundationEnabled(Enabled);
+        OnRep_LevelToStream();
+        ForceNetUpdate();
     }
-    // TODO Hook SetDynamicFoundationEnabled
+
+    static void SetDynamicFoundationEnabledHook(ABuildingFoundation* Foundation, FFrame* Stack)
+    {
+        FRAME_PROP(bool, Enabled);
+        FRAME_END();
+
+        Foundation->SetDynamicFoundationEnabled(Enabled);
+    }
 };

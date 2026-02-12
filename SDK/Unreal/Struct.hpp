@@ -12,6 +12,7 @@ class UStruct : public UField
     UFunction* GetFunction(std::string Name);
     void* GetProp(std::string Name);
     int32 GetPropOffset(std::string Name);
+    int32 GetPropSize(std::string Name);
     uint8 GetPropFieldMask(std::string Name);
 
     static void Init()

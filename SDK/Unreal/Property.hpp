@@ -14,6 +14,8 @@ public:
 class FProperty : public FField
 {
 public:
-    uint8 pad3[0x14];
+    int32 ArrayDim;
+    int32 ElementSize;
+    uint8 pad3[0xC];
     int32 Offset;
 };

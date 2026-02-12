@@ -1,5 +1,7 @@
 class AActor : public UObject
 {
+    PROP_BIT_REFLECTION(bCanBeDamaged);
+
 public:
     FTransform GetTransform()
     {

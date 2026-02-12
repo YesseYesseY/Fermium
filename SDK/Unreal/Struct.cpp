@@ -63,6 +63,22 @@ int32 UStruct::GetPropOffset(std::string Name)
     return -1;
 }
 
+int32 UStruct::GetPropSize(std::string Name)
+{
+    static bool UseFField = EngineVersion >= 4.25f;
+
+    auto Prop = GetProp(Name);
+    if (!Prop)
+        return -1;
+
+    if (UseFField)
+        return ((FProperty*)Prop)->ElementSize;
+    else
+        return ((UProperty*)Prop)->ElementSize;
+
+    return -1;
+}
+
 uint8 UStruct::GetPropFieldMask(std::string Name)
 {
     auto Prop = GetProp(Name);

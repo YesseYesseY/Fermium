@@ -26,6 +26,18 @@ public:
         return -1;
     }
 
+    template <typename T = void*>
+    void Hook(void* Hook, T* Original = nullptr)
+    {
+        if (EngineVersion >= 4.25f)
+            return;
+
+        if (Original)
+            *Original = (T)GetExecFunc();
+
+        GetExecFunc() = Hook;
+    }
+
     static void Init()
     {
         auto StructSize = UStruct::StaticClass()->GetSize();

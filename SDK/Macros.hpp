@@ -129,3 +129,30 @@ public: \
         static uint8 FieldMask = StaticStruct()->GetPropFieldMask(#Name); \
         return (*(uint8*)(int64(this) + Offset) & FieldMask) != 0; \
     }
+
+// FRAME
+
+#define FRAME_PROP(Type, Name) \
+    Type Name; \
+    Stack->Step(&Name);
+
+#define FRAME_END() Stack->End();
+
+// FUNCTION ARGS
+
+#define ARGS_NEW() auto args = FMemory::Malloc(Func->GetSize());
+
+#define ARGS_PROP(Type, Name, Value) \
+    static int32 Offset_##Name = Func->GetPropOffset(#Name); \
+    *(Type*)(int64(args) + Offset_##Name) = Value;
+
+#define ARGS_PROP_COPY(Name, SrcPtr) \
+    static int32 Offset_##Name = Func->GetPropOffset(#Name); \
+    static int32 Size_##Name = Func->GetPropSize(#Name); \
+    memcpy((void*)(int64(args) + Offset_##Name), SrcPtr, Size_##Name);
+
+#define ARGS_PROP_RET(Type, Name) \
+    static int32 Offset_##Name = Func->GetPropOffset(#Name); \
+    auto Ret = *(Type*)(int64(args) + Offset_##Name);
+    
+#define ARGS_FREE() FMemory::Free(args);

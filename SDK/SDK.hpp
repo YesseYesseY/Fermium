@@ -22,8 +22,10 @@ extern inline float GameVersion = -1.0f;
 #include "Unreal/Struct.hpp"
 #include "Unreal/Class.hpp"
 #include "Unreal/Function.hpp"
+#include "Unreal/Frame.hpp"
 
 #include "Unreal/MathStructs.hpp"
+#include "Unreal/ScalableFloat.hpp"
 
 #include "Unreal/KismetStringLibrary.hpp"
 #include "Unreal/KismetSystemLibrary.hpp"

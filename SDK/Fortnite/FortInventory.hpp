@@ -83,10 +83,13 @@ class AFortInventory : public AActor
             GetInventory().MarkArrayDirty();
     }
 
-    void GiveItem(UFortItemDefinition* ItemDef, int32 Count)
+    void GiveItem(UFortItemDefinition* ItemDef, int32 Count = -1)
     {
-        if (Count <= 0 || !ItemDef)
+        if (Count == 0 || !ItemDef)
             return;
+
+        if (Count == -1)
+            Count = ItemDef->GetMaxStackSize();
 
         auto Item = (UFortWorldItem*)ItemDef->CreateTemporaryItemInstanceBP(Count);
         auto& ItemEntry = Item->GetItemEntry();
