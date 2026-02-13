@@ -14,8 +14,9 @@ struct FGameplayAbilitySpec : FFastArraySerializerItem
     STRUCT_PROP_REF_REFLECTION(int32, Level);
     STRUCT_PROP_REF_REFLECTION(int32, InputID);
     STRUCT_PROP_BIT_REFLECTION(InputPressed);
+    STRUCT_PROP_REF_REFLECTION(UObject*, SourceObject);
 
-    static FGameplayAbilitySpec* Create(UClass* AbilityClass)
+    static FGameplayAbilitySpec* Create(UClass* AbilityClass, UObject* SourceObject = nullptr)
     {
         auto Ret = New();
         Ret->ReplicationID = -1;
@@ -25,6 +26,7 @@ struct FGameplayAbilitySpec : FFastArraySerializerItem
         Ret->GetAbility() = AbilityClass->GetDefaultObject();
         Ret->GetLevel() = 1;
         Ret->GetInputID() = -1;
+        Ret->GetSourceObject() = SourceObject;
         return Ret;
     }
 };

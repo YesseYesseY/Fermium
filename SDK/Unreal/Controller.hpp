@@ -26,4 +26,10 @@ class AController : public AActor
     {
         return (T*)GetPawn();
     }
+
+    template <typename T>
+    T* GetPlayerStateAs()
+    {
+        return (T*)GetPlayerState();
+    }
 };

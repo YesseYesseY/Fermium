@@ -57,6 +57,19 @@ class UAthenaPickaxeItemDefinition : public UAthenaCosmeticItemDefinition
     PROP_REF_REFLECTION(UFortWeaponMeleeItemDefinition*, WeaponDefinition);
 };
 
+class UFortMontageItemDefinitionBase : public UAthenaCosmeticItemDefinition
+{
+};
+
+class UAthenaDanceItemDefinition : public UFortMontageItemDefinitionBase
+{
+};
+
+class UAthenaSprayItemDefinition : public UAthenaDanceItemDefinition
+{
+    STATIC_CLASS(L"/Script/FortniteGame.AthenaSprayItemDefinition");
+};
+
 struct FItemAndCount
 {
     int32 Count;

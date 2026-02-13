@@ -3,6 +3,7 @@ class UAbilitySystemComponent : public UGameplayTasksComponent
 private:
     static inline int32 (*GiveAbil)(UAbilitySystemComponent* Component, FGameplayAbilitySpecHandle&, FGameplayAbilitySpec* Spec);
     static inline bool (*ITAA)(UAbilitySystemComponent*, FGameplayAbilitySpecHandle, const FPredictionKey&, UObject**, void* OnGameplayAbilityEndedDelegate, void* TriggerEventData);
+    static inline int32 (*GAAAO)(UAbilitySystemComponent* Component, FGameplayAbilitySpecHandle&, FGameplayAbilitySpec* Spec, void*);
 
 public:
     PROP_REF_REFLECTION(FGameplayAbilitySpecContainer, ActivatableAbilities);
@@ -31,6 +32,11 @@ public:
         auto Spec = FGameplayAbilitySpec::Create(AbilityClass);
         GiveAbil(this, Spec->GetHandle(), Spec);
         FMemory::Free(Spec);
+    }
+
+    void GiveAbilityAndActivateOnce(FGameplayAbilitySpec* Spec)
+    {
+        GAAAO(this, Spec->GetHandle(), Spec, nullptr);
     }
 
     void GiveAbilitySet(UFortAbilitySet* AbilitySet)
@@ -87,6 +93,20 @@ public:
             }
 
             ITAA = decltype(ITAA)(Addr);
+        }
+
+        // GiveAbilityAndActivateOnce
+        {
+            auto Addr = Memcury::Scanner::FindStringRef(L"GiveAbilityAndActivateOnce called on ability %s on the client, not allowed!")
+                .ScanFor({ 0x48, 0x89, 0x5C }, false).Get();
+
+            if (!Addr)
+            {
+                MsgBox("Failed to find GiveAbilityAndActivateOnce");
+                return;
+            }
+
+            GAAAO = decltype(GAAAO)(Addr);
         }
     }
 };
