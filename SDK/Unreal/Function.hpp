@@ -9,12 +9,13 @@ public:
     {
         auto Scanner = Memcury::Scanner(GetExecFunc());
         int idx = -1;
+        if (Memcury::Scanner::FindStringRef((GetWName() + L"_Validate")).IsValid())
+        {
+            Scanner.ScanFor({ 0x84, 0xC0 });
+        }
         Scanner.ScanForEither({{ 0xFF, 0x90 }, { 0xFF, 0x50 }}, true, 0, &idx);
         if (idx != -1)
         {
-            if (Memcury::Scanner::FindStringRef((GetWName() + L"_Validate")).IsValid())
-                Scanner.ScanForEither({{ 0xFF, 0x90 }, { 0xFF, 0x50 }}, true, 0, &idx);
-
             if (idx == 1)
                 return *Scanner.AbsoluteOffset(2).GetAs<int8*>() / 8;
 

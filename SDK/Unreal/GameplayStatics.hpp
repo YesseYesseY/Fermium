@@ -22,15 +22,21 @@ private:
 
 public:
     template <typename T = AActor>
-    static T* SpawnActor(UClass* ActorClass, FVector Pos = {}, FRotator Rot = {}, FVector Size = { 1, 1, 1 }, AActor* Owner = nullptr)
+    static T* SpawnActor(UClass* ActorClass, FTransform translivesmatter, AActor* Owner = nullptr)
     {
-        FTransform translivesmatter = UKismetMathLibrary::MakeTransform(Pos, Rot, Size);
         auto ret = BeginDeferredActorSpawnFromClass(ActorClass, translivesmatter, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn, Owner);
 
         if (ret)
             ret = FinishSpawningActor(ret, translivesmatter);
 
         return (T*)ret;
+    }
+
+    template <typename T = AActor>
+    static T* SpawnActor(UClass* ActorClass, FVector Pos = {}, FRotator Rot = {}, FVector Size = { 1, 1, 1 }, AActor* Owner = nullptr)
+    {
+        FTransform translivesmatter = UKismetMathLibrary::MakeTransform(Pos, Rot, Size);
+        return SpawnActor<T>(ActorClass, translivesmatter, Owner);
     }
 
     template <typename T = UObject>

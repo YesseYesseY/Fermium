@@ -33,6 +33,7 @@ namespace GameMode
     
         if (GameMode->GetNumPlayers() > 0)
         {
+            Vehicles::Init();
             return true;
         }
     

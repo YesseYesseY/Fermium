@@ -7,6 +7,7 @@
 #include "Net.hpp"
 #include "Inventory.hpp"
 #include "Building.hpp"
+#include "Vehicles.hpp"
 #include "GameMode.hpp"
 #include "Player.hpp"
 #include "Abilities.hpp"
