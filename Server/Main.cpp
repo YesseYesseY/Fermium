@@ -11,10 +11,6 @@
 #include "Player.hpp"
 #include "Abilities.hpp"
 
-void ReturnHook()
-{
-}
-
 DWORD MainThread(HMODULE Module)
 {
     AllocConsole();
@@ -83,25 +79,40 @@ DWORD MainThread(HMODULE Module)
 
     // RequestExit
     {
-        auto Addr = Memcury::Scanner::FindPattern("40 53 48 83 EC 30 80 3D ? ? ? ? ? 0F B6 D9 72 ? 48 8B 05 ? ? ? ? 4C 8D 44 24 ? 48 89 44 24 ? 41 B9 05 00 00 00 0F B6 C1 33 D2 89 44 24 ? 33 C9 48 8D 05 ? ? ? ? 48 89 44 24 ? E8 ? ? ? ? 48 8D 0D").Get();
-
-        if (!Addr)
-            Addr = Memcury::Scanner::FindPattern("40 53 48 83 EC 30 80 3D ? ? ? ? ? 0F B6 D9 72 ? 48 8D 05 ? ? ? ? 89 5C 24 ? 41 B9 05 00 00 00 48 89 44 24 ? 4C 8D 05 ? ? ? ? 33 D2 33 C9 E8 ? ? ? ? 48 8D 0D").Get();
-
-        if (!Addr)
-            Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 57 48 83 EC 40 41 B9 05 00 00 00 0F B6 F9").Get();
-
-        if (Addr)
+        // L"Win RequestExit" is on 18.40 but gets referenced multiple times, 
+        // L"FPlatformMisc::RequestExitWithStatus(%i, %i)" is on 19.40 but in a seperate function
+        if (EngineVersion >= 5.0f)
         {
-            Hook::Function(Addr, ReturnHook);
+            auto Scanner = Memcury::Scanner::FindStringRef(L"Win RequestExit");
+            if (Scanner.IsValid())
+            {
+                Hook::Function(Scanner.ScanFor({ 0x48, 0x8B, 0xC4 }, false).Get(), ReturnHook);
+            }
         }
         else
         {
-            MsgBox("Request exit not found");
+            auto Scanner = Memcury::Scanner::FindStringRef(L"FPlatformMisc::RequestExitWithStatus(%i, %i)");
+            if (Scanner.IsValid())
+            {
+                Hook::Function(Scanner.ScanFor({ 0x48, 0x89, 0x5C }, false).Get(), ReturnHook);
+            }
+            else
+            {
+                Scanner = Memcury::Scanner::FindStringRef(L"FPlatformMisc::RequestExitWithStatus(%i, %d) - return code will be ignored by the generic implementation.");
+                if (Scanner.IsValid())
+                {
+                    Hook::Function(Scanner.ScanFor({ 0xE9 }).RelativeOffset(1).Get(), ReturnHook);
+                }
+                else
+                {
+                    MsgBox("Request exit not found");
+                }
+            }
         }
     }
 
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogPackageLocalizationCache None");
+    UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogFortUIDirector None");
 
     UWorld::GetWorld()->GetOwningGameInstance()->GetLocalPlayers().Remove(0);
     if (GameVersion < 11.0f) UKismetSystemLibrary::ExecuteConsoleCommand(L"open Athena_Terrain");

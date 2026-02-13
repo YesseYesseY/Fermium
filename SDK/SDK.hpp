@@ -85,6 +85,11 @@ extern inline float GameVersion = -1.0f;
 
 #include "Fortnite/Festivus.hpp"
 
+static void ReturnHook()
+{
+    return;
+}
+
 static void InitSDK(bool IsServer)
 {
     // FMemory::Realloc
@@ -119,4 +124,5 @@ static void InitSDK(bool IsServer)
     }
 
     MH_Initialize();
+
 }

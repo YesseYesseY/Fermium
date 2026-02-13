@@ -159,6 +159,7 @@ namespace Net
 
             if (EngineVersion >= 5.0f)
             {
+                SetWorldIndex = *Addr.ScanFor({ 0x48, 0x8B, 0x98 }).AbsoluteOffset(3).GetAs<int32*>() / 8;
             }
             else if (EngineVersion >= 4.26f)
             {
@@ -174,11 +175,11 @@ namespace Net
         {
             auto Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC 30 33 F6 48 8B F9 84 D2").Get();
 
-            if (!Addr) // 7.30 to 14.60
-                Addr = Memcury::Scanner::FindPattern("40 ? 48 83 EC 30 48 8B ? 84 D2 74 ? 80 3D").Get();
-
             if (!Addr) // 19.40
                 Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC 20 33 ED 48 8B F1 84 D2").Get();
+
+            if (!Addr) // 7.30 to 14.60
+                Addr = Memcury::Scanner::FindPattern("40 ? 48 83 EC 30 48 8B ? 84 D2 74 ? 80 3D").Get();
 
             if(!Addr)
             {
@@ -191,13 +192,17 @@ namespace Net
 
         // UIpNetDriver::InitListen
         {
-            auto Scanner = Memcury::Scanner::FindStringRef(L"%s IpNetDriver listening on port %i");
-            if (EngineVersion >= 4.261f)
-                Scanner.ScanFor({ 0x4C, 0x8B, 0xDC }, false);
-            else
-                Scanner.ScanFor({ 0x48, 0x89, 0x5C }, false, 1);
+            auto Addr = Memcury::Scanner::FindPattern("4C 8B DC 49 89 5B ? 49 89 73 ? 57 48 83 EC 50 48 8B BC 24").Get();
+            if (!Addr)
+            {
+                auto Scanner = Memcury::Scanner::FindStringRef(L"%s IpNetDriver listening on port %i");
+                if (EngineVersion >= 4.261f)
+                    Scanner.ScanFor({ 0x4C, 0x8B, 0xDC }, false);
+                else
+                    Scanner.ScanFor({ 0x48, 0x89, 0x5C }, false, 1);
 
-            auto Addr = Scanner.Get();
+                Addr = Scanner.Get();
+            }
 
             if(!Addr)
             {
