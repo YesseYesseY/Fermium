@@ -123,6 +123,8 @@ static void InitSDK(bool IsServer)
     {
         UAbilitySystemComponent::Init();
         FFastArraySerializer::Init();
+        AFortPlayerState::Init();
+        ABuildingSMActor::Init();
     }
 
     MH_Initialize();

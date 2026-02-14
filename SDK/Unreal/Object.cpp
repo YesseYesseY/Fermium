@@ -101,4 +101,17 @@ void UObject::Init()
 
         Objects = (FChunkedFixedUObjectArray*)(Addr);
     }
+
+    // StaticLoadObject
+    {
+        auto Addr = Memcury::Scanner::FindStringRef(L"STAT_LoadObject").ScanForEither({{ 0x4C, 0x89, 0x4C, 0x24, 0x20 }, { 0x48, 0x8B, 0xC4 }}, false).Get();
+
+        if (!Addr)
+        {
+            MsgBox("Failed to find StaticLoadObject");
+            return;
+        }
+
+        StaticLoadObject = decltype(StaticLoadObject)(Addr);
+    }
 }

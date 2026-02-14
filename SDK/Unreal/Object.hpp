@@ -7,6 +7,7 @@ class UObject
 private:
     static inline UObject* (*StaticFindObject)(UClass*, UObject*, const wchar_t*, bool) = nullptr;
     static inline void (*ProcEven)(UObject*, UFunction*, void*) = nullptr;
+    static inline UObject* (*StaticLoadObject)(UClass*, UObject*, const wchar_t*, const wchar_t*, uint32, void*, bool, void*) = nullptr;
 
 public:
     static inline FChunkedFixedUObjectArray* Objects = nullptr;
@@ -61,6 +62,18 @@ public:
     {
         static UClass* StructClass = FindObject<UClass>(L"/Script/CoreUObject.Struct");
         return (UStruct*)StaticFindObject(StructClass, nullptr, Name, false);
+    }
+
+    template <typename T = UObject>
+    static T* LoadObject(UClass* ObjectClass, const wchar_t* Name)
+    {
+        return (T*)StaticLoadObject(ObjectClass, nullptr, Name, nullptr, 0, nullptr, true, nullptr);
+    }
+
+    static UClass* LoadClass(const wchar_t* Name)
+    {
+        static UClass* ClassClass = FindClass(L"/Script/CoreUObject.Class");
+        return (UClass*)StaticLoadObject(ClassClass, nullptr, Name, nullptr, 0, nullptr, true, nullptr);
     }
 
     template <typename T = UObject>

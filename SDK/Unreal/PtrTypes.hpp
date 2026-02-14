@@ -33,23 +33,6 @@ struct TPersistentObjectPtr
 
 struct FSoftObjectPtr : public TPersistentObjectPtr<FSoftObjectPath>
 {
-    UObject* Get()
-    {
-        if (auto WeakObj = WeakPtr.Get())
-            return WeakObj;
-
-        static auto Func = UObject::FindFunction(L"/Script/Engine.KismetSystemLibrary:LoadAsset_Blocking");
-        if (!Func)
-            return nullptr;
-
-        struct {
-            FSoftObjectPtr SoftPtr;
-            UObject* Ret;
-        } args { *this };
-        UKismetSystemLibrary::Default()->ProcessEvent(Func, &args);
-
-        return args.Ret;
-    }
 };
 
 template <typename T = UObject>
@@ -59,6 +42,28 @@ struct TSoftObjectPtr
 
     T* Get()
     {
-        return (T*)SoftObjectPtr.Get();
+        if (auto WeakObj = SoftObjectPtr.WeakPtr.Get())
+            return (T*)WeakObj;
+
+        if (auto Obj = UObject::LoadObject(UObject::StaticClass(), SoftObjectPtr.ObjectID.AssetPathName.ToWString().c_str()))
+            return (T*)Obj;
+
+        return nullptr;
+    }
+};
+
+struct TSoftClassPtr
+{
+    FSoftObjectPtr SoftObjectPtr;
+
+    UClass* Get()
+    {
+        if (auto WeakObj = SoftObjectPtr.WeakPtr.Get())
+            return (UClass*)WeakObj;
+
+        if (auto Obj = UObject::LoadClass(SoftObjectPtr.ObjectID.AssetPathName.ToWString().c_str()))
+            return (UClass*)Obj;
+
+        return nullptr;
     }
 };

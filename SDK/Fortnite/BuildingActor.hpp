@@ -24,20 +24,14 @@ public:
 
 class ABuildingSMActor : public ABuildingActor
 {
+private:
+    static inline ABuildingSMActor* (*RBA)(ABuildingSMActor*, uint8, UClass*, int, int, bool, AFortPlayerController*) = nullptr;
 public:
     PROP_REF_REFLECTION(AFortPlayerStateZone*, EditingPlayer);
     PROP_REF_REFLECTION(EFortResourceType, ResourceType);
 
     ABuildingSMActor* ReplaceBuildingActor(UClass* NewClass, int32 RotationIterations, bool bMirrored, AFortPlayerController* PlayerController)
     {
-        static ABuildingSMActor* (*RBA)(ABuildingSMActor*, uint8, UClass*, int, int, bool, AFortPlayerController*) = nullptr;
-        if (!RBA)
-        {
-            auto Addr = Memcury::Scanner::FindStringRef(L"STAT_Fort_BuildingSMActorReplaceBuildingActor")
-                .ScanForAny({{ 0x4C, 0x8B, 0xDC }, { 0x48, 0x8B, 0xC4 }}, false).Get();
-            RBA = decltype(RBA)(Addr);
-        }
-
         return RBA(this, 1, NewClass, 0, RotationIterations, bMirrored, PlayerController);
     }
 
@@ -55,6 +49,16 @@ public:
             int32 ResourcesSpent;
         } args { RepairingController, ResourcesSpent };
         ProcessEvent(Func, &args);
+    }
+
+    static void Init()
+    {
+        // ABuildingSMActor::ReplaceBuildingActor
+        {
+            auto Addr = Memcury::Scanner::FindStringRef(L"STAT_Fort_BuildingSMActorReplaceBuildingActor")
+                .ScanForAny({{ 0x4C, 0x8B, 0xDC }, { 0x48, 0x8B, 0xC4 }}, false).Get();
+            RBA = decltype(RBA)(Addr);
+        }
     }
 };
 

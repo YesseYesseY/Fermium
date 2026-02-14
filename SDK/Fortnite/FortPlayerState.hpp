@@ -1,12 +1,19 @@
 class AFortPlayerState : public APlayerState
 {
+private:
+    static inline void (*ACC)(UObject*, UObject*) = nullptr;
+
 public:
     PROP_REF_REFLECTION(UAbilitySystemComponent*, AbilitySystemComponent);
 
     void ApplyCharacterCustomization(UObject* Pawn)
     {
-        static void (*ApplyCharacterCustomization)(UObject*, UObject*) = nullptr;
-        if (!ApplyCharacterCustomization)
+        ACC(this, Pawn);
+    }
+
+    static void Init()
+    {
+        // ApplyCharacterCustomization
         {
             auto Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 81 EC 80 00 00 00 80 B9").Get();
 
@@ -19,11 +26,8 @@ public:
             }
 
             if (Addr)
-                ApplyCharacterCustomization = decltype(ApplyCharacterCustomization)(Addr);
+                ACC = decltype(ACC)(Addr);
         }
-
-        if (ApplyCharacterCustomization)
-            ApplyCharacterCustomization(this, Pawn);
     }
 };
 
