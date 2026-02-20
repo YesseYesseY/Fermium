@@ -38,6 +38,8 @@ class UFortWorldItemDefinition : public UFortItemDefinition
 class UFortWeaponItemDefinition : public UFortWorldItemDefinition
 {
     STATIC_CLASS(L"/Script/FortniteGame.FortWeaponItemDefinition");
+
+    PROP_REF_REFLECTION(FDataTableRowHandle, WeaponStatHandle);
 };
 
 class UFortWeaponMeleeItemDefinition : public UFortWeaponItemDefinition

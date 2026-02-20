@@ -28,12 +28,13 @@ namespace GameMode
             Net::Listen();
     
             GameMode->GetWarmupRequiredPlayerCount() = 1;
-            GameMode->SetbWorldIsReady(true);
         }
     
         if (GameMode->GetNumPlayers() > 0)
         {
+            Loot::Init();
             Vehicles::Init();
+            GameMode->SetbWorldIsReady(true);
             return true;
         }
     
@@ -60,6 +61,7 @@ namespace GameMode
                 { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/WoodItemData.WoodItemData"), -1 },
                 { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/StoneItemData.StoneItemData"), -1 },
                 { UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/MetalItemData.MetalItemData"), -1 },
+                { UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Weapons/WID_Assault_Heavy_Athena_SR_Ore_T03.WID_Assault_Heavy_Athena_SR_Ore_T03"), -1 },
             };
 
             for (auto thing : StartingItems)

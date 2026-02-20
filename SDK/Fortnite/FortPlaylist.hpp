@@ -1,6 +1,6 @@
 class UFortPlaylist : public UObject
 {
-
+    PROP_REF_REFLECTION(TSoftObjectPtr<UDataTable>, LootTierData);
 };
 
 class UFortPlaylistAthena : public UFortPlaylist

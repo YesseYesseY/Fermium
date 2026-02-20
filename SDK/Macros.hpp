@@ -10,6 +10,8 @@
     inline constexpr bool  operator! (Enum  E)             { return !(__underlying_type(Enum))E; } \
     inline constexpr Enum  operator~ (Enum  E)             { return (Enum)~(__underlying_type(Enum))E; }
 
+#define COMMA ,
+
 #define PROP_REF_OFFSET(Type, Name) \
 private: \
     static inline int32 Offset_##Name = -1; \

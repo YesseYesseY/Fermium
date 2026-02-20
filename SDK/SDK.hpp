@@ -26,6 +26,7 @@ extern inline float GameVersion = -1.0f;
 
 #include "Unreal/MathStructs.hpp"
 #include "Unreal/ScalableFloat.hpp"
+#include "Unreal/DataTable.hpp"
 
 #include "Unreal/KismetStringLibrary.hpp"
 #include "Unreal/KismetSystemLibrary.hpp"
@@ -70,6 +71,7 @@ extern inline float GameVersion = -1.0f;
 #include "Unreal/GameplayEffect.hpp"
 #include "Unreal/AbilitySystemComponent.hpp"
 #include "Fortnite/FortPlayerState.hpp"
+#include "Fortnite/FortWeaponStats.hpp"
 #include "Fortnite/FortItemDefinition.hpp"
 #include "Fortnite/FortInventory.hpp"
 #include "Fortnite/FortPickup.hpp"
@@ -118,6 +120,7 @@ static void InitSDK(bool IsServer)
     UStruct::Init();
     UClass::Init();
     UFunction::Init();
+    UDataTable::Init();
 
     if (IsServer)
     {

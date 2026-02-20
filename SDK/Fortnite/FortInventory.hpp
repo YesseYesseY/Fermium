@@ -5,6 +5,7 @@ struct FFortItemEntry : public FFastArraySerializerItem
     STRUCT_PROP_REF_REFLECTION(UFortItemDefinition*, ItemDefinition);
     STRUCT_PROP_REF_REFLECTION(FGuid, ItemGuid);
     STRUCT_PROP_REF_REFLECTION(int32, Count);
+    STRUCT_PROP_REF_REFLECTION(int32, LoadedAmmo);
 };
 
 class UFortItem : public UObject
@@ -95,6 +96,15 @@ class AFortInventory : public AActor
         auto& ItemEntry = Item->GetItemEntry();
         if (!ItemEntry.GetItemGuid().IsValid())
             ItemEntry.GetItemGuid().Regen();
+
+        if (ItemDef->IsA(UFortWeaponItemDefinition::StaticClass()))
+        {
+            auto WeaponDef = (UFortWeaponItemDefinition*)ItemDef;
+            if (auto WeaponStats = WeaponDef->GetWeaponStatHandle().Get<FFortBaseWeaponStats>())
+            {
+                ItemEntry.GetLoadedAmmo() = WeaponStats->GetClipSize();
+            }
+        }
 
         GetInventory().GetReplicatedEntries().AddCopy(&ItemEntry, FFortItemEntry::Size());
         GetInventory().GetItemInstances().Add(Item);

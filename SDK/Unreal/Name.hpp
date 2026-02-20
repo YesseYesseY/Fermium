@@ -6,6 +6,11 @@ class FName
     uint32 Number;
 
 public:
+    bool operator==(const FName& Other) const
+    {
+        return ComparisonIndex == Other.ComparisonIndex && Number == Number;
+    }
+
     std::string ToString();
     std::wstring ToWString();
 };

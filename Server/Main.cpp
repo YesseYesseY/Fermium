@@ -8,6 +8,7 @@
 #include "Inventory.hpp"
 #include "Building.hpp"
 #include "Vehicles.hpp"
+#include "Loot.hpp"
 #include "GameMode.hpp"
 #include "Player.hpp"
 #include "Abilities.hpp"
