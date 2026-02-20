@@ -91,6 +91,17 @@ namespace GameMode
         AbilitySystemComponent->GiveAbilitySet(AbilitySet);
     }
 
+    int64 (*StartAircraftPhaseOriginal)(AFortGameModeAthena* GameMode, char a2);
+    int64 StartAircraftPhase(AFortGameModeAthena* GameMode, char a2)
+    {
+        auto Players = UWorld::GetWorld()->GetNetDriver()->GetClientConnections();
+        for (auto Player : Players)
+        {
+            Player->GetPlayerControllerAs<AFortPlayerControllerAthena>()->GetWorldInventory()->Clear();
+        }
+        return StartAircraftPhaseOriginal(GameMode, a2);
+    }
+
     void Init()
     {
         auto GameModeBR = UObject::FindClass(L"/Script/FortniteGame.FortGameModeBR");
@@ -100,5 +111,19 @@ namespace GameMode
         GameModeBR->VTableHook("ReadyToStartMatch", ReadyToStartMatchHook);
         GameModeBR->VTableHook("SpawnDefaultPawnFor", SpawnDefaultPawnForHook);
         GameModeBR->VTableHook("HandleStartingNewPlayer", HandleStartingNewPlayer, &HandleStartingNewPlayerOriginal);
+
+        // StartAircraftPhase
+        {
+            auto Addr = Memcury::Scanner::FindStringRef(L"STAT_StartAircraftPhase").ScanForEither({{ 0x4C, 0x8B, 0xDC }, { 0x48, 0x8B, 0xC4 }}, false).Get();
+
+            if (Addr)
+            {
+                Hook::Function(Addr, StartAircraftPhase, &StartAircraftPhaseOriginal);
+            }
+            else
+            {
+                MsgBox("Couldn't find StartAircraftPhase");
+            }
+        }
     }
 }

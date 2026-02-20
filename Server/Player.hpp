@@ -8,6 +8,7 @@ namespace Player
         auto Pawn = (AFortPlayerPawnAthena*)GameMode::SpawnDefaultPawnForHook(UGameplayStatics::GetGameMode(), PlayerController, CurrentAircraft);
         PlayerController->Possess(Pawn);
         PlayerController->ClientSetRotation(ClientRotation, false);
+        PlayerController->GetWorldInventory()->Clear();
     }
 
     void ServerCheat(AFortPlayerControllerAthena* PlayerController, const FString& FMsg)

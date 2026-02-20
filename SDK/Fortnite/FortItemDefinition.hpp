@@ -33,6 +33,7 @@ public:
 
 class UFortWorldItemDefinition : public UFortItemDefinition
 {
+    PROP_BIT_REFLECTION(bCanBeDropped);
 };
 
 class UFortWeaponItemDefinition : public UFortWorldItemDefinition

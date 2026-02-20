@@ -46,6 +46,14 @@ public: \
         return *(Type*)(int64(this) + Offset); \
     }
 
+#define PROP_REF_REFLECTION_AS(Type, Name) \
+    PROP_REF_REFLECTION(Type, Name); \
+    template <typename T> \
+    T* Get##Name##As() \
+    { \
+        return (T*)Get##Name(); \
+    }
+
 #define PROP_BIT_REFLECTION(Name) \
 public: \
     void Set##Name(bool val) \

@@ -130,4 +130,19 @@ class AFortInventory : public AActor
     {
         return GetInventory().GetReplicatedEntries().Num();
     }
+
+    void Clear()
+    {
+        for (int i = 0; i < Num(); i++)
+        {
+            auto ItemDef = (UFortWorldItemDefinition*)GetInventory().GetReplicatedEntries().Get(i, FFortItemEntry::Size()).GetItemDefinition();
+            if (ItemDef->GetbCanBeDropped())
+            {
+                GetInventory().GetReplicatedEntries().Remove(i, FFortItemEntry::Size());
+                GetInventory().GetItemInstances().Remove(i);
+                i--;
+            }
+        }
+        Update();
+    }
 };
