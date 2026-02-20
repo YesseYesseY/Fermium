@@ -80,3 +80,32 @@ struct FItemAndCount
     UFortItemDefinition* Item;
 };
 
+class UFortCharacterType : public UFortAccountItemDefinition
+{
+};
+
+class UFortWorkerType : public UFortCharacterType
+{
+};
+
+class UCustomCharacterPart : public UObject
+{
+    PROP_REF_REFLECTION(uint8, CharacterPartType);
+};
+
+class UFortHeroSpecialization : public UObject
+{
+    PROP_REF_REFLECTION(TArray<TSoftObjectPtr<UCustomCharacterPart>>, CharacterParts);
+};
+
+class UFortHeroType : public UFortWorkerType
+{
+    PROP_REF_REFLECTION(TArray<TSoftObjectPtr<UFortHeroSpecialization>>, Specializations);
+};
+
+class UAthenaCharacterItemDefinition : public UAthenaCosmeticItemDefinition
+{
+    STATIC_CLASS(L"/Script/FortniteGame.AthenaCharacterItemDefinition");
+
+    PROP_REF_REFLECTION(UFortHeroType*, HeroDefinition);
+};

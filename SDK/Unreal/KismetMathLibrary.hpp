@@ -42,4 +42,16 @@ class UKismetMathLibrary : public UObject
         Default()->ProcessEvent(Func, &args);
         return args.R;
     }
+
+    static int32 RandomInteger(int32 Max)
+    {
+        static auto Func = StaticClass()->GetFunction("RandomInteger");
+        struct
+        {
+            int32 Max;
+            int32 Ret;
+        } args { Max };
+        Default()->ProcessEvent(Func, &args);
+        return args.Ret;
+    }
 };

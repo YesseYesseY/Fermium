@@ -1,3 +1,18 @@
+class UCustomCharacterPart;
+
+struct FCustomCharacterParts
+{
+    uint64 pad1;
+    UCustomCharacterPart* Parts[6];
+};
+
+struct FCustomCharacterData
+{
+    STATIC_STRUCT(FCustomCharacterData, L"/Script/FortniteGame.CustomCharacterData");
+
+    STRUCT_PROP_PTR_REFLECTION(UCustomCharacterPart*, Parts);
+};
+
 class AFortPlayerState : public APlayerState
 {
 private:
@@ -5,6 +20,9 @@ private:
 
 public:
     PROP_REF_REFLECTION(UAbilitySystemComponent*, AbilitySystemComponent);
+    PROP_REF_REFLECTION(UObject*, HeroType);
+    PROP_REF_REFLECTION_SAFE(FCustomCharacterParts, CharacterParts);
+    PROP_REF_REFLECTION_SAFE(FCustomCharacterData, CharacterData);
 
     void ApplyCharacterCustomization(UObject* Pawn)
     {

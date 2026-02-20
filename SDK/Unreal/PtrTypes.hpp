@@ -45,6 +45,9 @@ struct TSoftObjectPtr
         if (auto WeakObj = SoftObjectPtr.WeakPtr.Get())
             return (T*)WeakObj;
 
+        if (SoftObjectPtr.ObjectID.SubPathString.Len() > 0)
+            MsgBox("{}", SoftObjectPtr.ObjectID.SubPathString.ToString());
+
         if (auto Obj = UObject::LoadObject(UObject::StaticClass(), SoftObjectPtr.ObjectID.AssetPathName.ToWString().c_str()))
             return (T*)Obj;
 

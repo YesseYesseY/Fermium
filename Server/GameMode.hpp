@@ -73,8 +73,6 @@ namespace GameMode
         if (GameVersion > 12.0f)
             Pawn->SetbCanBeDamaged(false);
 
-        PlayerState->ApplyCharacterCustomization(Pawn);
-
         return Pawn;
     }
 
@@ -89,6 +87,44 @@ namespace GameMode
         auto PlayerState = (AFortPlayerState*)PlayerController->GetPlayerState();
         auto AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
         AbilitySystemComponent->GiveAbilitySet(AbilitySet);
+
+        PlayerState->ApplyCharacterCustomization(PlayerState->GetPawnPrivate());
+
+        auto CID = AssetManager->GetRandomCharacter();
+        if (CID)
+        {
+            auto Hero = CID->GetHeroDefinition();
+            if (PlayerState->HasCharacterParts())
+            {
+                for (auto Spec : Hero->GetSpecializations())
+                {
+                    auto CharParts = Spec.Get()->GetCharacterParts();
+                    for (int i = 0; i < CharParts.Num(); i++)
+                    {
+                        auto Part = CharParts[i].Get();
+                        PlayerState->GetCharacterParts().Parts[Part->GetCharacterPartType()] = Part;
+                    }
+                }
+
+                static auto OnRepFunc = PlayerState->ClassPrivate->GetFunction("OnRep_CharacterParts");
+                PlayerState->ProcessEvent(OnRepFunc);
+            }
+            else if (PlayerState->HasCharacterData())
+            {
+                for (auto Spec : Hero->GetSpecializations())
+                {
+                    auto CharParts = Spec.Get()->GetCharacterParts();
+                    for (int i = 0; i < CharParts.Num(); i++)
+                    {
+                        auto Part = CharParts[i].Get();
+                        PlayerState->GetCharacterData().GetParts()[Part->GetCharacterPartType()] = Part;
+                    }
+                }
+
+                static auto OnRepFunc = PlayerState->ClassPrivate->GetFunction("OnRep_CharacterData");
+                PlayerState->ProcessEvent(OnRepFunc);
+            }
+        }
     }
 
     int64 (*StartAircraftPhaseOriginal)(AFortGameModeAthena* GameMode, char a2);

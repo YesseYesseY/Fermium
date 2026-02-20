@@ -122,6 +122,14 @@ public: \
         return *(Type*)(int64(this) + Offset); \
     }
 
+#define STRUCT_PROP_PTR_REFLECTION(Type, Name) \
+public: \
+    Type* Get##Name() const \
+    { \
+        static int32 Offset = StaticStruct()->GetPropOffset(#Name); \
+        return (Type*)(int64(this) + Offset); \
+    }
+
 #define STRUCT_PROP_BIT_REFLECTION(Name) \
 public: \
     void Set##Name(bool val) \
