@@ -46,7 +46,6 @@ namespace GameMode
         auto translivesmatter = StartSpot->GetTransform();
         auto Pawn = (AFortPlayerPawn*)GameMode->SpawnDefaultPawnAtTransform(PlayerController, translivesmatter);
         auto PlayerState = (AFortPlayerState*)PlayerController->GetPlayerState();
-        PlayerState->ApplyCharacterCustomization(Pawn);
 
         auto Inventory = PlayerController->GetWorldInventory();
         if (Inventory->Num() == 0)
@@ -73,6 +72,8 @@ namespace GameMode
 
         if (GameVersion > 12.0f)
             Pawn->SetbCanBeDamaged(false);
+
+        PlayerState->ApplyCharacterCustomization(Pawn);
 
         return Pawn;
     }

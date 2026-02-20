@@ -289,24 +289,15 @@ namespace UC
 			if (GetSlack() < Count)
 				MaxElements += Count; 
 			
-			Data = static_cast<ArrayElementType*>(FMemory::Realloc(Data, MaxElements * ElemSize, ElementAlign));
+			Data = static_cast<ArrayElementType*>(FMemory::Realloc(Data, MaxElements * ElemSize, 0));
 		}
 
-		inline void Add(const ArrayElementType& Element)
-		{
-			if (GetSlack() <= 0)
-				Reserve(3);
-
-			Data[NumElements] = Element;
-			NumElements++;
-		}
-
-		inline void AddCopy(const ArrayElementType* Element, int32 ElemSize)
+		inline void Add(const ArrayElementType& Element, int32 ElemSize = ElementSize)
 		{
 			if (GetSlack() <= 0)
 				Reserve(3, ElemSize);
 
-            memcpy((ArrayElementType*)(int64(Data) + (NumElements * ElemSize)), Element, ElemSize);
+            memcpy((ArrayElementType*)(int64(Data) + (NumElements * ElemSize)), &Element, ElemSize);
 			// Data[NumElements] = Element;
 			NumElements++;
 		}

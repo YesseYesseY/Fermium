@@ -2,6 +2,7 @@ class UFunction : public UStruct
 {
     STATIC_CLASS(L"/Script/CoreUObject.Function");
 
+    PROP_REF_OFFSET(EFunctionFlags, FunctionFlags);
     PROP_REF_OFFSET(void*, ExecFunc);
 
 public:

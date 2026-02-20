@@ -78,6 +78,8 @@ class AFortInventory : public AActor
 
     void Update(FFortItemEntry* ItemEntry = nullptr)
     {
+        static auto Func = ClassPrivate->GetFunction("HandleInventoryLocalUpdate");
+        ProcessEvent(Func);
         if (ItemEntry)
             GetInventory().MarkItemDirty(ItemEntry);
         else
@@ -94,8 +96,6 @@ class AFortInventory : public AActor
 
         auto Item = (UFortWorldItem*)ItemDef->CreateTemporaryItemInstanceBP(Count);
         auto& ItemEntry = Item->GetItemEntry();
-        if (!ItemEntry.GetItemGuid().IsValid())
-            ItemEntry.GetItemGuid().Regen();
 
         if (ItemDef->IsA(UFortWeaponItemDefinition::StaticClass()))
         {
@@ -106,7 +106,7 @@ class AFortInventory : public AActor
             }
         }
 
-        GetInventory().GetReplicatedEntries().AddCopy(&ItemEntry, FFortItemEntry::Size());
+        GetInventory().GetReplicatedEntries().Add(ItemEntry, FFortItemEntry::Size());
         GetInventory().GetItemInstances().Add(Item);
     }
 
