@@ -17,35 +17,252 @@ struct FFortLootPackageData
 
     STRUCT_PROP_REF_REFLECTION(FName, LootPackageID);
     STRUCT_PROP_REF_REFLECTION(float, Weight);
-    STRUCT_PROP_REF_REFLECTION(FName, NamedWeightMult);
     STRUCT_PROP_REF_REFLECTION(int32, Count);
     STRUCT_PROP_REF_REFLECTION(int32, LootPackageCategory);
     STRUCT_PROP_REF_REFLECTION(FString, LootPackageCall);
     STRUCT_PROP_REF_REFLECTION(TSoftObjectPtr<UFortItemDefinition>, ItemDefinition);
 };
 
+struct LootTierData
+{
+    float Weight;
+    FName LootPackage;
+    float NumLootPackageDrops;
+
+    LootTierData(FFortLootTierData* Data)
+    {
+        Weight = Data->GetWeight();
+        LootPackage = Data->GetLootPackage();
+        NumLootPackageDrops = Data->GetNumLootPackageDrops();
+    }
+};
+
+struct LootPackageData
+{
+    float Weight;
+    FName LootPackageCall;
+    UFortItemDefinition* ItemDef;
+    int32 Count;
+
+    LootPackageData(FFortLootPackageData* Data)
+    {
+        Weight = Data->GetWeight();
+        LootPackageCall = UKismetStringLibrary::Conv_StringToName(Data->GetLootPackageCall());
+        ItemDef = Data->GetItemDefinition().Get();
+        Count = Data->GetCount();
+    }
+};
+
+template <typename T>
+struct WeightedContainer
+{
+    float TotalWeight;
+    std::vector<T> Items;
+
+    T& GetRandomItem()
+    {
+        float Randy = UKismetMathLibrary::RandomFloatInRange(0, TotalWeight);
+        float Total = 0.0f;
+
+        for (auto& Item : Items)
+        {
+            Total += Item.Weight;
+            if (Total >= Randy)
+            {
+                return Item;
+            }
+        }
+
+        return Items[0];
+    }
+};
+
+struct LootTierDataContainer : WeightedContainer<LootTierData>
+{
+    void Add(FFortLootTierData* Data)
+    {
+        auto weight = Data->GetWeight();
+        if (weight <= 0.0f)
+            return;
+
+        TotalWeight += weight;
+        Items.push_back(LootTierData(Data));
+    }
+};
+
+struct LootPackageDataContainer : WeightedContainer<LootPackageData>
+{
+    void Add(FFortLootPackageData* Data)
+    {
+        auto weight = Data->GetWeight();
+        if (weight <= 0.0f)
+            return;
+
+        TotalWeight += weight;
+        Items.push_back(LootPackageData(Data));
+    }
+};
+
 namespace Loot
 {
+    std::unordered_map<FName, LootTierDataContainer> LootTiers;
+    std::unordered_map<FName, LootPackageDataContainer> LootPackages;
+
+    // TODO Change to TArray<FFortItemEntry>?
+    std::vector<std::pair<UFortItemDefinition*, int32>> Get(FName TierGroup)
+    {
+        // Loot_Treasure -> Loot_AthenaTreasure
+        // Loot_Ammo -> Loot_AthenaAmmoLarge
+
+        static std::unordered_map<FName, FName> TierGroupRedirect = {
+            { UKismetStringLibrary::Conv_StringToName(L"Loot_Treasure"), UKismetStringLibrary::Conv_StringToName(L"Loot_AthenaTreasure") },
+            { UKismetStringLibrary::Conv_StringToName(L"Loot_Ammo"), UKismetStringLibrary::Conv_StringToName(L"Loot_AthenaAmmoLarge") },
+        };
+
+        if (TierGroupRedirect.contains(TierGroup))
+            TierGroup = TierGroupRedirect[TierGroup];
+
+        std::vector<std::pair<UFortItemDefinition*, int32>> Ret;
+
+        // Ret.push_back({UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Weapons/WID_Assault_Heavy_Athena_SR_Ore_T03.WID_Assault_Heavy_Athena_SR_Ore_T03"), 1});
+
+        if (!LootTiers.contains(TierGroup))
+        {
+            MsgBox("TierGroup {} not in LootTiers", TierGroup.ToString());
+            return Ret;
+        }
+
+        auto LootTier = LootTiers[TierGroup];
+        auto LTI = LootTier.GetRandomItem();
+
+        if (!LootPackages.contains(LTI.LootPackage))
+        {
+            MsgBox("LootPackage {} not in LootPackages", LTI.LootPackage.ToString());
+            return Ret;
+        }
+
+        auto BaseLootPackage = LootPackages[LTI.LootPackage];
+        auto IsWorldList = LTI.LootPackage.ToString().starts_with("WorldList"); // Is there a better way?
+        if (IsWorldList)
+        {
+            for (int i = 0; i < LTI.NumLootPackageDrops; i++)
+            {
+                auto toadd = BaseLootPackage.GetRandomItem();
+                Ret.push_back({ toadd.ItemDef, toadd.Count });
+            }
+        }
+        else
+        {
+            for (int i = 0; i < LTI.NumLootPackageDrops; i++)
+            {
+                if (!LootPackages.contains(BaseLootPackage.Items[i].LootPackageCall))
+                {
+                    MsgBox("LootPackageCall {} not in LootPackages", BaseLootPackage.Items[i].LootPackageCall.ToString());
+                    return Ret;
+                }
+
+                auto RealLootPackage = LootPackages[BaseLootPackage.Items[i].LootPackageCall];
+                if (RealLootPackage.Items.size() <= 0)
+                {
+                    // MsgBox("{}", BaseLootPackage.Items[i].LootPackageCall.ToString());
+                    continue;
+                }
+                auto toadd = RealLootPackage.GetRandomItem();
+                Ret.push_back({ toadd.ItemDef, toadd.Count });
+            }
+        }
+
+        return Ret;
+    }
+
+    bool SpawnLoot(ABuildingContainer* Container, AFortPlayerPawn* Pawn = nullptr)
+    {
+        // TODO Pickup spawn location
+        //      Combine loot drops when possible
+        //      NumLootPackageDrops
+        auto Drops = Get(Container->GetSearchLootTierGroup());
+        for (auto& Drop : Drops)
+            AFortPickup::SpawnFromItemDef(Container->GetActorLocation(), Drop.first, Drop.second);
+
+        Container->SetbAlreadySearched(true);
+        Container->OnRep_bAlreadySearched();
+        
+        return true;
+    }
+
     void Init()
     {
         auto GameState = UGameplayStatics::GetGameState();
         auto CurrentPlaylist = GameState->GetCurrentPlaylistInfo().GetBasePlaylist();
-        auto LootTierData = CurrentPlaylist->GetLootTierData().Get();
-        if (!LootTierData)
-            LootTierData = UObject::FindObject<UDataTable>(L"/Game/Items/Datatables/AthenaLootTierData_Client.AthenaLootTierData_Client");
+        auto LTD = CurrentPlaylist->GetLootTierData().Get();
+        if (!LTD)
+            LTD = UObject::FindObject<UDataTable>(L"/Game/Items/Datatables/AthenaLootTierData_Client.AthenaLootTierData_Client");
+
+        auto LPD = CurrentPlaylist->GetLootPackages().Get();
+        if (!LPD)
+            LPD = UObject::FindObject<UDataTable>(L"/Game/Items/Datatables/AthenaLootPackages_Client.AthenaLootPackages_Client");
+
+        for (auto& thing : LTD->GetRowMap())
+        {
+            auto Data = (FFortLootTierData*)thing.Value();
+            LootTiers[Data->GetTierGroup()].Add(Data);
+        }
+
+        for (auto& thing : LPD->GetRowMap())
+        {
+            auto Data = (FFortLootPackageData*)thing.Value();
+            LootPackages[Data->GetLootPackageID()].Add(Data);
+        }
+
+        // ABuildingContainer::SpawnLoot
+        {
+            auto Scanner = Memcury::Scanner::FindStringRef("OpenChests");
+            if (Scanner.IsValid())
+            {
+                auto Found = 0;
+                Scanner.ScanForEither({{ 0x4C, 0x8B, 0x90 }, { 0xFF, 0x90 }}, false, 0, &Found);
+                auto Idx = *Scanner.AbsoluteOffset(3 - Found).GetAs<int32*>() / 8;
+                ABuildingContainer::StaticClass()->VTableHook(Idx, SpawnLoot);
+            }
+            else
+            {
+                Scanner = Memcury::Scanner::FindStringRef(L"ABuildingContainer::ServerOnAttemptInteract %s failed for %s");
+                if (Scanner.IsValid())
+                {
+                    auto Idx = *Scanner.ScanFor({ 0x41, 0xFF, 0x92 }, false).AbsoluteOffset(3).GetAs<int32*>() / 8;
+                    ABuildingContainer::StaticClass()->VTableHook(Idx, SpawnLoot);
+                }
+            }
+        }
+
+        {
+            auto FloorLootClass = UObject::FindClass(L"/Game/Athena/Environments/Blueprints/Tiered_Athena_FloorLoot_01.Tiered_Athena_FloorLoot_01_C");
+            auto FloorLootSpawners = UGameplayStatics::GetAllActorsOfClass<ABuildingContainer>(FloorLootClass);
+            for (auto Spawner : FloorLootSpawners)
+                SpawnLoot(Spawner);
+            FloorLootSpawners.Free();
+        }
+
+        {
+            auto FloorLootClass = UObject::FindClass(L"/Game/Athena/Environments/Blueprints/Tiered_Athena_FloorLoot_Warmup.Tiered_Athena_FloorLoot_Warmup_C");
+            auto FloorLootSpawners = UGameplayStatics::GetAllActorsOfClass<ABuildingContainer>(FloorLootClass);
+            for (auto Spawner : FloorLootSpawners)
+                SpawnLoot(Spawner);
+            FloorLootSpawners.Free();
+        }
 
         // std::ofstream outltd("loottierdata.txt");
-        // for (auto& thing : LootTierData->GetRowMap())
+        // for (auto& thing : LTD->GetRowMap())
         // {
-        //     auto LTD = (FFortLootTierData*)thing.Value();
+        //     auto Data = (FFortLootTierData*)thing.Value();
         //     outltd << thing.Key().ToString() << '\n';
-        //     outltd << "TierGroup: " << LTD->GetTierGroup().ToString() << '\n';
-        //     outltd << "Weight: " << LTD->GetWeight() << '\n';
-        //     outltd << "LootPackage: " << LTD->GetLootPackage().ToString() << '\n';
-        //     outltd << "NumLootPackageDrops: " << LTD->GetNumLootPackageDrops() << '\n';
+        //     outltd << "TierGroup: " << Data->GetTierGroup().ToString() << '\n';
+        //     outltd << "Weight: " << Data->GetWeight() << '\n';
+        //     outltd << "LootPackage: " << Data->GetLootPackage().ToString() << '\n';
+        //     outltd << "NumLootPackageDrops: " << Data->GetNumLootPackageDrops() << '\n';
 
         //     outltd << "LootPackageCategoryWeightArray: ";
-        //     auto& LootPackageCategoryWeightArray = LTD->GetLootPackageCategoryWeightArray();
+        //     auto& LootPackageCategoryWeightArray = Data->GetLootPackageCategoryWeightArray();
         //     for (int i = 0; i < LootPackageCategoryWeightArray.Num(); i++)
         //     {
         //         outltd << LootPackageCategoryWeightArray[i];
@@ -55,7 +272,7 @@ namespace Loot
         //     outltd << '\n';
 
         //     outltd << "LootPackageCategoryMinArray: ";
-        //     auto& LootPackageCategoryMinArray = LTD->GetLootPackageCategoryMinArray();
+        //     auto& LootPackageCategoryMinArray = Data->GetLootPackageCategoryMinArray();
         //     for (int i = 0; i < LootPackageCategoryMinArray.Num(); i++)
         //     {
         //         outltd << LootPackageCategoryMinArray[i];
@@ -65,7 +282,7 @@ namespace Loot
         //     outltd << '\n';
 
         //     outltd << "LootPackageCategoryMaxArray: ";
-        //     auto& LootPackageCategoryMaxArray = LTD->GetLootPackageCategoryMaxArray();
+        //     auto& LootPackageCategoryMaxArray = Data->GetLootPackageCategoryMaxArray();
         //     for (int i = 0; i < LootPackageCategoryMaxArray.Num(); i++)
         //     {
         //         outltd << LootPackageCategoryMaxArray[i];
@@ -78,18 +295,14 @@ namespace Loot
         // }
         // outltd.close();
 
-        // auto LootPackageData = CurrentPlaylist->GetLootPackages().Get();
-        // if (!LootPackageData)
-        //     LootPackageData = UObject::FindObject<UDataTable>(L"/Game/Items/Datatables/AthenaLootPackages_Client.AthenaLootPackages_Client");
 
         // std::ofstream outlp("lootpackages.txt");
-        // for (auto& thing : LootPackageData->GetRowMap())
+        // for (auto& thing : LPD->GetRowMap())
         // {
         //     auto LP = (FFortLootPackageData*)thing.Value();
         //     outlp << thing.Key().ToString() << '\n';
         //     outlp << "LootPackageID: " << LP->GetLootPackageID().ToString() << '\n';
         //     outlp << "Weight: " << LP->GetWeight() << '\n';
-        //     outlp << "NamedWeightMult: " << LP->GetNamedWeightMult().ToString() << '\n';
         //     outlp << "Count: " << LP->GetCount() << '\n';
         //     outlp << "LootPackageCategory: " << LP->GetLootPackageCategory() << '\n';
         //     outlp << "LootPackageCall: " << LP->GetLootPackageCall().ToString() << '\n';

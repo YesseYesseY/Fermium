@@ -54,4 +54,17 @@ class UKismetMathLibrary : public UObject
         Default()->ProcessEvent(Func, &args);
         return args.Ret;
     }
+
+    static float RandomFloatInRange(float Min, float Max)
+    {
+        static auto Func = StaticClass()->GetFunction("RandomFloatInRange");
+        struct
+        {
+            float Min;
+            float Max;
+            float Ret;
+        } args { Min, Max };
+        Default()->ProcessEvent(Func, &args);
+        return args.Ret;
+    }
 };

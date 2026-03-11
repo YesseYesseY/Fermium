@@ -103,3 +103,26 @@ public:
         Foundation->SetDynamicFoundationEnabled(Enabled);
     }
 };
+
+class ABuildingAutoNav : public ABuildingSMActor
+{
+};
+
+class ABuildingTimeOfDayLights : public ABuildingAutoNav
+{
+};
+
+class ABuildingContainer : public ABuildingTimeOfDayLights
+{
+    STATIC_CLASS(L"/Script/FortniteGame.BuildingContainer");
+
+    PROP_BIT_REFLECTION(bAlreadySearched);
+    PROP_BIT_REFLECTION(bDestroyContainerOnSearch);
+    PROP_REF_REFLECTION(FName, SearchLootTierGroup);
+
+    void OnRep_bAlreadySearched()
+    {
+        static auto Func = ClassPrivate->GetFunction("OnRep_bAlreadySearched");
+        ProcessEvent(Func);
+    }
+};

@@ -19,7 +19,7 @@ public:
         return Ret;
     }
 
-    void K2_DestroyActor()
+    void DestroyActor()
     {
         static auto Func = ClassPrivate->GetFunction("K2_DestroyActor");
         ProcessEvent(Func);
