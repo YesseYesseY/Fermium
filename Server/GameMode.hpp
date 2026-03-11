@@ -32,6 +32,7 @@ namespace GameMode
     
         if (GameMode->GetNumPlayers() > 0)
         {
+            GameFeatures::Init();
             Loot::Init();
             Vehicles::Init();
             GameMode->SetbWorldIsReady(true);

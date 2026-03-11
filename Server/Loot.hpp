@@ -157,7 +157,7 @@ namespace Loot
             {
                 if (!LootPackages.contains(BaseLootPackage.Items[i].LootPackageCall))
                 {
-                    MsgBox("LootPackageCall {} not in LootPackages", BaseLootPackage.Items[i].LootPackageCall.ToString());
+                    // MsgBox("LootPackageCall {} not in LootPackages", BaseLootPackage.Items[i].LootPackageCall.ToString());
                     return Ret;
                 }
 
@@ -190,10 +190,36 @@ namespace Loot
         return true;
     }
 
+    void AddLTD(UDataTable* LTD)
+    {
+        if (!LTD)
+            return;
+
+        for (auto& thing : LTD->GetRowMap())
+        {
+            auto Data = (FFortLootTierData*)thing.Value();
+            LootTiers[Data->GetTierGroup()].Add(Data);
+        }
+    }
+
+    void AddLPD(UDataTable* LPD)
+    {
+        if (!LPD)
+            return;
+
+        for (auto& thing : LPD->GetRowMap())
+        {
+            auto Data = (FFortLootPackageData*)thing.Value();
+            LootPackages[Data->GetLootPackageID()].Add(Data);
+        }
+    }
+
     void Init()
     {
         auto GameState = UGameplayStatics::GetGameState();
         auto CurrentPlaylist = GameState->GetCurrentPlaylistInfo().GetBasePlaylist();
+        auto& PlaylistTags = CurrentPlaylist->GetGameplayTagContainer();
+
         auto LTD = CurrentPlaylist->GetLootTierData().Get();
         if (!LTD)
             LTD = UObject::FindObject<UDataTable>(L"/Game/Items/Datatables/AthenaLootTierData_Client.AthenaLootTierData_Client");
@@ -202,16 +228,33 @@ namespace Loot
         if (!LPD)
             LPD = UObject::FindObject<UDataTable>(L"/Game/Items/Datatables/AthenaLootPackages_Client.AthenaLootPackages_Client");
 
-        for (auto& thing : LTD->GetRowMap())
-        {
-            auto Data = (FFortLootTierData*)thing.Value();
-            LootTiers[Data->GetTierGroup()].Add(Data);
-        }
+        AddLTD(LTD);
+        AddLPD(LPD);
 
-        for (auto& thing : LPD->GetRowMap())
+        for (auto GameFeatureData : GameFeatures::Active)
         {
-            auto Data = (FFortLootPackageData*)thing.Value();
-            LootPackages[Data->GetLootPackageID()].Add(Data);
+            if (!GameFeatureData->IsA(UFortGameFeatureData::StaticClass()))
+                continue;
+
+            auto Data = (UFortGameFeatureData*)GameFeatureData;
+
+            bool AddedLoot = false;
+            for (auto& thing : Data->GetPlaylistOverrideLootTableData())
+            {
+                if (PlaylistTags.HasTag(thing.Key()))
+                {
+                    AddedLoot = true;
+                    AddLTD(thing.Value().LootTierData.Get());
+                    AddLPD(thing.Value().LootPackageData.Get());
+                    break;
+                }
+            }
+
+            if (!AddedLoot)
+            {
+                AddLTD(Data->GetDefaultLootTableData().LootTierData.Get());
+                AddLPD(Data->GetDefaultLootTableData().LootPackageData.Get());
+            }
         }
 
         // ABuildingContainer::SpawnLoot

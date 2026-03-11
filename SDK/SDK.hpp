@@ -59,6 +59,7 @@ extern inline float GameVersion = -1.0f;
 
 #include "Unreal/ActorComponent.hpp"
 
+#include "Unreal/GameplayTags.hpp"
 #include "Unreal/FastArraySerializer.hpp"
 #include "Unreal/GameplayAbilitySpec.hpp"
 
@@ -84,6 +85,7 @@ extern inline float GameVersion = -1.0f;
 #include "Fortnite/BuildingClassData.hpp"
 #include "Fortnite/BuildingActor.hpp"
 
+#include "Unreal/GameFeatures.hpp"
 #include "Fortnite/FortAssetManager.hpp"
 
 #include "Fortnite/FortVehicles.hpp"
