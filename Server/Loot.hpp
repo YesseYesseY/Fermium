@@ -34,6 +34,12 @@ struct LootTierData
         Weight = Data->GetWeight();
         LootPackage = Data->GetLootPackage();
         NumLootPackageDrops = Data->GetNumLootPackageDrops();
+
+        // TODO Whyy is this needed
+        if (LootPackage.ToString().contains("WorldPKG.AthenaLoot.Weapon") && Data->GetTierGroup().ToString().contains("FloorLoot")) 
+        {
+            NumLootPackageDrops = 2.0f;
+        }
     }
 };
 
@@ -177,12 +183,11 @@ namespace Loot
 
     bool SpawnLoot(ABuildingContainer* Container, AFortPlayerPawn* Pawn = nullptr)
     {
-        // TODO Pickup spawn location
-        //      Combine loot drops when possible
-        //      NumLootPackageDrops
+        // TODO Combine loot drops when possible
         auto Drops = Get(Container->GetSearchLootTierGroup());
+        auto DropLocation = UKismetMathLibrary::TransformLocation(Container->GetTransform(), Container->GetLootSpawnLocation_Athena());
         for (auto& Drop : Drops)
-            AFortPickup::SpawnFromItemDef(Container->GetActorLocation(), Drop.first, Drop.second);
+            AFortPickup::SpawnFromItemDef(DropLocation, Drop.first, Drop.second);
 
         Container->SetbAlreadySearched(true);
         Container->OnRep_bAlreadySearched();
@@ -263,7 +268,9 @@ namespace Loot
             if (Scanner.IsValid())
             {
                 auto Found = 0;
-                Scanner.ScanForEither({{ 0x4C, 0x8B, 0x90 }, { 0xFF, 0x90 }}, false, 0, &Found);
+                Scanner.ScanForEither({{ 0x4C, 0x8B, 0x90 }, { 0xFF, 0x90 }, { 0x41, 0xFF, 0x92 }}, false, 0, &Found);
+                if (Found == 2)
+                    Found = 0;
                 auto Idx = *Scanner.AbsoluteOffset(3 - Found).GetAs<int32*>() / 8;
                 ABuildingContainer::StaticClass()->VTableHook(Idx, SpawnLoot);
             }

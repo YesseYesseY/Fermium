@@ -67,4 +67,18 @@ class UKismetMathLibrary : public UObject
         Default()->ProcessEvent(Func, &args);
         return args.Ret;
     }
+
+    static FVector TransformLocation(const FTransform& T, const FVector& Location)
+    {
+        static auto Func = StaticClass()->GetFunction("TransformLocation");
+        struct
+        {
+            FTransform T;
+            FVector Location;
+            FVector Ret;
+        } args { T, Location };
+        Default()->ProcessEvent(Func, &args);
+        return args.Ret;
+
+    }
 };
