@@ -110,6 +110,15 @@ class AFortInventory : public AActor
         GetInventory().GetItemInstances().Add(Item);
     }
 
+    void GiveItem(FFortItemEntry& ItemEntry)
+    {
+        auto Item = (UFortWorldItem*)ItemEntry.GetItemDefinition()->CreateTemporaryItemInstanceBP(ItemEntry.GetCount());
+        Item->GetItemEntry().GetLoadedAmmo() = ItemEntry.GetLoadedAmmo();
+
+        GetInventory().GetReplicatedEntries().Add(Item->GetItemEntry(), FFortItemEntry::Size());
+        GetInventory().GetItemInstances().Add(Item);
+    }
+
     void RemoveItem(FFortItemEntry* ItemEntry, int32 Count)
     {
         if (Count >= ItemEntry->GetCount())

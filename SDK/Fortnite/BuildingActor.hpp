@@ -120,6 +120,9 @@ class ABuildingContainer : public ABuildingTimeOfDayLights
     PROP_BIT_REFLECTION(bDestroyContainerOnSearch);
     PROP_REF_REFLECTION(FName, SearchLootTierGroup);
     PROP_REF_REFLECTION(FVector, LootSpawnLocation_Athena);
+    PROP_REF_REFLECTION(float, LootTossConeHalfAngle_Athena);
+    PROP_REF_REFLECTION(FRotator, LootTossDirection_Athena);
+    PROP_REF_REFLECTION(float, LootTossSpeed_Athena);
 
     void OnRep_bAlreadySearched()
     {

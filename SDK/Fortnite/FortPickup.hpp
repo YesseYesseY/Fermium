@@ -1,10 +1,21 @@
 class AFortPawn;
 
+struct FFortPickupLocationData
+{
+    STATIC_STRUCT(FFortPickupLocationData, L"/Script/FortniteGame.FortPickupLocationData");
+
+    STRUCT_PROP_REF_REFLECTION(AFortPawn*, PickupTarget);
+    STRUCT_PROP_REF_REFLECTION(float, FlyTime);
+};
+
 class AFortPickup : public AActor
 {
     STATIC_CLASS(L"/Script/FortniteGame.FortPickup");
 
     PROP_REF_REFLECTION(FFortItemEntry, PrimaryPickupItemEntry);
+    PROP_REF_REFLECTION(bool, bTossedFromContainer);
+    PROP_REF_REFLECTION(bool, bPickedUp);
+    PROP_REF_REFLECTION(FFortPickupLocationData, PickupLocationData);
 
     void TossPickup(const FVector& FinalLocation, AFortPawn* ItemOwner, int32 OverrideMaxStackCount, bool bToss, uint8 InPickupSourceTypeFlags, uint8 InPickupSpawnSource)
     {
@@ -47,7 +58,32 @@ class AFortPickup : public AActor
         ProcessEvent(Func, &args);
     }
 
+    void OnRep_PrimaryPickupItemEntry()
+    {
+        static auto Func = ClassPrivate->GetFunction("OnRep_PrimaryPickupItemEntry");
+        ProcessEvent(Func);
+    }
+
+    void OnRep_TossedFromContainer()
+    {
+        static auto Func = ClassPrivate->GetFunction("OnRep_TossedFromContainer");
+        ProcessEvent(Func);
+    }
+
+    void OnRep_bPickedUp()
+    {
+        static auto Func = ClassPrivate->GetFunction("OnRep_bPickedUp");
+        ProcessEvent(Func);
+    }
+
+    void OnRep_PickupLocationData()
+    {
+        static auto Func = ClassPrivate->GetFunction("OnRep_PickupLocationData");
+        ProcessEvent(Func);
+    }
+
     static AFortPickup* SpawnFromItemDef(const FVector& Pos, UFortItemDefinition* ItemDef, int32 Count);
+    static AFortPickup* SpawnFromItemEntry(const FVector& Pos, FFortItemEntry* ItemEntry);
 };
 
 class AFortPickupAthena : public AFortPickup
