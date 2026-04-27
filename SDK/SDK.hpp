@@ -3,6 +3,7 @@
 #include <fstream>
 #include <unordered_map>
 #include <print>
+#include <algorithm>
 
 #include "Memcury.hpp"
 #include "UnrealContainers.hpp"

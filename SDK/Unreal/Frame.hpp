@@ -21,7 +21,7 @@ struct FFrame : FOutputDevice
         if (EngineVersion >= 4.261f) // Classic 4.26.1 ruining my day
             return;
 
-        static void (*sep)(void*, void*) = nullptr;
+        static void (*sep)(void*, void*, void*) = nullptr;
         static void (*step)(void* a1, void* a2, void* a3) = nullptr;
         if (!sep)
         {
@@ -40,12 +40,13 @@ struct FFrame : FOutputDevice
         else
         {
             auto This = (int64)this;
+            void* v5 = *(void**)(This + 128);
             if (EngineVersion >= 4.25f)
                 *(FProperty**)(This + 128) = (FProperty*)(*(FProperty**)(This + 128))->Next;
             else
                 *(UProperty**)(This + 128) = (UProperty*)(*(UProperty**)(This + 128))->Next;
 
-            sep(this, a1);
+            sep(this, a1, v5);
         }
     }
 
@@ -64,4 +65,9 @@ struct FFrame : FOutputDevice
     {
         Code += !!Code;
     }
+};
+
+struct FHitResult
+{
+    STATIC_STRUCT(FHitResult, L"/Script/Engine.HitResult");
 };

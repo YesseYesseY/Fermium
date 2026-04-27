@@ -16,7 +16,7 @@ namespace Inventory
         auto Inventory = PlayerController->GetWorldInventory();
         if (auto ItemEntry = Inventory->FindItemEntry(ItemGuid))
         {
-            AFortPickup::SpawnFromItemEntry(PlayerController->GetPawn()->GetActorLocation(), ItemEntry);
+            AFortPickup::SpawnFromItemEntry(PlayerController->GetPawn()->GetActorLocation(), ItemEntry, Count, PlayerController->GetPawnAs<AFortPawn>());
             Inventory->RemoveItem(ItemEntry, Count);
         }
     }

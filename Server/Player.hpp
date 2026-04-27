@@ -35,6 +35,34 @@ namespace Player
         FMemory::Free(Spec);
     }
 
+    // TODO Wrong function to hook?
+    //      OnCapsuleBeginOverlap has some hardcode-disabled auto pickup stuff, prob for PIE or something idk doesn't matter
+    //      But even if the function is hooked, auto pickup weapons settings is still fully functional?? (atleast on 7.30)
+    void OnCapsuleBeginOverlap(AFortPlayerPawn* Pawn, FFrame* Stack)
+    {
+        FRAME_PROP(UObject*, OverlappedComp);
+        FRAME_PROP(AActor*, OtherActor);
+        FRAME_PROP(UObject*, OtherComp);
+        FRAME_PROP(int32, OtherBodyIndex);
+        FRAME_PROP(bool, bFromSweep);
+        FRAME_PROP_STRUCT(FHitResult, SweepResult);
+        FMemory::Free(SweepResult);
+        FRAME_END();
+
+        if (OtherActor->IsA(AFortPickup::StaticClass()))
+        {
+            auto Pickup = (AFortPickup*)OtherActor;
+            if (Pickup->GetPawnWhoDroppedPickup() == Pawn)
+                return;
+
+            auto ItemDef = Pickup->GetPrimaryPickupItemEntry().GetItemDefinition();
+            if (ItemDef->IsA(UFortResourceItemDefinition::StaticClass()) || ItemDef->IsA(UFortAmmoItemDefinition::StaticClass()))
+            {
+                Inventory::ServerHandlePickup(Pawn, Pickup, 0.0f, {}, true);
+            }
+        }
+    }
+
     void Init()
     {
         auto AircraftComponent = UObject::FindClass(L"/Script/FortniteGame.FortControllerComponent_Aircraft");
@@ -48,5 +76,6 @@ namespace Player
         FortPlayerControllerAthena->VTableReplace("ServerAcknowledgePossession", PlayerController);
         FortPlayerControllerAthena->VTableHook("ServerCheat", ServerCheat);
         FortPlayerControllerAthena->VTableHook("ServerPlayEmoteItem", ServerPlayEmoteItem);
+        UObject::FindFunction(L"/Script/FortniteGame.FortPlayerPawn:OnCapsuleBeginOverlap")->Hook(OnCapsuleBeginOverlap);
     }
 }

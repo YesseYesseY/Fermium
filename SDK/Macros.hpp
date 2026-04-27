@@ -154,6 +154,10 @@ public: \
     Type Name; \
     Stack->Step(&Name);
 
+#define FRAME_PROP_STRUCT(Type, Name) \
+    Type* Name = Type::New(); \
+    Stack->Step(Name);
+
 #define FRAME_END() Stack->End();
 
 // FUNCTION ARGS

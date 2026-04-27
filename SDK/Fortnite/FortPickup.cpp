@@ -17,10 +17,12 @@ AFortPickup* AFortPickup::SpawnFromItemDef(const FVector& Pos, UFortItemDefiniti
     return Ret;
 }
 
-AFortPickup* AFortPickup::SpawnFromItemEntry(const FVector& Pos, FFortItemEntry* ItemEntry)
+AFortPickup* AFortPickup::SpawnFromItemEntry(const FVector& Pos, FFortItemEntry* ItemEntry, int32 CountOverride, AFortPawn* Pawn)
 {
     auto Ret = UGameplayStatics::SpawnActor<AFortPickup>(AFortPickupAthena::StaticClass(), Pos);
+    Ret->GetPawnWhoDroppedPickup() = Pawn;
     memcpy(&Ret->GetPrimaryPickupItemEntry(), ItemEntry, FFortItemEntry::Size());
+    Ret->GetPrimaryPickupItemEntry().GetCount() = CountOverride;
     Ret->OnRep_PrimaryPickupItemEntry();
     Ret->TossPickup(Pos, nullptr, 0, true, 16, 0);
     return Ret;

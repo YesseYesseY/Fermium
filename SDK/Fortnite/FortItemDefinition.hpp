@@ -109,3 +109,13 @@ class UAthenaCharacterItemDefinition : public UAthenaCosmeticItemDefinition
 
     PROP_REF_REFLECTION(UFortHeroType*, HeroDefinition);
 };
+
+class UFortResourceItemDefinition : public UFortWorldItemDefinition
+{
+    STATIC_CLASS(L"/Script/FortniteGame.FortResourceItemDefinition");
+};
+
+class UFortAmmoItemDefinition : public UFortWorldItemDefinition
+{
+    STATIC_CLASS(L"/Script/FortniteGame.FortAmmoItemDefinition");
+};

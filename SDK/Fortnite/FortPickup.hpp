@@ -16,6 +16,7 @@ class AFortPickup : public AActor
     PROP_REF_REFLECTION(bool, bTossedFromContainer);
     PROP_REF_REFLECTION(bool, bPickedUp);
     PROP_REF_REFLECTION(FFortPickupLocationData, PickupLocationData);
+    PROP_REF_REFLECTION(AFortPawn*, PawnWhoDroppedPickup);
 
     void TossPickup(const FVector& FinalLocation, AFortPawn* ItemOwner, int32 OverrideMaxStackCount, bool bToss, uint8 InPickupSourceTypeFlags, uint8 InPickupSpawnSource)
     {
@@ -83,7 +84,7 @@ class AFortPickup : public AActor
     }
 
     static AFortPickup* SpawnFromItemDef(const FVector& Pos, UFortItemDefinition* ItemDef, int32 Count);
-    static AFortPickup* SpawnFromItemEntry(const FVector& Pos, FFortItemEntry* ItemEntry);
+    static AFortPickup* SpawnFromItemEntry(const FVector& Pos, FFortItemEntry* ItemEntry, int32 CountOverride, AFortPawn* Pawn = nullptr);
 };
 
 class AFortPickupAthena : public AFortPickup
