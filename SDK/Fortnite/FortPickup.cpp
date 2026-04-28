@@ -22,7 +22,9 @@ AFortPickup* AFortPickup::SpawnFromItemEntry(const FVector& Pos, FFortItemEntry*
     auto Ret = UGameplayStatics::SpawnActor<AFortPickup>(AFortPickupAthena::StaticClass(), Pos);
     Ret->GetPawnWhoDroppedPickup() = Pawn;
     memcpy(&Ret->GetPrimaryPickupItemEntry(), ItemEntry, FFortItemEntry::Size());
-    Ret->GetPrimaryPickupItemEntry().GetCount() = CountOverride;
+    if (CountOverride != -1)
+        Ret->GetPrimaryPickupItemEntry().GetCount() = CountOverride;
+
     Ret->OnRep_PrimaryPickupItemEntry();
     Ret->TossPickup(Pos, nullptr, 0, true, 16, 0);
     return Ret;

@@ -38,6 +38,7 @@ namespace Player
     // TODO Wrong function to hook?
     //      OnCapsuleBeginOverlap has some hardcode-disabled auto pickup stuff, prob for PIE or something idk doesn't matter
     //      But even if the function is hooked, auto pickup weapons settings is still fully functional?? (atleast on 7.30)
+    //      Also just doesn't detect pickups on older builds
     void OnCapsuleBeginOverlap(AFortPlayerPawn* Pawn, FFrame* Stack)
     {
         FRAME_PROP(UObject*, OverlappedComp);

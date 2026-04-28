@@ -18,9 +18,6 @@ struct FFrame : FOutputDevice
 
     void Step(void* a1)
     {
-        if (EngineVersion >= 4.261f) // Classic 4.26.1 ruining my day
-            return;
-
         static void (*sep)(void*, void*, void*) = nullptr;
         static void (*step)(void* a1, void* a2, void* a3) = nullptr;
         if (!sep)
@@ -29,8 +26,15 @@ struct FFrame : FOutputDevice
             
             auto Scanner = Memcury::Scanner(Func->GetExecFunc()).ScanFor({ 0xE8 });
             auto Scanner2 = Memcury::Scanner(Scanner.Get()).ScanFor({ 0xE8 });
-            step = decltype(step)(Scanner.RelativeOffset(1).Get());
-            sep = decltype(sep)(Scanner2.RelativeOffset(1).Get());
+            sep = decltype(sep)(Scanner2.RelativeOffset(1).Get()); // sep is always on 2nd E8, atleast on the builds i test on
+            if (EngineVersion == 4.261f) // 4.26 is fine and 5.0, but not 4.261!!!!
+            {
+                step = decltype(step)(Memcury::Scanner::FindPattern("48 8B 41 ? 4C 8B D2 48 8B D1").Get());
+            }
+            else
+            {
+                step = decltype(step)(Scanner.RelativeOffset(1).Get());
+            }
         }
 
         if (Code)

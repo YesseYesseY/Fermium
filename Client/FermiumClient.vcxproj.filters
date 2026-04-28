@@ -24,6 +24,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\SDK\Fortnite\FortInventory.cpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClCompile>
     <ClCompile Include="..\SDK\Fortnite\FortPickup.cpp">
       <Filter>..\SDK\Fortnite</Filter>
     </ClCompile>

@@ -6,6 +6,8 @@ class UMcpItemDefinitionBase : public UObject
 
 class UFortItemDefinition : public UMcpItemDefinitionBase
 {
+    PROP_BIT_REFLECTION(bAllowMultipleStacks);
+
 public:
     UFortItem* CreateTemporaryItemInstanceBP(int32 Count, int32 Level = 1)
     {

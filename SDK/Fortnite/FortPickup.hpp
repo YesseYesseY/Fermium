@@ -84,7 +84,7 @@ class AFortPickup : public AActor
     }
 
     static AFortPickup* SpawnFromItemDef(const FVector& Pos, UFortItemDefinition* ItemDef, int32 Count);
-    static AFortPickup* SpawnFromItemEntry(const FVector& Pos, FFortItemEntry* ItemEntry, int32 CountOverride, AFortPawn* Pawn = nullptr);
+    static AFortPickup* SpawnFromItemEntry(const FVector& Pos, FFortItemEntry* ItemEntry, int32 CountOverride = -1, AFortPawn* Pawn = nullptr);
 };
 
 class AFortPickupAthena : public AFortPickup

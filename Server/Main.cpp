@@ -30,7 +30,7 @@ DWORD MainThread(HMODULE Module)
     Building::Init();
     Abilities::Init();
 
-    UObject::FindFunction(L"/Script/FortniteGame.BuildingFoundation:SetDynamicFoundationEnabled")->Hook(ABuildingFoundation::SetDynamicFoundationEnabledHook);
+    // UObject::FindFunction(L"/Script/FortniteGame.BuildingFoundation:SetDynamicFoundationEnabled")->Hook(ABuildingFoundation::SetDynamicFoundationEnabledHook);
 
     // GIsClient + GIsServer
     {

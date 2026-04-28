@@ -36,4 +36,18 @@ public:
         static auto Func = ClassPrivate->GetFunction("ForceNetUpdate");
         ProcessEvent(Func);
     }
+
+    AActor* GetOwner()
+    {
+        static auto Func = ClassPrivate->GetFunction("GetOwner");
+        AActor* Ret;
+        ProcessEvent(Func, &Ret);
+        return Ret;
+    }
+
+    template <typename T>
+    T* GetOwnerAs()
+    {
+        return (T*)GetOwner();
+    }
 };
