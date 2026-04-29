@@ -6,11 +6,11 @@ class UFunction : public UStruct
     PROP_REF_OFFSET(void*, ExecFunc);
 
 public:
-    int32 GetVTableIndex()
+    int32 GetVTableIndex(bool IgnoreValidate = false)
     {
         auto Scanner = Memcury::Scanner(GetExecFunc());
         int idx = -1;
-        if (Memcury::Scanner::FindStringRef((GetWName() + L"_Validate")).IsValid())
+        if (!IgnoreValidate && Memcury::Scanner::FindStringRef((GetWName() + L"_Validate")).IsValid())
         {
             Scanner.ScanFor({ 0x84, 0xC0 });
         }

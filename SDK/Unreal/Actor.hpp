@@ -1,3 +1,5 @@
+class UActorComponent;
+
 class AActor : public UObject
 {
     PROP_BIT_REFLECTION(bCanBeDamaged);
@@ -49,5 +51,22 @@ public:
     T* GetOwnerAs()
     {
         return (T*)GetOwner();
+    }
+
+    UActorComponent* _GetComponentByClass(UClass* ComponentClass)
+    {
+        static auto Func = ClassPrivate->GetFunction("GetComponentByClass");
+        struct {
+            UClass* ComponentClass;
+            UActorComponent* Ret;
+        } args { ComponentClass };
+        ProcessEvent(Func, &args);
+        return args.Ret;
+    }
+
+    template <typename T = UActorComponent>
+    T* GetComponentByClass(UClass* ComponentClass)
+    {
+        return (T*)_GetComponentByClass(ComponentClass);
     }
 };

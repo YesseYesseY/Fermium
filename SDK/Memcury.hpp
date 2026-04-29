@@ -757,6 +757,46 @@ namespace Memcury
             return Scanner(add);
         }
 
+        static auto FindPatternRel(const char* signature, uintptr_t relAddr) -> Scanner
+        {
+            PE::Address add { nullptr };
+
+            const auto sizeOfImage = PE::GetNTHeaders()->OptionalHeader.SizeOfImage;
+            auto patternBytes = ASM::pattern2bytes(signature);
+            const auto scanBytes = reinterpret_cast<std::uint8_t*>(PE::GetModuleBase());
+
+            const auto s = patternBytes.size();
+            const auto d = patternBytes.data();
+
+            for (auto i = 0ul; i < sizeOfImage - s; ++i)
+            {
+                bool found = true;
+                for (auto j = 0ul; j < s; ++j)
+                {
+                    if (scanBytes[i + j] != d[j] && d[j] != -1)
+                    {
+                        found = false;
+                        break;
+                    }
+                }
+
+                if (found)
+                {
+                    uintptr_t currAddr = reinterpret_cast<uintptr_t>(&scanBytes[i]);
+                    uintptr_t relPtr = currAddr + s + 4 + *reinterpret_cast<uint32_t*>(currAddr + s);
+                    if (relPtr == relAddr)
+                    {
+                        add = currAddr;
+                        break;
+                    }
+                }
+            }
+
+            MemcuryAssertM(add != 0, "FindPatternRel return nullptr");
+
+            return Scanner(add);
+        }
+
         // Supports wide and normal strings both std and pointers
         template <typename T = const wchar_t*>
         static auto FindStringRef(T string, bool find_first = false) -> Scanner

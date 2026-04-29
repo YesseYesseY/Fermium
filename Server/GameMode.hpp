@@ -109,7 +109,7 @@ namespace GameMode
         PlayerState->GetPlayerTeamPrivate() = Team->GetPrivateInfo();
         PlayerState->OnRep_PlayerTeam();
 
-        PlayerState->GetSquadId() = CurrTeamIdx;
+        PlayerState->GetSquadId() = CurrTeamIdx + 1;
         PlayerState->OnRep_SquadId();
 
         CurrTeamPlayerCount++;

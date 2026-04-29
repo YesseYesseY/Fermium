@@ -22,6 +22,12 @@ namespace Player
         {
             UObject::DumpObjects();
         }
+        else if (Msg == L"gascan")
+        {
+            static auto ItemDef = UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Weapons/Prototype/WID_Launcher_Petrol.WID_Launcher_Petrol");
+            PlayerController->GetWorldInventory()->GiveItem(ItemDef, 1);
+            PlayerController->GetWorldInventory()->Update();
+        }
     }
 
     void ServerPlayEmoteItem(AFortPlayerController* PlayerController, UObject* EmoteAsset/*, float EmoteRandomNumber*/)

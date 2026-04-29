@@ -10,3 +10,13 @@ class AFortAthenaVehicleSpawner : public AActor
         return Ret;
     }
 };
+
+struct FReplicatedPhysicsPawnState
+{
+    STATIC_STRUCT(FReplicatedPhysicsPawnState, L"/Script/FortniteGame.ReplicatedPhysicsPawnState");
+
+    STRUCT_PROP_REF_REFLECTION(FVector, Translation);
+    STRUCT_PROP_REF_REFLECTION(FQuat, Rotation);
+    STRUCT_PROP_REF_REFLECTION(FVector, LinearVelocity);
+    STRUCT_PROP_REF_REFLECTION(FVector, AngularVelocity);
+};

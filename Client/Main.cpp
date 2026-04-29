@@ -22,6 +22,14 @@ bool UWorldExecHook(UWorld* World, int64 a2, const wchar_t* Cmd, int64 a4)
     return UWorldExecOriginal(World, a2, Cmd, a4);
 }
 
+void (*CallServerMoveOriginal)(APawn* Vehicle, FReplicatedPhysicsPawnState* Args);
+void CallServerMoveHook(APawn* Vehicle, FReplicatedPhysicsPawnState* Args)
+{
+    Args->GetRotation() = Vehicle->GetTransform().Rotation;
+
+    CallServerMoveOriginal(Vehicle, Args);
+}
+
 DWORD MainThread(HMODULE Module)
 {
     AllocConsole();
@@ -48,6 +56,13 @@ DWORD MainThread(HMODULE Module)
         {
             Hook::Function(Addr, UWorldExecHook, &UWorldExecOriginal);
         }
+    }
+
+    if (GameVersion >= 13.0f)
+    {
+        auto ServerMoveAddr = Memcury::Scanner::FindStringRef(L"ServerMove", true).ScanFor({ 0x48, 0x8D, 0x0D }).RelativeOffset(3).Get();
+        auto CallServerMoveAddr = Memcury::Scanner::FindPatternRel("48 8B 15", ServerMoveAddr).ScanForEither({{ 0x48, 0x8B, 0xC4 }, { 0x48, 0x89, 0x5C}}, false).Get();
+        Hook::Function(CallServerMoveAddr, CallServerMoveHook, &CallServerMoveOriginal);
     }
 
     while (!(GetAsyncKeyState(VK_F5) & 0x8000)) Sleep(100);

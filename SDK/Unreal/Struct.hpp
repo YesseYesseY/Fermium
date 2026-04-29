@@ -14,6 +14,13 @@ class UStruct : public UField
     int32 GetPropOffset(std::string Name);
     int32 GetPropSize(std::string Name);
     uint8 GetPropFieldMask(std::string Name);
+    bool IsChildOf(UStruct* Other)
+    {
+        for (auto Struct = this; Struct; Struct = Struct->GetSuperStruct())
+            if (Struct == Other) return true;
+
+        return false;
+    }
 
     static void Init()
     {
