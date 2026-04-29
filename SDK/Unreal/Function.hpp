@@ -31,6 +31,9 @@ public:
     template <typename T = void*>
     void Hook(void* Hook, T* Original = nullptr)
     {
+        if (EngineVersion >= 5.0f) // TODO
+            return;
+
         if (Original)
             *Original = (T)GetExecFunc();
 

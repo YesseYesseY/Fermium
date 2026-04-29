@@ -15,6 +15,7 @@ class AFortGameStateBase : public AGameState
 
 class AFortGameState : public AFortGameStateBase
 {
+    PROP_REF_REFLECTION(TArray<AFortTeamInfo*>, Teams);
 };
 
 class AFortGameStateZone : public AFortGameState

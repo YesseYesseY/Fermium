@@ -134,7 +134,7 @@ namespace Loot
 
         if (!LootTiers.contains(TierGroup))
         {
-            MsgBox("TierGroup {} not in LootTiers", TierGroup.ToString());
+            // MsgBox("TierGroup {} not in LootTiers", TierGroup.ToString());
             return Ret;
         }
 
@@ -143,7 +143,7 @@ namespace Loot
 
         if (!LootPackages.contains(LTI.LootPackage))
         {
-            MsgBox("LootPackage {} not in LootPackages", LTI.LootPackage.ToString());
+            // MsgBox("LootPackage {} not in LootPackages", LTI.LootPackage.ToString());
             return Ret;
         }
 

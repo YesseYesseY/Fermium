@@ -1,6 +1,6 @@
 class AGameModeBase : public AInfo
 {
-    PROP_REF_REFLECTION(AGameStateBase*, GameState);
+    PROP_REF_REFLECTION_AS(AGameStateBase*, GameState);
 
     APawn* SpawnDefaultPawnAtTransform(AController* NewPlayer, const FTransform& SpawnTransform)
     {

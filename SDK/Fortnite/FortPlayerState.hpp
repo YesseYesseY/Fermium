@@ -23,6 +23,8 @@ public:
     PROP_REF_REFLECTION(UObject*, HeroType);
     PROP_REF_REFLECTION_SAFE(FCustomCharacterParts, CharacterParts);
     PROP_REF_REFLECTION_SAFE(FCustomCharacterData, CharacterData);
+    PROP_REF_REFLECTION(AFortTeamInfo*, PlayerTeam);
+    PROP_REF_REFLECTION(AFortTeamPrivateInfo*, PlayerTeamPrivate);
 
     void ApplyCharacterCustomization(UObject* Pawn)
     {
@@ -47,8 +49,36 @@ public:
                 ACC = decltype(ACC)(Addr);
         }
     }
+
+    void OnRep_PlayerTeam()
+    {
+        static auto Func = ClassPrivate->GetFunction("OnRep_PlayerTeam");
+        ProcessEvent(Func);
+    }
 };
 
 class AFortPlayerStateZone : public AFortPlayerState
 {
+};
+
+class AFortPlayerStatePvP : public AFortPlayerStateZone
+{
+};
+
+class AFortPlayerStateAthena : public AFortPlayerStatePvP
+{
+    PROP_REF_REFLECTION(uint8, TeamIndex);
+    PROP_REF_REFLECTION(uint8, SquadId);
+
+    void OnRep_TeamIndex(uint8 Old)
+    {
+        static auto Func = ClassPrivate->GetFunction("OnRep_TeamIndex");
+        ProcessEvent(Func, &Old);
+    }
+
+    void OnRep_SquadId()
+    {
+        static auto Func = ClassPrivate->GetFunction("OnRep_SquadId");
+        ProcessEvent(Func);
+    }
 };

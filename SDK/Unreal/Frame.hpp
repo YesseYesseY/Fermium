@@ -22,19 +22,8 @@ struct FFrame : FOutputDevice
         static void (*step)(void* a1, void* a2, void* a3) = nullptr;
         if (!sep)
         {
-            auto Func = UObject::FindFunction(L"/Script/Engine.Controller:Possess");
-            
-            auto Scanner = Memcury::Scanner(Func->GetExecFunc()).ScanFor({ 0xE8 });
-            auto Scanner2 = Memcury::Scanner(Scanner.Get()).ScanFor({ 0xE8 });
-            sep = decltype(sep)(Scanner2.RelativeOffset(1).Get()); // sep is always on 2nd E8, atleast on the builds i test on
-            if (EngineVersion == 4.261f) // 4.26 is fine and 5.0, but not 4.261!!!!
-            {
-                step = decltype(step)(Memcury::Scanner::FindPattern("48 8B 41 ? 4C 8B D2 48 8B D1").Get());
-            }
-            else
-            {
-                step = decltype(step)(Scanner.RelativeOffset(1).Get());
-            }
+            sep = decltype(sep)(Memcury::Scanner::FindPattern("41 8B 40 ? 4D 8B C8").Get()); // Tested on 7.30, 18.40, 19.40
+            step = decltype(step)(Memcury::Scanner::FindPattern("48 8B 41 ? 4C 8B D2 48 8B D1").Get()); // Tested on 7.30, 18.40, 19.40
         }
 
         if (Code)

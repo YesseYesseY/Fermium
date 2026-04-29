@@ -137,9 +137,6 @@ namespace Net
                 .ScanFor({ 0xC3 }).ScanFor({ 0xE8 }, false).RelativeOffset(1)
                 .ScanFor({ 0xE8 }, true, 1).RelativeOffset(1);
 
-            if (EngineVersion >= 4.261f)
-                Scanner.ScanFor({ 0xE9 }).RelativeOffset(1);
-
             auto Addr = Scanner.Get();
 
             Hook::Function(Addr, GetNetModeHook);

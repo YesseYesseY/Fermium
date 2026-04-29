@@ -11,7 +11,10 @@ namespace GameMode
         {
             Started = true;
     
-            auto Playlist = UObject::FindObject<UFortPlaylistAthena>(L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo");
+            auto Playlist = UObject::FindObject<UFortPlaylistAthena>(
+                    // L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo"
+                    L"/Game/Athena/Playlists/Playlist_DefaultDuo.Playlist_DefaultDuo"
+                    );
 #if 0
             if (Playlist->HasbSkipAircraft())
             {
@@ -84,11 +87,39 @@ namespace GameMode
     
         static auto AssetManager = UEngine::GetEngine()->GetAssetManager();
         static auto AbilitySet = AssetManager->GetAthenaAbilitySet();
+        auto PlayerState = (AFortPlayerStateAthena*)PlayerController->GetPlayerState();
+        auto GameState = GameMode->GetGameStateAs<AFortGameStateAthena>();
     
-        auto PlayerState = (AFortPlayerState*)PlayerController->GetPlayerState();
+        // Apply default ability set
         auto AbilitySystemComponent = PlayerState->GetAbilitySystemComponent();
         AbilitySystemComponent->GiveAbilitySet(AbilitySet);
 
+        // Join a team
+        static uint8 CurrTeamIdx = 0;
+        static uint8 CurrTeamPlayerCount = 0;
+        static int32 MaxTeamSize = GameState->GetCurrentPlaylistInfo().GetBasePlaylist()->GetMaxTeamSize();
+
+        auto Team = GameState->GetTeams()[CurrTeamIdx];
+        auto old = PlayerState->GetTeamIndex();
+        PlayerState->GetTeamIndex() = Team->GetTeam();
+        PlayerState->OnRep_TeamIndex(old);
+
+        Team->GetTeamMembers().Add(PlayerController);
+        PlayerState->GetPlayerTeam() = Team;
+        PlayerState->GetPlayerTeamPrivate() = Team->GetPrivateInfo();
+        PlayerState->OnRep_PlayerTeam();
+
+        PlayerState->GetSquadId() = CurrTeamIdx;
+        PlayerState->OnRep_SquadId();
+
+        CurrTeamPlayerCount++;
+        if (CurrTeamPlayerCount >= MaxTeamSize)
+        {
+            CurrTeamPlayerCount = 0;
+            CurrTeamIdx++;
+        }
+
+        // Equip default cosmetics
         PlayerState->ApplyCharacterCustomization(PlayerState->GetPawnPrivate());
 
         auto CID = AssetManager->GetRandomCharacter();

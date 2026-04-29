@@ -23,6 +23,7 @@ namespace Inventory
 
     void ServerHandlePickup(AFortPlayerPawn* Pawn, AFortPickup* Pickup, float InFlyTime, const FVector& InStartDirection, bool bPlayPickupSound)
     {
+        // MsgBox("InFlyTime: {}", InFlyTime);
         Pickup->GetPickupLocationData().GetPickupTarget() = Pawn;
         Pickup->GetPickupLocationData().GetFlyTime() /= 4;
         Pickup->OnRep_PickupLocationData();
