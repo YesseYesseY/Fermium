@@ -30,6 +30,16 @@ void CallServerMoveHook(APawn* Vehicle, FReplicatedPhysicsPawnState* Args)
     CallServerMoveOriginal(Vehicle, Args);
 }
 
+bool ReturnTrueHook()
+{
+    return true;
+}
+
+void crashit()
+{
+    ((AFortPickup*)UWorld::GetWorld())->TossPickup({}, (AFortPawn*)UWorld::GetWorld(), INT32_MAX, true, UINT8_MAX, UINT8_MAX);
+}
+
 DWORD MainThread(HMODULE Module)
 {
     AllocConsole();
@@ -65,8 +75,11 @@ DWORD MainThread(HMODULE Module)
         Hook::Function(CallServerMoveAddr, CallServerMoveHook, &CallServerMoveOriginal);
     }
 
+    // Hook::Function(0x143f17000, crashit);
+
     while (!(GetAsyncKeyState(VK_F5) & 0x8000)) Sleep(100);
 
+    UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogFortInventory VeryVerbose");
     UKismetSystemLibrary::ExecuteConsoleCommand(L"open 127.0.0.1");
 
     return 0;

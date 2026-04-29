@@ -41,10 +41,8 @@ namespace Player
         FMemory::Free(Spec);
     }
 
-    // TODO Wrong function to hook?
-    //      OnCapsuleBeginOverlap has some hardcode-disabled auto pickup stuff, prob for PIE or something idk doesn't matter
-    //      But even if the function is hooked, auto pickup weapons settings is still fully functional?? (atleast on 7.30)
-    //      Also just doesn't detect pickups on older builds
+    // TODO I thought the original functionality for this function was behind a forced if (false) but im just stupid
+    //      Still doesn't explain why AutoPickupWeapons works but not mats/ammo
     void OnCapsuleBeginOverlap(AFortPlayerPawn* Pawn, FFrame* Stack)
     {
         FRAME_PROP(UObject*, OverlappedComp);
@@ -59,7 +57,7 @@ namespace Player
         if (OtherActor->IsA(AFortPickup::StaticClass()))
         {
             auto Pickup = (AFortPickup*)OtherActor;
-            if (Pickup->GetPawnWhoDroppedPickup() == Pawn)
+            if (Pickup->GetPawnWhoDroppedPickup() == Pawn && Pickup->GetGameTimeSinceCreation() < 10.0f)
                 return;
 
             auto ItemDef = Pickup->GetPrimaryPickupItemEntry().GetItemDefinition();

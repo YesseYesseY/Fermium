@@ -69,4 +69,12 @@ public:
     {
         return (T*)_GetComponentByClass(ComponentClass);
     }
+
+    float GetGameTimeSinceCreation()
+    {
+        static auto Func = ClassPrivate->GetFunction("GetGameTimeSinceCreation");
+        float Ret;
+        ProcessEvent(Func, &Ret);
+        return Ret;
+    }
 };
