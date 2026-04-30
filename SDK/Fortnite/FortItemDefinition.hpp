@@ -29,7 +29,7 @@ public:
         if (PropSize == 4)
             return *(int32*)(int64(this) + Offset);
 
-        return (int32)((FScalableFloat*)(int64(this) + Offset))->GetValue();
+        return (int32)((FScalableFloat*)(int64(this) + Offset))->GetValueAsInteger(0.0f);
     }
 };
 

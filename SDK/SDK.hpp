@@ -27,6 +27,7 @@ extern inline float GameVersion = -1.0f;
 #include "Unreal/Frame.hpp"
 
 #include "Unreal/MathStructs.hpp"
+#include "Unreal/CurveTable.hpp"
 #include "Unreal/ScalableFloat.hpp"
 #include "Unreal/DataTable.hpp"
 
@@ -126,6 +127,7 @@ static void InitSDK(bool IsServer)
     UClass::Init();
     UFunction::Init();
     UDataTable::Init();
+    UCurveTable::Init();
 
     if (IsServer)
     {
