@@ -13,7 +13,14 @@ class AFortAthenaVehicleSpawner : public AActor
 
 struct FReplicatedPhysicsPawnState
 {
-    STATIC_STRUCT(FReplicatedPhysicsPawnState, L"/Script/FortniteGame.ReplicatedPhysicsPawnState");
+    static UStruct* StaticStruct()
+    {
+        static UStruct* Struct = UObject::FindStruct(L"/Script/FortniteGame.ReplicatedPhysicsPawnState");
+        if (!Struct)
+            Struct = UObject::FindStruct(L"/Script/FortniteGame.ReplicatedAthenaVehiclePhysicsState");
+        return Struct;
+    }
+    STRUCT_UTILS(FReplicatedPhysicsPawnState);
 
     STRUCT_PROP_REF_REFLECTION(FVector, Translation);
     STRUCT_PROP_REF_REFLECTION(FQuat, Rotation);

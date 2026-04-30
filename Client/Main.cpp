@@ -68,9 +68,11 @@ DWORD MainThread(HMODULE Module)
         }
     }
 
-    if (GameVersion >= 13.0f)
     {
-        auto ServerMoveAddr = Memcury::Scanner::FindStringRef(L"ServerMove", true).ScanFor({ 0x48, 0x8D, 0x0D }).RelativeOffset(3).Get();
+        auto Func = UObject::FindFunction(L"/Script/FortniteGame.FortAthenaVehicle:ServerUpdatePhysicsParams");
+        auto Func2 = UObject::FindFunction(L"/Script/FortniteGame.FortPhysicsPawn:ServerUpdatePhysicsParams");
+        auto ServerMoveAddr = Memcury::Scanner::FindStringRef(Func || Func2 ? L"ServerUpdatePhysicsParams" : L"ServerMove", true)
+            .ScanFor({ 0x48, 0x8D, 0x0D }).RelativeOffset(3).Get();
         auto CallServerMoveAddr = Memcury::Scanner::FindPatternRel("48 8B 15", ServerMoveAddr).ScanForEither({{ 0x48, 0x8B, 0xC4 }, { 0x48, 0x89, 0x5C}}, false).Get();
         Hook::Function(CallServerMoveAddr, CallServerMoveHook, &CallServerMoveOriginal);
     }

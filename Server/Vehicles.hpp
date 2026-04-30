@@ -29,11 +29,21 @@ namespace Vehicles
             }
         }
 
-        if (GameVersion < 13.0f) // Idk when they started with ServerMove
-            return;
-
-        UClass* FortPhysicsPawnClass = UObject::FindClass(L"/Script/FortniteGame.FortPhysicsPawn");
-        auto ServerMoveIdx = FortPhysicsPawnClass->GetFunction("ServerMove")->GetVTableIndex(true);
+        UClass* VehicleClass = nullptr;
+        int32 ServerMoveIdx = -1;
+        if (UObject::FindFunction(L"/Script/FortniteGame.FortAthenaVehicle:ServerUpdatePhysicsParams"))
+        {
+            VehicleClass = UObject::FindClass(L"/Script/FortniteGame.FortAthenaVehicle");
+            ServerMoveIdx = VehicleClass->GetFunction("ServerUpdatePhysicsParams")->GetVTableIndex();
+        }
+        else
+        {
+            VehicleClass = UObject::FindClass(L"/Script/FortniteGame.FortPhysicsPawn");
+            auto func = VehicleClass->GetFunction("ServerMove");
+            if (!func)
+                func = VehicleClass->GetFunction("ServerUpdatePhysicsParams");
+            ServerMoveIdx = func->GetVTableIndex(true);
+        }
 
         for (int i = 0; i < UObject::Objects->Num(); i++)
         {
@@ -42,7 +52,7 @@ namespace Vehicles
 
             auto Class = (UClass*)Object;
             auto Default = Class->GetDefaultObject();
-            if (Class->IsChildOf(FortPhysicsPawnClass) && Default)
+            if (Class->IsChildOf(VehicleClass) && Default)
             {
                 Hook::VTable((void**)Default->VTable, ServerMoveIdx, ServerMove);
             }
