@@ -2,8 +2,8 @@ class APawn;
 
 class AController : public AActor
 {
-    PROP_REF_REFLECTION(APlayerState*, PlayerState);
-    PROP_REF_REFLECTION(APawn*, Pawn);
+    PROP_REF_REFLECTION_AS(APlayerState*, PlayerState);
+    PROP_REF_REFLECTION_AS(APawn*, Pawn);
 
     void Possess(APawn* Pawn)
     {
@@ -19,17 +19,5 @@ class AController : public AActor
             bool bResetCamera;
         } args { NewRotation, bResetCamera };
         ProcessEvent(Func, &args);
-    }
-
-    template <typename T>
-    T* GetPawnAs()
-    {
-        return (T*)GetPawn();
-    }
-
-    template <typename T>
-    T* GetPlayerStateAs()
-    {
-        return (T*)GetPlayerState();
     }
 };

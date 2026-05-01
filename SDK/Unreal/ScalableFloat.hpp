@@ -23,17 +23,22 @@ struct FScalableFloat
         return (int32)Ret;
     }
 
-    int32 GetValueAsInteger(float Level)
+    float GetValueAtLevel(float Level)
     {
-        static UFunction* Func = StaticLib()->ClassPrivate->GetFunction("GetValueAsInteger");
+        static UFunction* Func = StaticLib()->ClassPrivate->GetFunction("GetValueAtLevel");
         ARGS_NEW();
         ARGS_PROP_COPY(Input, this);
         ARGS_PROP(float, Level, Level);
 
         StaticLib()->ProcessEvent(Func, args);
 
-        ARGS_PROP_RET(int32, ReturnValue);
+        ARGS_PROP_RET(float, ReturnValue);
         ARGS_FREE();
-        return (int32)Ret;
+        return Ret;
+    }
+
+    int32 GetValueAsInteger(float Level) // The real function is not on all builds
+    {
+        return (int32)GetValueAtLevel(Level);
     }
 };
