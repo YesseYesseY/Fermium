@@ -23,6 +23,9 @@ namespace Inventory
 
     void ServerHandlePickup(AFortPlayerPawn* Pawn, AFortPickup* Pickup, float InFlyTime, const FVector& InStartDirection, bool bPlayPickupSound)
     {
+        if (!Pickup)
+            return;
+
         // MsgBox("InFlyTime: {}", InFlyTime);
         Pickup->GetPickupLocationData().GetPickupTarget() = Pawn;
         Pickup->GetPickupLocationData().GetFlyTime() /= 4;
@@ -60,11 +63,14 @@ namespace Inventory
             if (!Addr) // 18.40 NOTE: This version can techinally be gotten from the "AFortPickup::FinishedTargetSpline" string but not alot of versions have that
                 Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 55 57 41 54 48 8D AC 24 ? ? ? ? 48 81 EC A0 01 00 00 48 8B 05 ? ? ? ? 48 33 C4 48 89 85 ? ? ? ? 48 8B B9").Get();
 
-            if (!Addr) // 14.40
+            if (!Addr) // 14.40 & 5.30
                 Addr = Memcury::Scanner::FindPattern("40 53 56 48 83 EC 38 4C 89 6C 24").Get();
 
             if (!Addr) // 7.30
                 Addr = Memcury::Scanner::FindPattern("40 53 56 57 48 83 EC 30 4C 89 6C 24").Get();
+
+            if (!Addr)
+                Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 57 48 83 EC 20 48 8B D9 48 8B 89 ? ? ? ? 48 85 C9 74 ? 48 8D 44 24").Get();
 
             Hook::Function(Addr, FinishedTargetSpline, &FinishedTargetSplineOriginal);
         }

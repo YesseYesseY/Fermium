@@ -73,7 +73,8 @@ class AFortPlayerStateAthena : public AFortPlayerStatePvP
     void OnRep_TeamIndex(uint8 Old)
     {
         static auto Func = ClassPrivate->GetFunction("OnRep_TeamIndex");
-        ProcessEvent(Func, &Old);
+        if (Func)
+            ProcessEvent(Func, &Old);
     }
 
     void OnRep_SquadId()

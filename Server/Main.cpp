@@ -117,8 +117,24 @@ DWORD MainThread(HMODULE Module)
 
     if (EngineVersion <= 4.21f) // TODO Look into why this is crashing
     {
-        auto Scanner = Memcury::Scanner::FindStringRef(L"STAT_PoiVolume_CheckPawnOverlap").ScanFor({ 0x4C, 0x8B, 0xDC }, false);
+        auto Scanner = Memcury::Scanner::FindStringRef(L"STAT_PoiVolume_CheckPawnOverlap").ScanFor({ 0xE8, 0x00, 0x00, 0x00, 0xE8 }).RelativeOffset(5);
+        // .ScanFor({ 0x4C, 0x8B, 0xDC }, false);
         Hook::Function(Scanner.Get(), ReturnHook);
+    }
+
+    if (EngineVersion <= 4.20f)
+    {
+        auto Scanner = Memcury::Scanner::FindStringRef(L"STAT_GrassUpdate");
+        if (Scanner.IsValid())
+        {
+            Hook::Function(Scanner.ScanFor({ 0x4C, 0x8B, 0xDC }, false).Get(), ReturnHook);
+        }
+
+        Scanner = Memcury::Scanner::FindStringRef(L"STAT_ParticleSystemComponent_InitParticles");
+        if (Scanner.IsValid())
+        {
+            Hook::Function(Scanner.ScanFor({ 0x4C, 0x8B, 0xDC }, false).Get(), ReturnHook);
+        }
     }
 
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogPackageLocalizationCache None");

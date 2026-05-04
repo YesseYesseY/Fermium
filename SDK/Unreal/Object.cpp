@@ -91,7 +91,7 @@ void UObject::Init()
     // Objects
     {
         // auto Addr = Memcury::Scanner::FindStringRef(L"SubmitRemoteVoiceData(%s) Size: %d received!").ScanFor({ 0x48, 0x8B, 0x05 }, true, 1).RelativeOffset(3).Get();
-        auto Addr = Memcury::Scanner::FindStringRef(L"Material=").ScanFor({ 0x48, 0x8B, 0x05 }).RelativeOffset(3).Get();
+        auto Addr = Memcury::Scanner::FindStringRef(L"Material=").ScanForEither({{ 0x48, 0x8B, 0x05 }, { 0x48, 0x8B, 0x0D }}).RelativeOffset(3).Get();
 
         if (!Addr)
         {
@@ -99,7 +99,7 @@ void UObject::Init()
             return;
         }
 
-        Objects = (FChunkedFixedUObjectArray*)(Addr);
+        Objects = (GlobalObjectArray*)(Addr);
     }
 
     // StaticLoadObject

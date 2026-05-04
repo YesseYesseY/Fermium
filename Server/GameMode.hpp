@@ -12,8 +12,8 @@ namespace GameMode
             Started = true;
     
             auto Playlist = UObject::FindObject<UFortPlaylistAthena>(
-                    L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo"
-                    // L"/Game/Athena/Playlists/Playlist_DefaultDuo.Playlist_DefaultDuo"
+                    // L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo"
+                    L"/Game/Athena/Playlists/Playlist_DefaultDuo.Playlist_DefaultDuo"
                     // L"/Game/Athena/Playlists/Playground/Playlist_Playground.Playlist_Playground"
                     );
 #if 0
@@ -194,15 +194,34 @@ namespace GameMode
 
         // StartAircraftPhase
         {
-            auto Addr = Memcury::Scanner::FindStringRef(L"STAT_StartAircraftPhase").ScanForEither({{ 0x4C, 0x8B, 0xDC }, { 0x48, 0x8B, 0xC4 }}, false).Get();
+            auto Scanner = Memcury::Scanner::FindStringRef(L"STAT_StartAircraftPhase");
 
-            if (Addr)
+            if (Scanner.IsValid())
             {
-                Hook::Function(Addr, StartAircraftPhase, &StartAircraftPhaseOriginal);
+                auto Addr = Scanner.ScanForEither({{ 0x4C, 0x8B, 0xDC }, { 0x48, 0x8B, 0xC4 }}, false).Get();
+
+                if (Addr)
+                {
+                    Hook::Function(Addr, StartAircraftPhase, &StartAircraftPhaseOriginal);
+                }
+                else
+                {
+                    MsgBox("Couldn't find StartAircraftPhase");
+                }
             }
             else
             {
-                MsgBox("Couldn't find StartAircraftPhase");
+                auto Addr = Memcury::Scanner::FindStringRef(L"AFortGameModeAthena::StartAircraftPhase: Initiating aircraft phase").ScanFor({ 0x40, 0x55 }, false).Get();
+
+                if (Addr)
+                {
+                    Hook::Function(Addr, StartAircraftPhase, &StartAircraftPhaseOriginal);
+                }
+                else
+                {
+                    MsgBox("Couldn't find StartAircraftPhase");
+                }
+
             }
         }
     }

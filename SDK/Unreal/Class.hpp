@@ -24,6 +24,8 @@ public:
     static void Init()
     {
         Offset_DefaultObject = StaticClass()->GetSize() - 0x108;
+        if (EngineVersion == 4.20f)
+            Offset_DefaultObject += 0x8;
         if (EngineVersion >= 4.25f)
             Offset_DefaultObject -= 0x10;
         if (EngineVersion >= 4.261f)

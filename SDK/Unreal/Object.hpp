@@ -10,7 +10,7 @@ private:
     static inline UObject* (*StaticLoadObject)(UClass*, UObject*, const wchar_t*, const wchar_t*, uint32, void*, bool, void*) = nullptr;
 
 public:
-    static inline FChunkedFixedUObjectArray* Objects = nullptr;
+    static inline GlobalObjectArray* Objects = nullptr;
 
 public:
     void** VTable;

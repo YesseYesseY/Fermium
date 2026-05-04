@@ -5,6 +5,9 @@ namespace Building
     {
         static auto BSSS = UObject::FindFirstObjectOfClass(UObject::FindClass(L"/Script/FortniteGame.BuildingStructuralSupportSystem"));
         static auto Func = UObject::FindFunction(L"/Script/FortniteGame.BuildingStructuralSupportSystem:CanAddBuildingActorClassToGrid");
+        if (!Func) // TODO
+            return true;
+
         struct {
             UObject* WorldContext;
             UClass* BuildingClass;

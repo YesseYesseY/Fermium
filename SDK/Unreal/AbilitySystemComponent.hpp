@@ -88,6 +88,10 @@ public:
         // UAbilitySystemComponent::GiveAbility
         {
             auto Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 56 57 41 56 48 83 EC 20 8B 81 ? ? ? ? 49 8B E8").Get();
+
+            if (!Addr) // 4.1
+                Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 56 57 41 56 48 83 EC 20 83 B9").Get();
+
             if (!Addr)
                 Addr = Memcury::Scanner::FindStringRef(L"GiveAbilityAndActivateOnce called on ability %s on the client, not allowed!")
                     .ScanFor({ 0xE8 }).RelativeOffset(1).Get();
@@ -104,6 +108,10 @@ public:
         // InternalTryActivateAbility
         {
             auto Addr = Memcury::Scanner::FindPattern("48 8B C4 4C 89 48 ? 4C 89 40 ? 89 50 ? 55 53 56 57 41 54 41 55 41 56 41 57 48 8D A8 ? ? ? ? 48 81 EC 88 01 00 00").Get();
+
+            if (!Addr) // 4.1
+                Addr = Memcury::Scanner::FindPattern("4C 89 4C 24 ? 4C 89 44 24 ? 89 54 24 ? 55 53 56").Get();
+
             if (!Addr)
                 Addr = Memcury::Scanner::FindStringRef(L"GiveAbilityAndActivateOnce called on ability %s on the client, not allowed!")
                     .ScanFor({ 0xE8 }, true, 2).RelativeOffset(1).Get();

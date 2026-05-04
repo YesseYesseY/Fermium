@@ -31,10 +31,12 @@ namespace Vehicles
 
         UClass* VehicleClass = nullptr;
         int32 ServerMoveIdx = -1;
-        if (UObject::FindFunction(L"/Script/FortniteGame.FortAthenaVehicle:ServerUpdatePhysicsParams"))
+        if (UObject::FindClass(L"/Script/FortniteGame.FortAthenaVehicle"))
         {
             VehicleClass = UObject::FindClass(L"/Script/FortniteGame.FortAthenaVehicle");
-            ServerMoveIdx = VehicleClass->GetFunction("ServerUpdatePhysicsParams")->GetVTableIndex();
+            auto func = VehicleClass->GetFunction("ServerUpdatePhysicsParams");
+            if (func)
+                ServerMoveIdx = func->GetVTableIndex();
         }
         else
         {
@@ -42,8 +44,13 @@ namespace Vehicles
             auto func = VehicleClass->GetFunction("ServerMove");
             if (!func)
                 func = VehicleClass->GetFunction("ServerUpdatePhysicsParams");
-            ServerMoveIdx = func->GetVTableIndex(true);
+
+            if (func)
+                ServerMoveIdx = func->GetVTableIndex(true);
         }
+
+        if (ServerMoveIdx == -1)
+            return;
 
         for (int i = 0; i < UObject::Objects->Num(); i++)
         {
