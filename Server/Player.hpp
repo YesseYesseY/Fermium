@@ -18,6 +18,12 @@ namespace Player
         {
             UKismetSystemLibrary::ExecuteConsoleCommand(Msg.substr(7).c_str());
         }
+        else if (Msg.starts_with(L"client "))
+        {
+            if (!PlayerController->GetCheatManager())
+                PlayerController->GetCheatManager() = UGameplayStatics::SpawnObject(PlayerController->GetCheatClass(), PlayerController);
+            UKismetSystemLibrary::ExecuteConsoleCommand(Msg.substr(7).c_str(), PlayerController);
+        }
         else if (Msg == L"dumpobjects")
         {
             UObject::DumpObjects();
