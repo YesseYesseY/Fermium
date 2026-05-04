@@ -34,6 +34,9 @@ public:
         if (EngineVersion >= 5.0f) // TODO
             return;
 
+        if (!this)
+            return;
+
         if (Original)
             *Original = (T)GetExecFunc();
 

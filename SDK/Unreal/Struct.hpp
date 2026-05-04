@@ -24,9 +24,9 @@ class UStruct : public UField
 
     static void Init()
     {
-        Offset_SuperStruct = 0x40;
-        Offset_Children = 0x48;
-        Offset_Size = 0x50;
+        Offset_SuperStruct = EngineVersion <= 4.21f ? 0x30 : 0x40;
+        Offset_Children = Offset_SuperStruct + 8;
+        Offset_Size = Offset_Children + 8;
 
         if (EngineVersion >= 4.25f)
         {

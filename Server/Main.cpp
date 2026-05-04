@@ -115,6 +115,12 @@ DWORD MainThread(HMODULE Module)
         }
     }
 
+    if (EngineVersion <= 4.21f) // TODO Look into why this is crashing
+    {
+        auto Scanner = Memcury::Scanner::FindStringRef(L"STAT_PoiVolume_CheckPawnOverlap").ScanFor({ 0x4C, 0x8B, 0xDC }, false);
+        Hook::Function(Scanner.Get(), ReturnHook);
+    }
+
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogPackageLocalizationCache None");
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogFortUIDirector None");
 

@@ -178,6 +178,9 @@ namespace Net
             if (!Addr) // 7.30 to 14.60
                 Addr = Memcury::Scanner::FindPattern("40 ? 48 83 EC 30 48 8B ? 84 D2 74 ? 80 3D").Get();
 
+            if (!Addr) // 6.21
+                Addr = Memcury::Scanner::FindPattern("40 53 48 83 EC 30 48 8B 99 ? ? ? ? 48 85 DB 0F 84 ? ? ? ? 84 D2").Get();
+
             if(!Addr)
             {
                 MsgBox("Couldn't find PauseBeaconRequests");

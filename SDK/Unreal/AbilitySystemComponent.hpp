@@ -84,6 +84,7 @@ public:
             GAAAO = decltype(GAAAO)(Addr);
         }
 
+        // TODO The 2 scanners below could possibly be a problem on some builds because it's only searching for a single E8
         // UAbilitySystemComponent::GiveAbility
         {
             auto Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 56 57 41 56 48 83 EC 20 8B 81 ? ? ? ? 49 8B E8").Get();

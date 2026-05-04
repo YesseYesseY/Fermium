@@ -279,7 +279,7 @@ namespace Loot
                 Scanner = Memcury::Scanner::FindStringRef(L"ABuildingContainer::ServerOnAttemptInteract %s failed for %s");
                 if (Scanner.IsValid())
                 {
-                    auto Idx = *Scanner.ScanFor({ 0x41, 0xFF, 0x92 }, false).AbsoluteOffset(3).GetAs<int32*>() / 8;
+                    auto Idx = *Scanner.ScanFor({ 0x41, 0xFF/*, 0x92*/ }, false).AbsoluteOffset(3).GetAs<int32*>() / 8;
                     ABuildingContainer::StaticClass()->VTableHook(Idx, SpawnLoot);
                 }
             }
