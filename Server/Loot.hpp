@@ -130,7 +130,8 @@ namespace Loot
 
         std::vector<std::pair<UFortItemDefinition*, int32>> Ret;
 
-        // Ret.push_back({UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Weapons/WID_Assault_Heavy_Athena_SR_Ore_T03.WID_Assault_Heavy_Athena_SR_Ore_T03"), 1});
+        // Ret.push_back({UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/WoodItemData.WoodItemData"), 1});
+        // return Ret;
 
         if (!LootTiers.contains(TierGroup))
         {
@@ -222,16 +223,16 @@ namespace Loot
     void Init()
     {
         auto GameState = UGameplayStatics::GetGameState();
-        auto CurrentPlaylist = GameState->GetCurrentPlaylistInfo().GetBasePlaylist();
+        auto CurrentPlaylist = GameState->GetCurrentPlaylist();
         auto& PlaylistTags = CurrentPlaylist->GetGameplayTagContainer();
 
         auto LTD = CurrentPlaylist->GetLootTierData().Get();
         if (!LTD)
-            LTD = UObject::FindObject<UDataTable>(L"/Game/Items/Datatables/AthenaLootTierData_Client.AthenaLootTierData_Client");
+            LTD = UObject::LoadObject<UDataTable>(UDataTable::StaticClass(), L"/Game/Items/Datatables/AthenaLootTierData_Client.AthenaLootTierData_Client");
 
         auto LPD = CurrentPlaylist->GetLootPackages().Get();
         if (!LPD)
-            LPD = UObject::FindObject<UDataTable>(L"/Game/Items/Datatables/AthenaLootPackages_Client.AthenaLootPackages_Client");
+            LPD = UObject::LoadObject<UDataTable>(UDataTable::StaticClass(), L"/Game/Items/Datatables/AthenaLootPackages_Client.AthenaLootPackages_Client");
 
         AddLTD(LTD);
         AddLPD(LPD);

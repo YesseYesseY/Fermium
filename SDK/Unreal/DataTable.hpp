@@ -1,5 +1,7 @@
 class UDataTable : public UObject
 {
+    STATIC_CLASS(L"/Script/Engine.DataTable");
+
     PROP_REF_OFFSET(TMap<FName COMMA uint8*>, RowMap);
 
     PROP_REF_REFLECTION(UStruct*, RowStruct);

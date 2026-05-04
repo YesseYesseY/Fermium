@@ -29,6 +29,7 @@ namespace Inventory
         Pickup->OnRep_PickupLocationData();
         Pickup->GetbPickedUp() = true;
         Pickup->OnRep_bPickedUp();
+        // TODO Fix animation on 5.30 and below
     }
 
     void (*FinishedTargetSplineOriginal)(AFortPickup* Pickup);

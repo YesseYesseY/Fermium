@@ -25,9 +25,17 @@ namespace GameMode
 #endif
     
             auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
-            GameState->GetCurrentPlaylistInfo().GetBasePlaylist() = Playlist;
-            GameState->GetCurrentPlaylistInfo().GetPlaylistReplicationKey()++;
-            GameState->OnRep_CurrentPlaylistInfo();
+            if (GameState->HasCurrentPlaylistInfo())
+            {
+                GameState->GetCurrentPlaylistInfo().GetBasePlaylist() = Playlist;
+                GameState->GetCurrentPlaylistInfo().GetPlaylistReplicationKey()++;
+                GameState->OnRep_CurrentPlaylistInfo();
+            }
+            else
+            {
+                GameState->GetCurrentPlaylistData() = Playlist;
+                GameState->OnRep_CurrentPlaylistData();
+            }
     
             Net::Listen();
     
@@ -98,7 +106,7 @@ namespace GameMode
         // Join a team
         static uint8 CurrTeamIdx = 0;
         static uint8 CurrTeamPlayerCount = 0;
-        static int32 MaxTeamSize = GameState->GetCurrentPlaylistInfo().GetBasePlaylist()->GetMaxTeamSize();
+        static int32 MaxTeamSize = GameState->GetCurrentPlaylist()->GetMaxTeamSize();
 
         auto Team = GameState->GetTeams()[CurrTeamIdx];
         auto old = PlayerState->GetTeamIndex();
@@ -121,7 +129,10 @@ namespace GameMode
         }
 
         // Equip default cosmetics
-        PlayerState->ApplyCharacterCustomization(PlayerState->GetPawnPrivate());
+        PlayerState->ApplyCharacterCustomization(PlayerController->GetPawn());
+
+        if (GameVersion < 6.21f) // Some version between 5.30 and 6.21 breaks the random defaults
+            return;
 
         auto CID = AssetManager->GetRandomCharacter();
         if (CID)
