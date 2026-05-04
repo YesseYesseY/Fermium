@@ -33,6 +33,7 @@ DWORD MainThread(HMODULE Module)
     // UObject::FindFunction(L"/Script/FortniteGame.BuildingFoundation:SetDynamicFoundationEnabled")->Hook(ABuildingFoundation::SetDynamicFoundationEnabledHook);
 
     // GIsClient + GIsServer
+    if (GameVersion == 9.41f) // TODO Remake this mess
     {
         auto Scanner = Memcury::Scanner::FindStringRef(L"AllowCommandletRendering");
         auto StrBase = Scanner.Get();
