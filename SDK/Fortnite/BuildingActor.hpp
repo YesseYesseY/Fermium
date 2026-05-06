@@ -130,3 +130,23 @@ class ABuildingContainer : public ABuildingTimeOfDayLights
         ProcessEvent(Func);
     }
 };
+
+class ABuildingGameplayActor : public ABuildingActor
+{
+};
+
+struct FCollectorUnitInfo
+{
+    STATIC_STRUCT_OR(FCollectorUnitInfo, L"/Script/FortniteGame.CollectorUnitInfo", L"/Script/FortniteGame.ColletorUnitInfo"); // Nice
+
+    STRUCT_PROP_REF_REFLECTION(UFortItemDefinition*, OutputItem);
+    STRUCT_PROP_REF_REFLECTION(TArray<FFortItemEntry>, OutputItemEntry);
+};
+
+class ABuildingItemCollectorActor : public ABuildingGameplayActor
+{
+    PROP_REF_REFLECTION(TArray<FCollectorUnitInfo>, ItemCollections);
+    PROP_REF_REFLECTION(int32, StartingGoalLevel);
+    PROP_REF_REFLECTION_SAFE(int32, OverrideGoal);
+    PROP_REF_REFLECTION(FName, DefaultItemLootTierGroupName);
+};

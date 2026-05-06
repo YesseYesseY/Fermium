@@ -114,6 +114,17 @@ public: \
     } \
     STRUCT_UTILS(Type)
 
+#define STATIC_STRUCT_OR(Type, Name, Name2) \
+public: \
+    static UStruct* StaticStruct() \
+    { \
+        static UStruct* Ret = UObject::FindStruct(Name); \
+        if (!Ret) \
+            Ret = UObject::FindStruct(Name2); \
+        return Ret; \
+    } \
+    STRUCT_UTILS(Type)
+
 #define STRUCT_PROP_REF_REFLECTION(Type, Name) \
 public: \
     Type& Get##Name() const \

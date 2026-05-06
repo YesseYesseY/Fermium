@@ -9,6 +9,7 @@ struct FFortLootTierData
     STRUCT_PROP_REF_REFLECTION(TArray<int32>, LootPackageCategoryWeightArray);
     STRUCT_PROP_REF_REFLECTION(TArray<int32>, LootPackageCategoryMinArray);
     STRUCT_PROP_REF_REFLECTION(TArray<int32>, LootPackageCategoryMaxArray);
+    STRUCT_PROP_REF_REFLECTION(int32, LootTier);
 };
 
 struct FFortLootPackageData
@@ -28,12 +29,14 @@ struct LootTierData
     float Weight;
     FName LootPackage;
     float NumLootPackageDrops;
+    int32 LootTier;
 
     LootTierData(FFortLootTierData* Data)
     {
         Weight = Data->GetWeight();
         LootPackage = Data->GetLootPackage();
         NumLootPackageDrops = Data->GetNumLootPackageDrops();
+        LootTier = Data->GetLootTier();
 
         // TODO Whyy is this needed
         if (LootPackage.ToString().contains("WorldPKG.AthenaLoot.Weapon") && Data->GetTierGroup().ToString().contains("FloorLoot")) 
@@ -60,9 +63,49 @@ struct LootPackageData
 };
 
 template <typename T>
+struct WeightedType
+{
+    T Value;
+    float Weight;
+};
+
+template <typename T>
+struct WeightedContainerSimple
+{
+    float TotalWeight = 0.0f;
+    std::vector<WeightedType<T>> Items;
+
+    T& GetRandomItem()
+    {
+        float Randy = UKismetMathLibrary::RandomFloatInRange(0, TotalWeight);
+        float Total = 0.0f;
+
+        for (auto& Item : Items)
+        {
+            Total += Item.Weight;
+            if (Total >= Randy)
+            {
+                return Item.Value;
+            }
+        }
+
+        return Items[0].Value;
+    }
+
+    void Add(T Item, float Weight)
+    {
+        if (Weight <= 0.0f)
+            return;
+
+        TotalWeight += Weight;
+        Items.push_back(WeightedType<T>(Item, Weight));
+    }
+};
+
+template <typename T>
 struct WeightedContainer
 {
-    float TotalWeight;
+    float TotalWeight = 0.0f;
     std::vector<T> Items;
 
     T& GetRandomItem()
@@ -85,14 +128,53 @@ struct WeightedContainer
 
 struct LootTierDataContainer : WeightedContainer<LootTierData>
 {
+    std::unordered_map<int32, float> LootTierTotalWeight;
+
+    float GetTotalWeight(int32 LootTier)
+    {
+        if (LootTierTotalWeight.contains(LootTier))
+            return LootTierTotalWeight[LootTier];
+
+        MsgBox("TotalWeight not found for LootTier {} {}", LootTier, LootTierTotalWeight.size());
+
+        return 0.0f;
+    }
+
     void Add(FFortLootTierData* Data)
     {
         auto weight = Data->GetWeight();
         if (weight <= 0.0f)
             return;
 
+        auto LootTier = Data->GetLootTier();
+
+        if (!LootTierTotalWeight.contains(LootTier))
+            LootTierTotalWeight[LootTier] = 0.0f;
+
+        LootTierTotalWeight[LootTier] += weight;
+
         TotalWeight += weight;
         Items.push_back(LootTierData(Data));
+    }
+
+    LootTierData& GetRandomItemWithLootTier(int32 LootTier)
+    {
+        float Randy = UKismetMathLibrary::RandomFloatInRange(0, GetTotalWeight(LootTier));
+        float Total = 0.0f;
+
+        for (auto& Item : Items)
+        {
+            if (Item.LootTier != LootTier)
+                continue;
+
+            Total += Item.Weight;
+            if (Total >= Randy)
+            {
+                return Item;
+            }
+        }
+
+        return Items[0];
     }
 };
 
@@ -115,7 +197,7 @@ namespace Loot
     std::unordered_map<FName, LootPackageDataContainer> LootPackages;
 
     // TODO Change to TArray<FFortItemEntry>?
-    std::vector<std::pair<UFortItemDefinition*, int32>> Get(FName TierGroup)
+    std::vector<std::pair<UFortItemDefinition*, int32>> Get(FName TierGroup, int32 InLootTier = -1)
     {
         // Loot_Treasure -> Loot_AthenaTreasure
         // Loot_Ammo -> Loot_AthenaAmmoLarge
@@ -140,7 +222,7 @@ namespace Loot
         }
 
         auto LootTier = LootTiers[TierGroup];
-        auto LTI = LootTier.GetRandomItem();
+        auto LTI = InLootTier == -1 ? LootTier.GetRandomItem() : LootTier.GetRandomItemWithLootTier(InLootTier);
 
         if (!LootPackages.contains(LTI.LootPackage))
         {
@@ -302,64 +384,49 @@ namespace Loot
             FloorLootSpawners.Free();
         }
 
-        // std::ofstream outltd("loottierdata.txt");
-        // for (auto& thing : LTD->GetRowMap())
-        // {
-        //     auto Data = (FFortLootTierData*)thing.Value();
-        //     outltd << thing.Key().ToString() << '\n';
-        //     outltd << "TierGroup: " << Data->GetTierGroup().ToString() << '\n';
-        //     outltd << "Weight: " << Data->GetWeight() << '\n';
-        //     outltd << "LootPackage: " << Data->GetLootPackage().ToString() << '\n';
-        //     outltd << "NumLootPackageDrops: " << Data->GetNumLootPackageDrops() << '\n';
+        {
+            auto VendingClass = UObject::FindClass(L"/Game/Athena/Items/Gameplay/VendingMachine/B_Athena_VendingMachine.B_Athena_VendingMachine_C");
 
-        //     outltd << "LootPackageCategoryWeightArray: ";
-        //     auto& LootPackageCategoryWeightArray = Data->GetLootPackageCategoryWeightArray();
-        //     for (int i = 0; i < LootPackageCategoryWeightArray.Num(); i++)
-        //     {
-        //         outltd << LootPackageCategoryWeightArray[i];
-        //         if (i != LootPackageCategoryWeightArray.Num() - 1)
-        //             outltd << ", ";
-        //     }
-        //     outltd << '\n';
+            auto VendingMachines = UGameplayStatics::GetAllActorsOfClass<ABuildingItemCollectorActor>(VendingClass);
 
-        //     outltd << "LootPackageCategoryMinArray: ";
-        //     auto& LootPackageCategoryMinArray = Data->GetLootPackageCategoryMinArray();
-        //     for (int i = 0; i < LootPackageCategoryMinArray.Num(); i++)
-        //     {
-        //         outltd << LootPackageCategoryMinArray[i];
-        //         if (i != LootPackageCategoryMinArray.Num() - 1)
-        //             outltd << ", ";
-        //     }
-        //     outltd << '\n';
+            WeightedContainerSimple<int32> VendingRarityWC;
+            if (GameVersion >= 5.20f) // TODO Get from GameData "Default.VendingMachine.RarityWeights"
+            {
+                VendingRarityWC.Add(0, 0.25f);
+                VendingRarityWC.Add(1, 0.75f);
+                VendingRarityWC.Add(2, 0.75f);
+                VendingRarityWC.Add(3, 0.70f);
+                VendingRarityWC.Add(4, 0.30f);
+            }
+            else
+            {
+                VendingRarityWC.Add(0, 10.0f);
+                VendingRarityWC.Add(1, 20.0f);
+                VendingRarityWC.Add(2, 20.0f);
+                VendingRarityWC.Add(3, 7.5f);
+                VendingRarityWC.Add(4, 5.0f);
+            }
 
-        //     outltd << "LootPackageCategoryMaxArray: ";
-        //     auto& LootPackageCategoryMaxArray = Data->GetLootPackageCategoryMaxArray();
-        //     for (int i = 0; i < LootPackageCategoryMaxArray.Num(); i++)
-        //     {
-        //         outltd << LootPackageCategoryMaxArray[i];
-        //         if (i != LootPackageCategoryMaxArray.Num() - 1)
-        //             outltd << ", ";
-        //     }
-        //     outltd << '\n';
+            int32 Cost[5] = {}; // TODO Get from GameData "Default.VendingMachine.Cost.*"
+            for (int i = 1; i <= 5; i++)
+            {
+                Cost[i] = (GameVersion < 5.20f ? 100 : 75) * i;
+            }
 
-        //     outltd << '\n';
-        // }
-        // outltd.close();
+            for (auto VendingMachine : VendingMachines)
+            {
+                int Rarity = VendingRarityWC.GetRandomItem();
+                for (int i = 0; i < 3; i++)
+                {
+                    auto Items = Loot::Get(VendingMachine->GetDefaultItemLootTierGroupName(), Rarity);
+                    VendingMachine->GetItemCollections().Get(i, FCollectorUnitInfo::Size()).GetOutputItem() = Items[0].first;
+                }
 
-
-        // std::ofstream outlp("lootpackages.txt");
-        // for (auto& thing : LPD->GetRowMap())
-        // {
-        //     auto LP = (FFortLootPackageData*)thing.Value();
-        //     outlp << thing.Key().ToString() << '\n';
-        //     outlp << "LootPackageID: " << LP->GetLootPackageID().ToString() << '\n';
-        //     outlp << "Weight: " << LP->GetWeight() << '\n';
-        //     outlp << "Count: " << LP->GetCount() << '\n';
-        //     outlp << "LootPackageCategory: " << LP->GetLootPackageCategory() << '\n';
-        //     outlp << "LootPackageCall: " << LP->GetLootPackageCall().ToString() << '\n';
-        //     outlp << "ItemDefinition: " << LP->GetItemDefinition().SoftObjectPtr.ObjectID.AssetPathName.ToString() << '\n';
-        //     outlp << '\n';
-        // }
-        // outlp.close();
+                VendingMachine->GetStartingGoalLevel() = Rarity;
+                if (VendingMachine->HasOverrideGoal())
+                    VendingMachine->GetOverrideGoal() = Cost[Rarity];
+            }
+            VendingMachines.Free();
+        }
     }
 }
