@@ -1,4 +1,5 @@
 class AFortPawn;
+class ABuildingContainer;
 
 struct FFortPickupLocationData
 {
@@ -6,6 +7,10 @@ struct FFortPickupLocationData
 
     STRUCT_PROP_REF_REFLECTION(AFortPawn*, PickupTarget);
     STRUCT_PROP_REF_REFLECTION(float, FlyTime);
+
+    STRUCT_PROP_REF_REFLECTION(FVector, LootInitialPosition);
+    STRUCT_PROP_REF_REFLECTION(FVector, StartDirection);
+    STRUCT_PROP_REF_REFLECTION(uint8, TossState);
 };
 
 class AFortPickup : public AActor
@@ -85,6 +90,7 @@ class AFortPickup : public AActor
 
     static AFortPickup* SpawnFromItemDef(const FVector& Pos, UFortItemDefinition* ItemDef, int32 Count);
     static AFortPickup* SpawnFromItemEntry(const FVector& Pos, FFortItemEntry* ItemEntry, int32 CountOverride = -1, AFortPawn* Pawn = nullptr);
+    static AFortPickup* SpawnFromContainer(ABuildingContainer* Container, UFortItemDefinition* ItemDef, int32 Count);
 };
 
 class AFortPickupAthena : public AFortPickup

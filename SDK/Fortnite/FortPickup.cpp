@@ -29,3 +29,22 @@ AFortPickup* AFortPickup::SpawnFromItemEntry(const FVector& Pos, FFortItemEntry*
     Ret->TossPickup(Pos, nullptr, 0, true, 16, 0);
     return Ret;
 }
+
+AFortPickup* AFortPickup::SpawnFromContainer(ABuildingContainer* Container, UFortItemDefinition* ItemDef, int32 Count)
+{
+    auto Pos = UKismetMathLibrary::TransformLocation(Container->GetTransform(), Container->GetLootSpawnLocation_Athena());
+    auto Ret = UGameplayStatics::SpawnActor<AFortPickup>(AFortPickupAthena::StaticClass(), Pos);
+    Ret->GetPrimaryPickupItemEntry().GetItemDefinition() = ItemDef;
+    Ret->GetPrimaryPickupItemEntry().GetCount() = Count;
+    if (ItemDef->IsA(UFortWeaponItemDefinition::StaticClass()))
+    {
+        auto WeaponDef = (UFortWeaponItemDefinition*)ItemDef;
+        if (auto WeaponStats = WeaponDef->GetWeaponStatHandle().Get<FFortBaseWeaponStats>())
+        {
+            Ret->GetPrimaryPickupItemEntry().GetLoadedAmmo() = WeaponStats->GetClipSize();
+        }
+    }
+    Ret->TossPickup(Pos, nullptr, 0, true, 4 | 16, 2);
+
+    return Ret;
+}

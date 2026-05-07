@@ -266,11 +266,14 @@ namespace Loot
 
     bool SpawnLoot(ABuildingContainer* Container, AFortPlayerPawn* Pawn = nullptr)
     {
+        // MsgBox("{}", Container->GetLootTossConeHalfAngle_Athena());
+
         // TODO Combine loot drops when possible
         auto Drops = Get(Container->GetSearchLootTierGroup());
         auto DropLocation = UKismetMathLibrary::TransformLocation(Container->GetTransform(), Container->GetLootSpawnLocation_Athena());
         for (auto& Drop : Drops)
-            AFortPickup::SpawnFromItemDef(DropLocation, Drop.first, Drop.second);
+            // AFortPickup::SpawnFromItemDef(DropLocation, Drop.first, Drop.second);
+            AFortPickup::SpawnFromContainer(Container, Drop.first, Drop.second);
 
         Container->SetbAlreadySearched(true);
         Container->OnRep_bAlreadySearched();
@@ -368,6 +371,7 @@ namespace Loot
             }
         }
 
+        // if (false)
         {
             auto FloorLootClass = UObject::FindClass(L"/Game/Athena/Environments/Blueprints/Tiered_Athena_FloorLoot_01.Tiered_Athena_FloorLoot_01_C");
             auto FloorLootSpawners = UGameplayStatics::GetAllActorsOfClass<ABuildingContainer>(FloorLootClass);
@@ -376,6 +380,7 @@ namespace Loot
             FloorLootSpawners.Free();
         }
 
+        // if (false)
         {
             auto FloorLootClass = UObject::FindClass(L"/Game/Athena/Environments/Blueprints/Tiered_Athena_FloorLoot_Warmup.Tiered_Athena_FloorLoot_Warmup_C");
             auto FloorLootSpawners = UGameplayStatics::GetAllActorsOfClass<ABuildingContainer>(FloorLootClass);
@@ -384,6 +389,7 @@ namespace Loot
             FloorLootSpawners.Free();
         }
 
+        if (GameVersion < 11.0f)
         {
             auto VendingClass = UObject::FindClass(L"/Game/Athena/Items/Gameplay/VendingMachine/B_Athena_VendingMachine.B_Athena_VendingMachine_C");
 
