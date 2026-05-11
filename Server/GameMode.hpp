@@ -135,40 +135,7 @@ namespace GameMode
             return;
 
         auto CID = AssetManager->GetRandomCharacter();
-        if (CID)
-        {
-            auto Hero = CID->GetHeroDefinition();
-            if (PlayerState->HasCharacterParts())
-            {
-                for (auto Spec : Hero->GetSpecializations())
-                {
-                    auto CharParts = Spec.Get()->GetCharacterParts();
-                    for (int i = 0; i < CharParts.Num(); i++)
-                    {
-                        auto Part = CharParts[i].Get();
-                        PlayerState->GetCharacterParts().Parts[Part->GetCharacterPartType()] = Part;
-                    }
-                }
-
-                static auto OnRepFunc = PlayerState->ClassPrivate->GetFunction("OnRep_CharacterParts");
-                PlayerState->ProcessEvent(OnRepFunc);
-            }
-            else if (PlayerState->HasCharacterData())
-            {
-                for (auto Spec : Hero->GetSpecializations())
-                {
-                    auto CharParts = Spec.Get()->GetCharacterParts();
-                    for (int i = 0; i < CharParts.Num(); i++)
-                    {
-                        auto Part = CharParts[i].Get();
-                        PlayerState->GetCharacterData().GetParts()[Part->GetCharacterPartType()] = Part;
-                    }
-                }
-
-                static auto OnRepFunc = PlayerState->ClassPrivate->GetFunction("OnRep_CharacterData");
-                PlayerState->ProcessEvent(OnRepFunc);
-            }
-        }
+        PlayerState->ApplyCID(CID);
     }
 
     int64 (*StartAircraftPhaseOriginal)(AFortGameModeAthena* GameMode, char a2);

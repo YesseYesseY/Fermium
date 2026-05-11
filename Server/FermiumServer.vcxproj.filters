@@ -30,6 +30,9 @@
     <ClCompile Include="..\SDK\Fortnite\FortPickup.cpp">
       <Filter>..\SDK\Fortnite</Filter>
     </ClCompile>
+    <ClCompile Include="..\SDK\Fortnite\FortPlayerState.cpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClCompile>
     <ClCompile Include="..\SDK\Unreal\Class.cpp">
       <Filter>..\SDK\Unreal</Filter>
     </ClCompile>

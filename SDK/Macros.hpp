@@ -72,6 +72,14 @@ public: \
         return (*(uint8*)(int64(this) + Offset) & FieldMask) != 0; \
     }
 
+#define PROP_BIT_REFLECTION_SAFE(Name) \
+    bool Has##Name() \
+    { \
+        static int32 Offset = ClassPrivate->GetPropOffset(#Name); \
+        return Offset != -1; \
+    } \
+    PROP_BIT_REFLECTION(Name);
+
 #define PROP_REF_REFLECTION_SAFE(Type, Name) \
 private: \
     static inline int32 Offset_##Name = -1; \

@@ -1,4 +1,5 @@
 class UCustomCharacterPart;
+class UAthenaCharacterItemDefinition;
 
 struct FCustomCharacterParts
 {
@@ -55,6 +56,9 @@ public:
         static auto Func = ClassPrivate->GetFunction("OnRep_PlayerTeam");
         ProcessEvent(Func);
     }
+
+    void ApplyCharacterParts(TArray<UCustomCharacterPart*>& Parts);
+    void ApplyCID(UAthenaCharacterItemDefinition* CID);
 };
 
 class AFortPlayerStateZone : public AFortPlayerState

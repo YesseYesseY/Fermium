@@ -121,3 +121,45 @@ class UFortAmmoItemDefinition : public UFortWorldItemDefinition
 {
     STATIC_CLASS(L"/Script/FortniteGame.FortAmmoItemDefinition");
 };
+
+class UFortGadgetItemDefinition : public UFortWorldItemDefinition
+{
+    STATIC_CLASS(L"/Script/FortniteGame.FortGadgetItemDefinition");
+
+    PROP_REF_REFLECTION(TArray<UCustomCharacterPart*>, CharacterParts);
+
+public:
+    bool HasbDropAllOnEquip()
+    {
+        static int32 Offset = ClassPrivate->GetPropOffset("bDropAllOnEquip");
+        return Offset != -1;
+    }
+
+    bool GetbDropAllOnEquip()
+    {
+        static int32 Offset = ClassPrivate->GetPropOffset("bDropAllOnEquip");
+        static uint8 FieldMask = ClassPrivate->GetPropFieldMask("bDropAllOnEquip");
+        return FieldMask == 0xFF ? *(bool*)(int64(this) + Offset) != 0 : (*(uint8*)(int64(this) + Offset) & FieldMask) != 0;
+    }
+
+    void SetbDropAllOnEquip(bool Value)
+    {
+        static int32 Offset = ClassPrivate->GetPropOffset("bDropAllOnEquip");
+        static uint8 FieldMask = ClassPrivate->GetPropFieldMask("bDropAllOnEquip");
+        if (FieldMask == 0xFF)
+        {
+            *(bool*)(int64(this) + Offset) = Value;
+        }
+        else
+        {
+            if (Value)
+                *(uint8*)(int64(this) + Offset) |= FieldMask;
+            else
+                *(uint8*)(int64(this) + Offset) &= ~FieldMask;
+        }
+    }
+};
+
+class UAthenaGadgetItemDefinition : public UFortGadgetItemDefinition
+{
+};

@@ -94,6 +94,7 @@ extern inline float GameVersion = -1.0f;
 #include "Fortnite/FortVehicles.hpp"
 
 #include "Fortnite/Festivus.hpp"
+#include "Fortnite/Cube.hpp"
 
 static void ReturnHook()
 {

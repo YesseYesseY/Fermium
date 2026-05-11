@@ -34,6 +34,10 @@ namespace Player
             PlayerController->GetWorldInventory()->GiveItem(ItemDef, 1);
             PlayerController->GetWorldInventory()->Update();
         }
+        else if (Msg == L"event")
+        {
+            Events::Start();
+        }
     }
 
     void ServerPlayEmoteItem(AFortPlayerController* PlayerController, UObject* EmoteAsset/*, float EmoteRandomNumber*/)

@@ -5,7 +5,7 @@ void AFortInventory::GiveItem(FFortItemEntry& ItemEntry)
     if (ItemEntry.GetCount() <= 0)
         return;
 
-    auto ItemDef = ItemEntry.GetItemDefinition();
+    auto ItemDef = (UFortWorldItemDefinition*)ItemEntry.GetItemDefinition();
     int32 MaxStackSize = ItemDef->GetMaxStackSize();
 
     if (auto FoundEntry = FindItemEntry(ItemEntry.GetItemDefinition()))
@@ -33,6 +33,25 @@ void AFortInventory::GiveItem(FFortItemEntry& ItemEntry)
     else
     {
 JustAddTheItem:
+        auto PlayerController = (AFortPlayerController*)GetOwner();
+        auto Pawn = PlayerController->GetPawnAs<AFortPlayerPawn>();
+        if (ItemDef->IsA(UFortGadgetItemDefinition::StaticClass()))
+        {
+            auto GadgetItemDef = (UFortGadgetItemDefinition*)ItemDef;
+            if (GadgetItemDef->HasbDropAllOnEquip() && GadgetItemDef->GetbDropAllOnEquip())
+            {
+                Clear(true);
+            }
+
+            auto Parts = GadgetItemDef->GetCharacterParts();
+            if (Parts.Num() > 0)
+            {
+                auto PlayerState = PlayerController->GetPlayerStateAs<AFortPlayerState>();
+                PlayerState->ApplyCharacterParts(Parts);
+            }
+
+        }
+
         auto Item = (UFortWorldItem*)ItemDef->CreateTemporaryItemInstanceBP(ItemEntry.GetCount());
         Item->GetItemEntry().GetLoadedAmmo() = ItemEntry.GetLoadedAmmo();
 
@@ -40,3 +59,24 @@ JustAddTheItem:
         GetInventory().GetItemInstances().Add(Item);
     }
 }
+
+void AFortInventory::Clear(bool Drop)
+{
+    auto Pawn = ((AFortPlayerController*)GetOwner())->GetPawnAs<AFortPawn>();
+    auto Pos = Pawn->GetActorLocation();
+    for (int i = 0; i < Num(); i++)
+    {
+        auto& ItemEntry = GetInventory().GetReplicatedEntries().Get(i, FFortItemEntry::Size());
+        auto ItemDef = (UFortWorldItemDefinition*)ItemEntry.GetItemDefinition();
+        if (ItemDef->GetbCanBeDropped())
+        {
+            if (Drop)
+                AFortPickup::SpawnFromItemEntry(Pos, &ItemEntry, -1, Pawn);
+            GetInventory().GetReplicatedEntries().Remove(i, FFortItemEntry::Size());
+            GetInventory().GetItemInstances().Remove(i);
+            i--;
+        }
+    }
+    Update();
+}
+

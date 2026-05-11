@@ -11,6 +11,7 @@
 #include "GameFeatures.hpp"
 #include "Loot.hpp"
 #include "GameMode.hpp"
+#include "Events.hpp"
 #include "Player.hpp"
 #include "Abilities.hpp"
 
