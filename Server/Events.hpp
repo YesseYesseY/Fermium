@@ -2,7 +2,10 @@ namespace Events
 {
     void Init()
     {
-        ABP_SnowAlwaysRelevant_C::Get()->LoadSleepy();
+        if (GameVersion == 8.40f)
+        {
+            ABP_SnowAlwaysRelevant_C::Get()->LoadSleepy();
+        }
     }
 
     void PostInit()
@@ -97,6 +100,5 @@ namespace Events
                 // TODO ? Sink
             }
         }
-
     }
 }
