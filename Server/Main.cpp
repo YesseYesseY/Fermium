@@ -10,8 +10,8 @@
 #include "Vehicles.hpp"
 #include "GameFeatures.hpp"
 #include "Loot.hpp"
-#include "GameMode.hpp"
 #include "Events.hpp"
+#include "GameMode.hpp"
 #include "Player.hpp"
 #include "Abilities.hpp"
 
@@ -80,6 +80,13 @@ DWORD MainThread(HMODULE Module)
                 }
             }
         }
+    }
+
+    // Pedestal crash
+    {
+        auto Addr = Memcury::Scanner::FindPattern("48 8B C4 48 89 58 ? 55 57 41 56 48 8D 68 ? 48 81 EC A0 00 00 00 48 89 70").Get();
+        if (Addr)
+            Hook::Function(Addr, ReturnHook);
     }
 
     // RequestExit

@@ -175,7 +175,7 @@ namespace Net
             if (!Addr) // 19.40
                 Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC 20 33 ED 48 8B F1 84 D2").Get();
 
-            if (!Addr) // 7.30 to 14.60
+            if (!Addr) // 7.30 to 15.30
                 Addr = Memcury::Scanner::FindPattern("40 ? 48 83 EC 30 48 8B ? 84 D2 74 ? 80 3D").Get();
 
             if (!Addr) // 6.21

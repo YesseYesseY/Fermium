@@ -4,19 +4,19 @@ class ACUBE_C : public ABuildingGameplayActor
 
     static ACUBE_C* Get()
     {
-        static ACUBE_C* Ret = nullptr;
-        if (!Ret)
-        {
-            auto Cubes = UGameplayStatics::GetAllActorsOfClass<ACUBE_C>(ACUBE_C::StaticClass());
-            Ret = Cubes.Num() == 0 ? nullptr : Cubes[0];
-            Cubes.Free();
-        }
+        static ACUBE_C* Ret = UGameplayStatics::GetFirstActorOfClass<ACUBE_C>(ACUBE_C::StaticClass());
         return Ret;
     }
 
     void SpawnCube()
     {
         static auto Func = ClassPrivate->GetFunction("SpawnCube");
+        ProcessEvent(Func);
+    }
+
+    void PlayFinalSink()
+    {
+        static auto Func = ClassPrivate->GetFunction("PlayFinalSink");
         ProcessEvent(Func);
     }
 

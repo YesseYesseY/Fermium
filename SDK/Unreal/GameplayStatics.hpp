@@ -65,6 +65,15 @@ public:
         return args.Ret;
     }
 
+    template <typename T = AActor>
+    static T* GetFirstActorOfClass(UClass* ActorClass)
+    {
+        auto Actors = GetAllActorsOfClass<T>(ActorClass);
+        auto Ret = Actors.Num() > 0 ? Actors[0] : nullptr;
+        Actors.Free();
+        return Ret;
+    }
+
     static int32 GetNumActorsOfClass(UClass* ActorClass)
     {
         auto Actors = GetAllActorsOfClass(ActorClass);

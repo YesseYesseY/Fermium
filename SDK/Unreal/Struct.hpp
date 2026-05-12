@@ -8,6 +8,7 @@ class UStruct : public UField
     PROP_REF_OFFSET(UField*, Children);
     PROP_REF_OFFSET(FField*, ChildProperties);
     PROP_REF_OFFSET(int32, Size);
+    PROP_REF_OFFSET(TArray<uint8>, Script);
 
     UFunction* GetFunction(std::string Name);
     void* GetProp(std::string Name);
@@ -27,6 +28,7 @@ class UStruct : public UField
         Offset_SuperStruct = EngineVersion <= 4.21f ? 0x30 : 0x40;
         Offset_Children = Offset_SuperStruct + 8;
         Offset_Size = Offset_Children + 8;
+        Offset_Script = Offset_Size + 8;
 
         if (EngineVersion >= 4.25f)
         {

@@ -31,6 +31,15 @@ public: \
         return Ret; \
     }
 
+#define STATIC_CLASS_GET(Type, Name) \
+    STATIC_CLASS(Name) \
+    static Type* Get() \
+    { \
+        static Type* Ret = UGameplayStatics::GetFirstActorOfClass<Type>(Type::StaticClass()); \
+        return Ret; \
+    } \
+
+
 #define DEFAULT_OBJECT(TypeName) \
     static TypeName* Default() \
     { \

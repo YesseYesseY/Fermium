@@ -47,6 +47,7 @@ namespace GameMode
             GameFeatures::Init();
             Loot::Init();
             Vehicles::Init();
+            Events::Init();
             GameMode->SetbWorldIsReady(true);
             return true;
         }
@@ -146,6 +147,9 @@ namespace GameMode
         {
             Player->GetPlayerControllerAs<AFortPlayerControllerAthena>()->GetWorldInventory()->Clear();
         }
+
+        Events::PostInit();
+
         return StartAircraftPhaseOriginal(GameMode, a2);
     }
 
