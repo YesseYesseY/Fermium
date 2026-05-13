@@ -28,5 +28,6 @@ class UKismetSystemLibrary : public UObject
         return ret;
     }
 
+    static void K2_ClearAndInvalidateTimerHandle(uint64 Handle);
     static void ExecuteConsoleCommand(const FString& Cmd, APlayerController* Player = nullptr);
 };
