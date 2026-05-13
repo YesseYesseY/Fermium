@@ -6,6 +6,17 @@ namespace Events
         {
             ABP_SnowAlwaysRelevant_C::Get()->LoadSleepy();
         }
+        else if (GameVersion >= 15.00f && GameVersion < 16.00f)
+        {
+            auto Portals = UGameplayStatics::GetAllActorsOfClass<ABP_Pickle_Portal_Parent_C>(ABP_Pickle_Portal_Parent_C::StaticClass());
+            for (auto Portal : Portals)
+            {
+                Portal->GetProgress() = 1.0f;
+                Portal->OnRep_Progress();
+                Portal->ForceNetUpdate();
+            }
+            Portals.Free();
+        }
     }
 
     void PostInit()

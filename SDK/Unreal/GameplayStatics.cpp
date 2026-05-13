@@ -52,16 +52,3 @@ AFortGameModeAthena* UGameplayStatics::GetGameMode()
     Default()->ProcessEvent(Func, &args);
     return args.Ret;
 }
-
-void UGameplayStatics::LoadStreamLevel(FName LevelName, bool bMakeVisibleAfterLoad, bool bShouldBlockOnLoad)
-{
-    static auto Func = StaticClass()->GetFunction("LoadStreamLevel");
-    struct {
-        UObject* WorldContext;
-        FName LevelName;
-        bool bMakeVisibleAfterLoad;
-        bool bShouldBlockOnLoad;
-        uint8 pad[0x1E];
-    } args { UWorld::GetWorld(), LevelName, bMakeVisibleAfterLoad, bShouldBlockOnLoad };
-    Default()->ProcessEvent(Func, &args);
-}

@@ -84,5 +84,4 @@ public:
 
     static AFortGameStateAthena* GetGameState();
     static AFortGameModeAthena* GetGameMode();
-    static void LoadStreamLevel(FName LevelName, bool bMakeVisibleAfterLoad = true, bool bShouldBlockOnLoad = false);
 };
