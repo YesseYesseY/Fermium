@@ -8,16 +8,6 @@ namespace Events
         }
         else if (GameVersion >= 15.00f && GameVersion < 16.00f)
         {
-            auto ZP = ABP_ZeroPoint_Destabalize_RWs_C::Get();
-            auto ZP2 = ABP_ZeroPoint_2Point0_C::Get();
-            ZP2->GetProgress() = 1.0f;
-            ZP2->OnRep_Progress();
-            UKismetSystemLibrary::K2_ClearAndInvalidateTimerHandle(ZP->GetProgressTimer());
-            ZP->GetTimer() = 30.0f;
-            ZP->OnRep_Timer();
-            ZP->ForceNetUpdate();
-            ZP2->ForceNetUpdate();
-
             auto Portals = UGameplayStatics::GetAllActorsOfClass<ABP_Pickle_Portal_Parent_C>(ABP_Pickle_Portal_Parent_C::StaticClass());
             for (auto Portal : Portals)
             {
@@ -26,6 +16,19 @@ namespace Events
                 Portal->ForceNetUpdate();
             }
             Portals.Free();
+
+            if (GameVersion == 15.50f)
+            {
+                auto ZP = ABP_ZeroPoint_Destabalize_RWs_C::Get();
+                auto ZP2 = ABP_ZeroPoint_2Point0_C::Get();
+                ZP2->GetProgress() = 1.0f;
+                ZP2->OnRep_Progress();
+                UKismetSystemLibrary::K2_ClearAndInvalidateTimerHandle(ZP->GetProgressTimer());
+                ZP->GetTimer() = 30.0f;
+                ZP->OnRep_Timer();
+                ZP->ForceNetUpdate();
+                ZP2->ForceNetUpdate();
+            }
         }
     }
 
