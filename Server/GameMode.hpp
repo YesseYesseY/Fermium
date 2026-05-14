@@ -2,8 +2,9 @@ namespace GameMode
 {
     bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
     {
+        // TODO Don't enable this check on s13 until ABuildingFoundation::SetDynamicFoundationEnabled works
         static auto StartClass = UObject::FindClass(L"/Script/FortniteGame.FortPlayerStartWarmup");
-        if (UGameplayStatics::GetNumActorsOfClass(StartClass) <= 0)
+        if (UGameplayStatics::GetNumActorsOfClass(StartClass) <= 0 && std::floor(GameVersion) != 13)
             return false;
     
         static bool Started = false;
