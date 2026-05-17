@@ -53,6 +53,12 @@ DWORD MainThread(HMODULE Module)
     auto GameViewport = Engine->GetGameViewport();
     GameViewport->GetViewportConsole() = UGameplayStatics::SpawnObject(Engine->GetConsoleClass(), GameViewport);
 
+    if (GameVersion >= 9.0f && GameVersion < 11.0f)
+    {
+        auto Settings = UObject::FindObject<UObject>(L"/Script/Engine.Default__InputSettings");
+        **(FName**)(int64(Settings) + Settings->ClassPrivate->GetPropOffset("ConsoleKeys")) = UKismetStringLibrary::Conv_StringToName(L"F8");
+    }
+
     // UWorld::Exec
     {
         auto Scanner = Memcury::Scanner::FindStringRef(L"FLUSHPERSISTENTDEBUGLINES");

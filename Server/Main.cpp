@@ -34,7 +34,7 @@ DWORD MainThread(HMODULE Module)
     // UObject::FindFunction(L"/Script/FortniteGame.BuildingFoundation:SetDynamicFoundationEnabled")->Hook(ABuildingFoundation::SetDynamicFoundationEnabledHook);
 
     // GIsClient + GIsServer
-    if (GameVersion != 9.41f) // TODO Remake this mess
+    // if (GameVersion != 9.41f) // TODO Remake this mess
     {
         auto Scanner = Memcury::Scanner::FindStringRef(L"AllowCommandletRendering");
         auto StrBase = Scanner.Get();
@@ -153,6 +153,7 @@ DWORD MainThread(HMODULE Module)
 
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogPackageLocalizationCache None");
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogFortUIDirector None");
+    UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogFortSignificance None");
 
     UWorld::GetWorld()->GetOwningGameInstance()->GetLocalPlayers().Remove(0);
     if (GameVersion < 11.0f) UKismetSystemLibrary::ExecuteConsoleCommand(L"open Athena_Terrain");

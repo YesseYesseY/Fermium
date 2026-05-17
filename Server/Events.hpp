@@ -11,6 +11,10 @@ namespace Events
             auto Sneezy = ABP_Sneezy_FloorProp_Area_C::Get();
             Sneezy->SetDancefloorEnabled(true);
         }
+        else if (GameVersion == 9.41f)
+        {
+            ABP_CattusDoggus_Scripting_C::Get()->LoadCattusLevel();
+        }
         else if (GameVersion >= 15.00f && GameVersion < 16.00f)
         {
             auto Portals = UGameplayStatics::GetAllActorsOfClass<ABP_Pickle_Portal_Parent_C>(ABP_Pickle_Portal_Parent_C::StaticClass());
@@ -172,6 +176,10 @@ namespace Events
                 Cube->Next(Step++);
                 // TODO ? Sink
             }
+        }
+        else if (GameVersion == 9.41f)
+        {
+            ABP_CattusDoggus_Scripting_C::Get()->StartEvent();
         }
     }
 }
