@@ -152,7 +152,11 @@ namespace Events
 
     void Start()
     {
-        if (GameVersion >= 5.30f && GameVersion < 6.00f)
+        if (GameVersion == 4.5f)
+        {
+            ABP_GeodeScripting_C::Get()->TestLaunch(60.0f);
+        }
+        else if (GameVersion >= 5.30f && GameVersion < 6.00f)
         {
             // TODO Lightning
             static bool SpawnedCube = false;

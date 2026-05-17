@@ -145,6 +145,12 @@ DWORD MainThread(HMODULE Module)
         }
     }
 
+    if (GameVersion == 4.5f)
+    {
+        auto Scanner = Memcury::Scanner::FindPattern("48 8B C4 48 89 58 ? 88 50");
+        Hook::Function(Scanner.Get(), ReturnHook);
+    }
+
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogPackageLocalizationCache None");
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogFortUIDirector None");
 
