@@ -38,3 +38,26 @@ class ABP_Sleepy_Prop_C : public AActor
         ProcessEvent(Func, &Damage);
     }
 };
+
+class ABP_Sneezy_FloorProp_Area_C : public AActor
+{
+    STATIC_CLASS_GET(ABP_Sneezy_FloorProp_Area_C, L"/Game/Athena/Prototype/Blueprints/Sneezy/BP_Sneezy_FloorProp_Area.BP_Sneezy_FloorProp_Area_C");
+
+    void SetDancefloorEnabled(bool Enabled)
+    {
+        static auto Func = ClassPrivate->GetFunction("SetDancefloorEnabled");
+        ProcessEvent(Func, &Enabled);
+    }
+
+    void EdgeServerMeterLevel(float MeterLevel)
+    {
+        static auto Func = ClassPrivate->GetFunction("EdgeServerMeterLevel");
+        ProcessEvent(Func, &MeterLevel);
+    }
+
+    void UpdateMeterLevelAudio(float MeterLevel)
+    {
+        static auto Func = ClassPrivate->GetFunction("UpdateMeterLevelAudio");
+        ProcessEvent(Func, &MeterLevel);
+    }
+};

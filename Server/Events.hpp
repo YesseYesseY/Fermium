@@ -6,6 +6,11 @@ namespace Events
         {
             ABP_SnowAlwaysRelevant_C::Get()->LoadSleepy();
         }
+        else if (GameVersion == 8.50f)
+        {
+            auto Sneezy = ABP_Sneezy_FloorProp_Area_C::Get();
+            Sneezy->SetDancefloorEnabled(true);
+        }
         else if (GameVersion >= 15.00f && GameVersion < 16.00f)
         {
             auto Portals = UGameplayStatics::GetAllActorsOfClass<ABP_Pickle_Portal_Parent_C>(ABP_Pickle_Portal_Parent_C::StaticClass());
@@ -44,7 +49,7 @@ namespace Events
             auto ScriptSize = Script.Num();
             auto Writer = ScriptWriter(Script.GetData());
             Writer.Skip(2676);
-            Writer.WriteJump(ScriptSize);
+            Writer.Jump(ScriptSize);
 
             Script.Reserve(512);
             Writer = ScriptWriter(Script.GetData());
@@ -57,51 +62,91 @@ namespace Events
             auto FloatProp = Func->GetProp("CallFunc_Conv_IntToBool_ReturnValue");
             auto ProgressProp = SleepyProp->ClassPrivate->GetProp("Progress");
 
-            Writer.WriteLet(FTruncProp);
-            Writer.WriteVarL(FTruncProp);
-            Writer.WriteCallMath(UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:FTrunc"));
-            Writer.WriteVarL(DamageProp);
-            Writer.WriteEndFunction();
+            Writer.Let(FTruncProp);
+            Writer.VarL(FTruncProp);
+            Writer.CallMath(UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:FTrunc"));
+            Writer.VarL(DamageProp);
+            Writer.EndFunction();
 
-            Writer.WriteLet(Conv64Prop);
-            Writer.WriteVarL(Conv64Prop);
-            Writer.WriteCallMath(UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:Conv_IntToInt64"));
-            Writer.WriteVarL(FTruncProp);
-            Writer.WriteEndFunction();
+            Writer.Let(Conv64Prop);
+            Writer.VarL(Conv64Prop);
+            Writer.CallMath(UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:Conv_IntToInt64"));
+            Writer.VarL(FTruncProp);
+            Writer.EndFunction();
 
-            Writer.WriteLet(Conv64Prop);
-            Writer.WriteVarL(Conv64Prop);
-            Writer.WriteCallMath(UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:Subtract_Int64Int64"));
-            Writer.WriteVarI(UObject::FindObject(L"/Script/FortniteGame.BuildingPropBigHealth:BigHealth"));
-            Writer.WriteVarL(FTruncProp);
-            Writer.WriteEndFunction();
+            Writer.Let(Conv64Prop);
+            Writer.VarL(Conv64Prop);
+            Writer.CallMath(UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:Subtract_Int64Int64"));
+            Writer.VarI(UObject::FindObject(L"/Script/FortniteGame.BuildingPropBigHealth:BigHealth"));
+            Writer.VarL(FTruncProp);
+            Writer.EndFunction();
 
-            Writer.WriteLet(LessEqualProp);
-            Writer.WriteVarL(LessEqualProp);
-            Writer.WriteCallMath(UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:LessEqual_Int64Int64"));
-            Writer.WriteVarL(Conv64Prop);
-            Writer.WriteInt64Const(0);
-            Writer.WriteEndFunction();
+            Writer.Let(LessEqualProp);
+            Writer.VarL(LessEqualProp);
+            Writer.CallMath(UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:LessEqual_Int64Int64"));
+            Writer.VarL(Conv64Prop);
+            Writer.Int64Const(0);
+            Writer.EndFunction();
 
-            Writer.WritePopExecIfNot();
-            Writer.WriteVarL(LessEqualProp);
+            Writer.PopExecIfNot();
+            Writer.VarL(LessEqualProp);
 
-            Writer.WriteLet(DamageProp);
-            Writer.WriteVarL(DamageProp);
-            Writer.WriteCallMath(UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:Add_FloatFloat"));
-            Writer.WriteVarI(ProgressProp);
-            Writer.WriteFloatConst(0.001f);
-            Writer.WriteEndFunction();
+            Writer.Let(DamageProp);
+            Writer.VarL(DamageProp);
+            Writer.CallMath(UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:Add_FloatFloat"));
+            Writer.VarI(ProgressProp);
+            Writer.FloatConst(0.001f);
+            Writer.EndFunction();
 
-            Writer.WriteFinalFunction(ABP_Sleepy_Prop_C::StaticClass()->GetFunction("EdgeServerSetProgress"));
-            Writer.WriteVarL(DamageProp);
-            Writer.WriteEndFunction();
+            Writer.FinalFunction(ABP_Sleepy_Prop_C::StaticClass()->GetFunction("EdgeServerSetProgress"));
+            Writer.VarL(DamageProp);
+            Writer.EndFunction();
 
-            Writer.WriteFinalFunction(ABP_Sleepy_Prop_C::StaticClass()->GetFunction("EdgeServerApplyDamage"));
-            Writer.WriteIntConst(250);
-            Writer.WriteEndFunction();
+            Writer.FinalFunction(ABP_Sleepy_Prop_C::StaticClass()->GetFunction("EdgeServerApplyDamage"));
+            Writer.IntConst(250);
+            Writer.EndFunction();
 
-            Writer.WritePopExec();
+            Writer.PopExec();
+        }
+        else if (GameVersion == 8.50f)
+        {
+            auto Sneezy = ABP_Sneezy_FloorProp_Area_C::Get();
+            auto Func = Sneezy->ClassPrivate->GetFunction("ExecuteUbergraph_BP_Sneezy_FloorProp_Area");
+            auto& Script = Func->GetScript();
+            auto ScriptSize = Script.Num();
+            auto Writer = ScriptWriter(Script.GetData());
+            Writer.Skip(622);
+            Writer.Jump(ScriptSize);
+
+            Script.Reserve(512);
+            Writer = ScriptWriter(Script.GetData());
+            Writer.Skip(ScriptSize);
+
+            auto DancerCountProp = Sneezy->ClassPrivate->GetProp("DancerCount");
+            auto IntToFloatProp = Func->GetProp("CallFunc_Abs_ReturnValue");
+            auto DivideProp = Func->GetProp("CallFunc_Divide_FloatFloat_ReturnValue");
+
+            Writer.FinalFunction(Sneezy->ClassPrivate->GetFunction("FlushNetDormancy"));
+            Writer.EndFunction();
+
+            Writer.Let(IntToFloatProp);
+            Writer.VarL(IntToFloatProp);
+            Writer.CallMath(UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:Conv_IntToFloat"));
+            Writer.VarI(DancerCountProp);
+            Writer.EndFunction();
+
+            Writer.Let(DivideProp);
+            Writer.VarL(DivideProp);
+            Writer.CallMath(UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:Divide_FloatFloat"));
+            Writer.VarL(IntToFloatProp);
+            Writer.FloatConst((float)UGameplayStatics::GetGameMode()->GetNumPlayers());
+            Writer.EndFunction();
+
+            Writer.FinalFunction(Sneezy->ClassPrivate->GetFunction("EdgeServerMeterLevel"));
+            Writer.VarL(DivideProp);
+            Writer.EndFunction();
+
+            Writer.PopExec();
         }
     }
 

@@ -1,12 +1,6 @@
 class ACUBE_C : public ABuildingGameplayActor
 {
-    STATIC_CLASS(L"/Game/Athena/Prototype/Blueprints/Cube/CUBE.CUBE_C");
-
-    static ACUBE_C* Get()
-    {
-        static ACUBE_C* Ret = UGameplayStatics::GetFirstActorOfClass<ACUBE_C>(ACUBE_C::StaticClass());
-        return Ret;
-    }
+    STATIC_CLASS_GET(ACUBE_C, L"/Game/Athena/Prototype/Blueprints/Cube/CUBE.CUBE_C");
 
     void SpawnCube()
     {

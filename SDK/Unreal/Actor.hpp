@@ -77,4 +77,17 @@ public:
         ProcessEvent(Func, &Ret);
         return Ret;
     }
+
+    bool TeleportTo(FVector DestLocation, FRotator DestRotation = {})
+    {
+        static auto Func = ClassPrivate->GetFunction("K2_TeleportTo");
+        struct
+        {
+            FVector DestLocation;
+            FRotator DestRotation;
+            bool Ret;
+        } args { DestLocation, DestRotation };
+        ProcessEvent(Func, &args);
+        return args.Ret;
+    }
 };

@@ -38,6 +38,14 @@ namespace Player
         {
             Events::Start();
         }
+        else if (Msg == L"tpalltome")
+        {
+            auto Pos = PlayerController->GetPawn()->GetActorLocation();
+            for (auto Player : UWorld::GetWorld()->GetNetDriver()->GetClientConnections())
+            {
+                Player->GetPlayerController()->GetPawn()->TeleportTo(Pos);
+            }
+        }
     }
 
     void ServerPlayEmoteItem(AFortPlayerController* PlayerController, UObject* EmoteAsset/*, float EmoteRandomNumber*/)

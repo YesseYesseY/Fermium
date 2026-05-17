@@ -25,71 +25,71 @@ public:
         Addr += sizeof(T);
     }
 
-    void WriteVarL(void* Value)
+    void VarL(void* Value)
     {
         Write<uint8>(0x00);
         Write<void*>(Value);
     }
 
-    void WriteVarI(void* Value)
+    void VarI(void* Value)
     {
         Write<uint8>(0x01);
         Write<void*>(Value);
     }
 
-    void WriteCallMath(void* Value)
+    void CallMath(void* Value)
     {
         Write<uint8>(0x68);
         Write<void*>(Value);
     }
 
-    void WriteEndFunction()
+    void EndFunction()
     {
         Write<uint8>(0x16);
     }
 
-    void WriteLet(void* Value)
+    void Let(void* Value)
     {
         Write<uint8>(0x0F);
         Write<void*>(Value);
     }
 
-    void WriteJump(int32 Value)
+    void Jump(int32 Value)
     {
         Write<uint8>(0x06);
         Write<int32>(Value);
     }
 
-    void WritePopExecIfNot()
+    void PopExecIfNot()
     {
         Write<uint8>(0x4F);
     }
 
-    void WriteFinalFunction(void* Value)
+    void FinalFunction(void* Value)
     {
         Write<uint8>(0x1C);
         Write<void*>(Value);
     }
 
-    void WriteInt64Const(int64 Value)
+    void Int64Const(int64 Value)
     {
         Write<uint8>(0x35);
         Write<int64>(Value);
     }
 
-    void WriteFloatConst(float Value)
+    void FloatConst(float Value)
     {
         Write<uint8>(0x1E);
         Write<float>(Value);
     }
 
-    void WriteIntConst(int32 Value)
+    void IntConst(int32 Value)
     {
         Write<uint8>(0x1D);
         Write<int32>(Value);
     }
 
-    void WritePopExec()
+    void PopExec()
     {
         Write<uint8>(0x4D);
     }
