@@ -783,7 +783,7 @@ namespace Memcury
                 if (found)
                 {
                     uintptr_t currAddr = reinterpret_cast<uintptr_t>(&scanBytes[i]);
-                    uintptr_t relPtr = currAddr + s + 4 + *reinterpret_cast<uint32_t*>(currAddr + s);
+                    uintptr_t relPtr = currAddr + s + 4 + *reinterpret_cast<int32_t*>(currAddr + s);
                     if (relPtr == relAddr)
                     {
                         add = currAddr;

@@ -29,25 +29,21 @@ namespace Vehicles
             }
         }
 
-        UClass* VehicleClass = nullptr;
-        int32 ServerMoveIdx = -1;
-        if (UObject::FindClass(L"/Script/FortniteGame.FortAthenaVehicle"))
-        {
+        UClass* VehicleClass = UObject::FindClass(L"/Script/FortniteGame.FortPhysicsPawn");
+        if (!VehicleClass)
             VehicleClass = UObject::FindClass(L"/Script/FortniteGame.FortAthenaVehicle");
-            auto func = VehicleClass->GetFunction("ServerUpdatePhysicsParams");
-            if (func)
-                ServerMoveIdx = func->GetVTableIndex();
-        }
-        else
-        {
-            VehicleClass = UObject::FindClass(L"/Script/FortniteGame.FortPhysicsPawn");
-            auto func = VehicleClass->GetFunction("ServerMove");
-            if (!func)
-                func = VehicleClass->GetFunction("ServerUpdatePhysicsParams");
 
-            if (func)
-                ServerMoveIdx = func->GetVTableIndex(true);
-        }
+        if (!VehicleClass)
+            return;
+
+        UFunction* ServerMoveFunc = VehicleClass->GetFunction("ServerUpdatePhysicsParams");
+        if (!ServerMoveFunc)
+            ServerMoveFunc = VehicleClass->GetFunction("ServerMove");
+
+        if (!ServerMoveFunc)
+            return;
+
+        int32 ServerMoveIdx = ServerMoveFunc->GetVTableIndex(true);
 
         if (ServerMoveIdx == -1)
             return;
@@ -64,6 +60,5 @@ namespace Vehicles
                 Hook::VTable((void**)Default->VTable, ServerMoveIdx, ServerMove);
             }
         }
-
     }
 }
