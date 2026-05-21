@@ -86,6 +86,28 @@ namespace Player
         }
     }
 
+    void TeleportPlayerPawn(UObject* Lib, FFrame* Stack, bool* Ret)
+    {
+        auto Func = UObject::FindFunction(L"/Script/FortniteGame.FortMissionLibrary:TeleportPlayerPawn");
+        static bool HasWCO = Func->GetPropOffset("WorldContextObject") != -1;
+        if (HasWCO)
+        {
+            FRAME_PROP(UObject*, WorldContextObject);
+        }
+        FRAME_PROP(AFortPlayerPawn*, PlayerPawn);
+        FRAME_PROP(FVector, DestLocation);
+        FRAME_PROP(FRotator, DestRotation);
+        FRAME_PROP(bool, bIgnoreCollision);
+        FRAME_PROP(bool, bIgnoreSupplementalKillVolumeSweep);
+        FRAME_END();
+
+        auto ret = PlayerPawn->TeleportTo(DestLocation, DestRotation);
+
+        static bool HasRet = Func->GetPropOffset("ReturnValue") != -1;
+        if (HasRet)
+            *Ret = ret;
+    }
+
     void Init()
     {
         auto AircraftComponent = UObject::FindClass(L"/Script/FortniteGame.FortControllerComponent_Aircraft");
@@ -100,5 +122,6 @@ namespace Player
         FortPlayerControllerAthena->VTableHook("ServerCheat", ServerCheat);
         FortPlayerControllerAthena->VTableHook("ServerPlayEmoteItem", ServerPlayEmoteItem);
         UObject::FindFunction(L"/Script/FortniteGame.FortPlayerPawn:OnCapsuleBeginOverlap")->Hook(OnCapsuleBeginOverlap);
+        UObject::FindFunction(L"/Script/FortniteGame.FortMissionLibrary:TeleportPlayerPawn")->Hook(TeleportPlayerPawn);
     }
 }

@@ -6,6 +6,8 @@ namespace GameMode
         static auto StartClass = UObject::FindClass(L"/Script/FortniteGame.FortPlayerStartWarmup");
         if (UGameplayStatics::GetNumActorsOfClass(StartClass) <= 0 && std::floor(GameVersion) != 13)
             return false;
+
+        auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
     
         static bool Started = false;
         if (!Started)
@@ -25,7 +27,6 @@ namespace GameMode
             }
 #endif
     
-            auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
             if (GameState->HasCurrentPlaylistInfo())
             {
                 GameState->GetCurrentPlaylistInfo().GetBasePlaylist() = Playlist;
@@ -49,6 +50,8 @@ namespace GameMode
             Loot::Init();
             Vehicles::Init();
             Events::Init();
+            if (GameState->HasbCraftingEnabled())
+                GameState->GetbCraftingEnabled() = GameVersion < 19.00f; // TODO Get from GameData or something maybe
             GameMode->SetbWorldIsReady(true);
             return true;
         }

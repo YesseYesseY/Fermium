@@ -34,6 +34,7 @@ public:
     PROP_REF_REFLECTION_SAFE(FPlaylistPropertyArray, CurrentPlaylistInfo);
     PROP_REF_REFLECTION(UFortPlaylistAthena*, CurrentPlaylistData);
     PROP_REF_REFLECTION(EAthenaGamePhase, GamePhase);
+    PROP_REF_REFLECTION_SAFE(bool, bCraftingEnabled);
 
     void OnRep_GamePhase(EAthenaGamePhase OldPhase)
     {
