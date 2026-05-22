@@ -108,6 +108,26 @@ namespace Player
             *Ret = ret;
     }
 
+    void GetPlayerViewPoint(APlayerController* PlayerController, FVector* Location, FRotator* Rotation)
+    {
+        static auto NAME_Spectating = UKismetStringLibrary::Conv_StringToName(L"Spectating");
+        if (PlayerController->GetStateName() == NAME_Spectating)
+        {
+            *Location = PlayerController->GetLastSpectatorSyncLocation();
+            *Rotation = PlayerController->GetLastSpectatorSyncRotation();
+        }
+        else if (auto Pawn = PlayerController->GetPawn())
+        {
+            *Location = Pawn->GetActorLocation();
+            *Rotation = PlayerController->GetControlRotation();
+        }
+        else
+        {
+            *Location = PlayerController->GetActorLocation();
+            *Rotation = PlayerController->GetActorRotation();
+        }
+    }
+
     void Init()
     {
         auto AircraftComponent = UObject::FindClass(L"/Script/FortniteGame.FortControllerComponent_Aircraft");
@@ -123,5 +143,37 @@ namespace Player
         FortPlayerControllerAthena->VTableHook("ServerPlayEmoteItem", ServerPlayEmoteItem);
         UObject::FindFunction(L"/Script/FortniteGame.FortPlayerPawn:OnCapsuleBeginOverlap")->Hook(OnCapsuleBeginOverlap);
         UObject::FindFunction(L"/Script/FortniteGame.FortMissionLibrary:TeleportPlayerPawn")->Hook(TeleportPlayerPawn);
+
+        // GetPlayerViewPoint
+        {
+            int32 Idx = -1;
+            if (auto ufunc = UObject::FindFunction(L"/Script/Engine.Controller:GetPlayerViewPoint"))
+            {
+                Idx = ufunc->GetVTableIndex();
+            }
+            else
+            {
+                auto Scanner = Memcury::Scanner::FindStringRef(L"APlayerController::GetPlayerViewPoint: out_Location, ViewTarget=%s");
+                if (Scanner.IsValid())
+                {
+                    auto func = Scanner.ScanFor({ 0x48, 0x89, 0x5C, 0x24, 0x10 }, false).GetAs<void*>();
+
+                    auto vtable = APlayerController::StaticClass()->GetDefaultObject()->VTable;
+                    for (int i = 0; i < 256; i++)
+                    {
+                        if (vtable[i] == func)
+                        {
+                            Idx = i;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (Idx != -1)
+            {
+                Hook::AllVTables(APlayerController::StaticClass(), Idx, GetPlayerViewPoint);
+            }
+        }
     }
 }

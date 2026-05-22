@@ -21,6 +21,14 @@ public:
         return Ret;
     }
 
+    FRotator GetActorRotation()
+    {
+        static auto Func = ClassPrivate->GetFunction("K2_GetActorRotation");
+        FRotator Ret;
+        ProcessEvent(Func, &Ret);
+        return Ret;
+    }
+
     void DestroyActor()
     {
         static auto Func = ClassPrivate->GetFunction("K2_DestroyActor");

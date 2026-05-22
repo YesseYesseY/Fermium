@@ -101,6 +101,25 @@ extern inline float GameVersion = -1.0f;
 #include "Fortnite/Rocket.hpp"
 #include "Fortnite/Cattus.hpp"
 
+namespace Hook
+{
+    static void AllVTables(UClass* ObjectClass, int32 Idx, void* Hook)
+    {
+        for (int i = 0; i < UObject::Objects->Num(); i++)
+        {
+            auto Object = UObject::Objects->Get(i);
+            if (!Object || !Object->IsA(UClass::StaticClass())) continue;
+
+            auto Class = (UClass*)Object;
+            auto Default = Class->GetDefaultObject();
+            if (Class->IsChildOf(ObjectClass) && Default)
+            {
+                Hook::VTable((void**)Default->VTable, Idx, Hook);
+            }
+        }
+    }
+}
+
 static void ReturnHook()
 {
     return;

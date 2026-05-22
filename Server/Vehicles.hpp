@@ -48,17 +48,6 @@ namespace Vehicles
         if (ServerMoveIdx == -1)
             return;
 
-        for (int i = 0; i < UObject::Objects->Num(); i++)
-        {
-            auto Object = UObject::Objects->Get(i);
-            if (!Object || !Object->IsA(UClass::StaticClass())) continue;
-
-            auto Class = (UClass*)Object;
-            auto Default = Class->GetDefaultObject();
-            if (Class->IsChildOf(VehicleClass) && Default)
-            {
-                Hook::VTable((void**)Default->VTable, ServerMoveIdx, ServerMove);
-            }
-        }
+        Hook::AllVTables(VehicleClass, ServerMoveIdx, ServerMove);
     }
 }
