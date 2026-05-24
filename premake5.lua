@@ -9,6 +9,9 @@ project "FermiumClient"
     targetdir "bin"
     objdir "obj/client"
     files {
+        "SDK/**.hpp"
+        "Client/*.hpp"
+
         "Client/*.cpp",
 
         "SDK/**.cpp",
@@ -29,6 +32,9 @@ project "FermiumServer"
     targetdir "bin"
     objdir "obj/server"
     files {
+        "SDK/**.hpp"
+        "Server/*.hpp"
+
         "Server/*.cpp",
 
         "SDK/**.cpp",
