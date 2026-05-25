@@ -24,6 +24,230 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\SDK\Fortnite\BuildingActor.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\BuildingClassData.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\Cattus.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\Cube.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\Festivus.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortAbilitySet.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortAssetManager.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortGameMode.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortGameState.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortInventory.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortItemDefinition.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortKismetLibrary.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortPawn.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortPickup.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortPlayerController.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortPlayerState.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortPlaylist.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortTeam.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortVehicles.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\FortWeaponStats.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\Pickle.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\PlaylistPropertyArray.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\Rocket.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\Snow.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Hook.hpp">
+      <Filter>..\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Macros.hpp">
+      <Filter>..\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Memcury.hpp">
+      <Filter>..\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\SDK.hpp">
+      <Filter>..\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\ScriptWriter.hpp">
+      <Filter>..\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\AbilitySystemComponent.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Actor.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\ActorComponent.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Beacon.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Class.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Controller.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\CurveTable.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\DataTable.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Engine.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\FastArraySerializer.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Field.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Flags.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Frame.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Function.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\GameFeatures.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\GameInstance.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\GameMode.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\GameState.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\GameViewportClient.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\GameplayAbilitySpec.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\GameplayEffect.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\GameplayStatics.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\GameplayTags.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Info.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\KismetMathLibrary.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\KismetStringLibrary.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\KismetSystemLibrary.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\LevelCollection.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\MathStructs.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Name.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\NetDriver.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Object.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\ObjectArray.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Pawn.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Player.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\PlayerController.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\PlayerState.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Property.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\PtrTypes.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\ReplicationDriver.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\ScalableFloat.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Struct.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Url.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\World.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\UnrealContainers.hpp">
+      <Filter>..\SDK</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\SDK\Fortnite\FortInventory.cpp">
       <Filter>..\SDK\Fortnite</Filter>
     </ClCompile>
