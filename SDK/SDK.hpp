@@ -68,6 +68,8 @@ extern inline float GameVersion = -1.0f;
 
 #include "Fortnite/FortPlaylist.hpp"
 #include "Fortnite/PlaylistPropertyArray.hpp"
+#include "Fortnite/MapInfo.hpp"
+#include "Fortnite/SafeZoneIndicator.hpp"
 
 #include "Fortnite/FortTeam.hpp"
 #include "Fortnite/FortGameState.hpp"

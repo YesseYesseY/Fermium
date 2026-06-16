@@ -52,3 +52,14 @@ AFortGameModeAthena* UGameplayStatics::GetGameMode()
     Default()->ProcessEvent(Func, &args);
     return args.Ret;
 }
+
+float UGameplayStatics::GetTimeSeconds()
+{
+    static auto Func = StaticClass()->GetFunction("GetTimeSeconds");
+    struct {
+        UObject* WorldContext;
+        float Ret;
+    } args { UWorld::GetWorld() };
+    Default()->ProcessEvent(Func, &args);
+    return args.Ret;
+}

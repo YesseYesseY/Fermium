@@ -157,6 +157,25 @@ namespace GameMode
         return StartAircraftPhaseOriginal(GameMode, a2);
     }
 
+    void (*StartNewSafeZonePhaseOriginal)(AFortGameModeAthena* GameMode, int a2);
+    void StartNewSafeZonePhase(AFortGameModeAthena* GameMode, int a2)
+    {
+        StartNewSafeZonePhaseOriginal(GameMode, a2);
+
+        static auto GameState = GameMode->GetGameStateAs<AFortGameStateAthena>();
+        static auto MapInfo = GameState->GetMapInfo();
+        static auto WaitTimes = MapInfo->GetSafeZoneDefinition().GetWaitTimes();
+        static auto ShrinkTimes = MapInfo->GetSafeZoneDefinition().GetShrinkTimes();
+
+        auto SafeZonePhase = GameMode->GetSafeZonePhase();
+        auto SZI = GameMode->GetSafeZoneIndicator();
+        if (SafeZonePhase < WaitTimes.Num())
+        {
+            SZI->GetSafeZoneStartShrinkTime() = SZI->GetSafeZoneFinishShrinkTime() + WaitTimes[SafeZonePhase];
+            SZI->GetSafeZoneFinishShrinkTime() = SZI->GetSafeZoneStartShrinkTime() + ShrinkTimes[SafeZonePhase];
+        }
+    }
+
     void Init()
     {
         auto GameModeBR = UObject::FindClass(L"/Script/FortniteGame.FortGameModeBR");
@@ -197,6 +216,39 @@ namespace GameMode
                     MsgBox("Couldn't find StartAircraftPhase");
                 }
 
+            }
+        }
+
+        // StartNewSafeZonePhase (Tested on: 13.40, 14.60, 18.40, 19.40)
+        if (GameVersion >= 13.0f)
+        {
+            auto Scanner = Memcury::Scanner::FindStringRef("AFortGameModeAthena::StartNewSafeZonePhase");
+
+            uintptr_t Addr = 0;
+            uintptr_t StrAddr = 0;
+
+            if (Scanner.IsValid())
+            {
+                StrAddr = Scanner.Get();
+
+                Addr = Scanner.ScanForLongRange({ 0x48, 0x8B, 0xC4 }, false).Get();;
+            }
+            else
+            {
+                Scanner = Memcury::Scanner::FindStringRef(L"FortGameModeAthena: No MegaStorm on SafeZone[%d].  GridCellThickness is less than 1.0.");
+                StrAddr = Scanner.Get();
+
+                Addr = Scanner.ScanForLongRange({ 0x40, 0x55, 0x53, 0x56 }, false).Get();;
+
+            }
+
+            if (Addr != StrAddr)
+            {
+                Hook::Function(Addr, StartNewSafeZonePhase, &StartNewSafeZonePhaseOriginal);
+            }
+            else
+            {
+                MsgBox("Failed to find StartNewSafeZonePhase. SafeZone will not work correctly.");
             }
         }
     }

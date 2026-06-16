@@ -82,6 +82,7 @@ public:
         return ret;
     }
 
+    static float GetTimeSeconds();
     static AFortGameStateAthena* GetGameState();
     static AFortGameModeAthena* GetGameMode();
 };
