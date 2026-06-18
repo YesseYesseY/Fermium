@@ -3,6 +3,8 @@ namespace GameMode
     bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
     {
         auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
+        if (!GameState->GetMapInfo())
+            return false;
     
         static bool Started = false;
         if (!Started)
@@ -38,7 +40,7 @@ namespace GameMode
     
             GameMode->GetWarmupRequiredPlayerCount() = 1;
         }
-    
+
         if (GameMode->GetNumPlayers() > 0)
         {
             GameFeatures::Init();

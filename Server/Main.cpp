@@ -31,7 +31,11 @@ DWORD MainThread(HMODULE Module)
     Building::Init();
     Abilities::Init();
 
-    // UObject::FindFunction(L"/Script/FortniteGame.BuildingFoundation:SetDynamicFoundationEnabled")->Hook(ABuildingFoundation::SetDynamicFoundationEnabledHook);
+    if (GameVersion >= 13.00f) // Stupid 12.41 crashes when going near agency, and i don't even wanna talk about the chapter 1 issues
+    {
+        UObject::FindFunction(L"/Script/FortniteGame.BuildingFoundation:SetDynamicFoundationEnabled")->Hook(ABuildingFoundation::SetDynamicFoundationEnabledHook);
+        UObject::FindFunction(L"/Script/FortniteGame.BuildingFoundation:SetDynamicFoundationTransform")->Hook(ABuildingFoundation::SetDynamicFoundationTransformHook);
+    }
 
     // GIsClient + GIsServer
     // if (GameVersion != 9.41f) // TODO Remake this mess

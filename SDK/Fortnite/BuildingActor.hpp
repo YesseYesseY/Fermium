@@ -62,45 +62,61 @@ public:
     }
 };
 
+struct FDynamicBuildingFoundationRepData
+{
+    STATIC_STRUCT(FDynamicBuildingFoundationRepData, L"/Script/FortniteGame.DynamicBuildingFoundationRepData");
+
+    STRUCT_PROP_REF_REFLECTION(uint8, EnabledState);
+    STRUCT_PROP_REF_REFLECTION(FVector, Translation);
+    STRUCT_PROP_REF_REFLECTION(FRotator, Rotation);
+};
+
 class ABuildingFoundation : public ABuildingSMActor
 {
 public:
     PROP_BIT_REFLECTION(bFoundationEnabled);
     PROP_REF_REFLECTION(uint8, DynamicFoundationType);
 
-    void OnRep_LevelToStream()
-    {
-        static auto Func = ClassPrivate->GetFunction("OnRep_LevelToStream");
-        ProcessEvent(Func);
-    }
+    PROP_BIT_REFLECTION(bServerStreamedInLevel);
 
-    // This gets insta returned if DynamicFoundationType is Static
-    void OnRep_FoundationEnabled()
-    {
-        static auto Func = ClassPrivate->GetFunction("OnRep_FoundationEnabled");
-        ProcessEvent(Func);
-    }
+    PROP_REF_REFLECTION(uint8, FoundationEnabledState);
+    PROP_REF_REFLECTION_SAFE(FDynamicBuildingFoundationRepData, DynamicFoundationRepData);
 
-    void OnRep_ServerStreamedInLevel()
-    {
-        static auto Func = ClassPrivate->GetFunction("OnRep_ServerStreamedInLevel");
-        ProcessEvent(Func);
-    }
-
-    void SetDynamicFoundationEnabled(bool Enabled)
-    {
-        FlushNetDormancy();
-        SetbFoundationEnabled(Enabled);
-        OnRep_LevelToStream();
-        ForceNetUpdate();
-    }
+    BASIC_UFUNC(OnRep_LevelToStream);
+    BASIC_UFUNC(OnRep_DynamicFoundationRepData);
+    BASIC_UFUNC(OnRep_FoundationEnabled);
+    BASIC_UFUNC(OnRep_ServerStreamedInLevel);
 
     static void SetDynamicFoundationEnabledHook(ABuildingFoundation* Foundation, FFrame* Stack)
     {
         FRAME_PROP(bool, Enabled);
         FRAME_END();
 
-        Foundation->SetDynamicFoundationEnabled(Enabled);
+        if (!Foundation->HasDynamicFoundationRepData())
+            return;
+
+        auto EnabledState = Enabled ? 1 : 2;
+
+        Foundation->GetFoundationEnabledState() = EnabledState;
+        Foundation->GetDynamicFoundationRepData().GetEnabledState() = EnabledState;
+        Foundation->OnRep_DynamicFoundationRepData();
+    }
+
+    static void SetDynamicFoundationTransformHook(ABuildingFoundation* Foundation, FFrame* Stack)
+    {
+        FRAME_PROP(FTransform, NewTransform);
+        FRAME_END();
+
+        return;
+
+        FRotator Rot;
+        UKismetMathLibrary::BreakTransform(NewTransform, nullptr, &Rot, nullptr);
+
+        Foundation->TeleportTo(NewTransform.Translation, Rot);
+
+        Foundation->GetDynamicFoundationRepData().GetTranslation() = NewTransform.Translation;
+        Foundation->GetDynamicFoundationRepData().GetRotation() = Rot;
+        Foundation->OnRep_DynamicFoundationRepData();
     }
 };
 

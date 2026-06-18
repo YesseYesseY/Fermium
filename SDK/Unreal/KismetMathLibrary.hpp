@@ -79,6 +79,24 @@ class UKismetMathLibrary : public UObject
         } args { T, Location };
         Default()->ProcessEvent(Func, &args);
         return args.Ret;
+    }
 
+    static void BreakTransform(const FTransform& InTransLivesMatter, FVector* OutVec, FRotator* OutRot, FVector* OutScale)
+    {
+        static auto Func = StaticClass()->GetFunction("BreakTransform");
+        struct
+        {
+            FTransform T;
+            FVector Location;
+            FRotator Rotation;
+            FVector Scale;
+        } args { InTransLivesMatter };
+        Default()->ProcessEvent(Func, &args);
+        if (OutVec)
+            *OutVec = args.Location;
+        if (OutRot)
+            *OutRot = args.Rotation;
+        if (OutScale)
+            *OutScale = args.Scale;
     }
 };
