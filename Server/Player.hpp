@@ -38,6 +38,9 @@ namespace Player
         {
             Events::Start();
         }
+        else if (Msg == L"storm")
+        {
+        }
         else if (Msg == L"tpalltome")
         {
             auto Pos = PlayerController->GetPawn()->GetActorLocation();
@@ -128,6 +131,38 @@ namespace Player
         }
     }
 
+    void ServerAcknowledgePossession(APlayerController* Controller, APawn* Pawn)
+    {
+        Controller->GetAcknowledgedPawn() = Pawn;
+    }
+
+    void SetIsInsideSafeZone(AFortPlayerPawn* Pawn, bool a2)
+    {
+        if (Pawn->GetbIsInsideSafeZone() != a2)
+        {
+            Pawn->SetbIsInsideSafeZone(a2);
+            Pawn->OnRep_IsInsideSafeZone();
+        }
+
+#if 0 // I did all of this reversing just to find out about OnRep_IsInsideSafeZone as i was working on the last ProcessMulticastDelegate line! :D
+        if (Pawn->GetbIsInsideSafeZone() != a2)
+        {
+            Pawn->SetbIsInsideSafeZone(a2);
+
+            auto ASC = Pawn->GetAbilitySystemComponent();
+            if (!ASC)
+                return;
+
+            auto& TagCount = ASC->GetGameplayTagCountContainer();
+            static FGameplayTag Tag = { UKismetStringLibrary::Conv_StringToName(L"Gameplay.InsideSafeZone") };
+            int32 Count = a2;
+            TagCount.SetTagCount(Tag, Count);
+
+            Pawn->GetOnSafeZoneOccupancyChangedEvent().Process(&a2);
+        }
+#endif
+    }
+
     void Init()
     {
         auto AircraftComponent = UObject::FindClass(L"/Script/FortniteGame.FortControllerComponent_Aircraft");
@@ -137,8 +172,9 @@ namespace Player
         }
 
         auto FortPlayerControllerAthena = AFortPlayerControllerAthena::StaticClass();
+        auto FortPlayerPawnAthena = AFortPlayerPawnAthena::StaticClass();
         auto PlayerController = APlayerController::StaticClass();
-        FortPlayerControllerAthena->VTableReplace("ServerAcknowledgePossession", PlayerController);
+        FortPlayerControllerAthena->VTableHook("ServerAcknowledgePossession", ServerAcknowledgePossession);
         FortPlayerControllerAthena->VTableHook("ServerCheat", ServerCheat);
         FortPlayerControllerAthena->VTableHook("ServerPlayEmoteItem", ServerPlayEmoteItem);
         UObject::FindFunction(L"/Script/FortniteGame.FortPlayerPawn:OnCapsuleBeginOverlap")->Hook(OnCapsuleBeginOverlap);
@@ -173,6 +209,26 @@ namespace Player
             if (Idx != -1)
             {
                 Hook::AllVTables(APlayerController::StaticClass(), Idx, GetPlayerViewPoint);
+            }
+        }
+
+        // SetIsInsideInSafeZone
+        if (GameVersion >= 18.40f) // TODO Find out what build removed this
+        {
+            auto Scanner = Memcury::Scanner::FindStringRef(L"STAT_SafeZoneInsideCheck");
+
+            if (Scanner.IsValid())
+            {
+                // Idk what builds this works on, works on 18.40 and 19.40 atleast. It doesn't work on 14.60 but that build doesn't remove SetIsInsideSafeZone
+                Scanner.ScanFor({ 0x8A, 0x55, 0x6F });
+                Scanner.ScanFor({ 0xE8 });
+
+                Scanner.RelativeOffset(1);
+                Scanner.ScanFor({ 0xFF, 0x90 });
+                Scanner.AbsoluteOffset(2);
+
+                auto Idx = *Scanner.GetAs<int32*>();
+                FortPlayerPawnAthena->VTableHook(Idx / 8, SetIsInsideSafeZone);
             }
         }
     }

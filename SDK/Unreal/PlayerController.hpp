@@ -6,4 +6,5 @@ class APlayerController : public AController
     PROP_REF_REFLECTION(UClass*, CheatClass);
     PROP_REF_REFLECTION(FVector, LastSpectatorSyncLocation);
     PROP_REF_REFLECTION(FRotator, LastSpectatorSyncRotation);
+    PROP_REF_REFLECTION(APawn*, AcknowledgedPawn);
 };

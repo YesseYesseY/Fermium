@@ -8,6 +8,11 @@ private:
 public:
     PROP_REF_REFLECTION(FGameplayAbilitySpecContainer, ActivatableAbilities);
 
+    FGameplayTagCountContainer& GetGameplayTagCountContainer()
+    {
+        static int32 Offset = ClassPrivate->GetPropOffset("BlockedAbilityBindings") + 0x10;
+        return *(FGameplayTagCountContainer*)(int64(this) + Offset);
+    }
 
     FGameplayAbilitySpec* FindAbilitySpecFromHandle(FGameplayAbilitySpecHandle Handle)
     {

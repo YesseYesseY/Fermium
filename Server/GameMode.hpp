@@ -2,11 +2,6 @@ namespace GameMode
 {
     bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
     {
-        // TODO Don't enable this check on s13 until ABuildingFoundation::SetDynamicFoundationEnabled works
-        static auto StartClass = UObject::FindClass(L"/Script/FortniteGame.FortPlayerStartWarmup");
-        if (UGameplayStatics::GetNumActorsOfClass(StartClass) <= 0 && std::floor(GameVersion) != 13)
-            return false;
-
         auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
     
         static bool Started = false;
@@ -15,8 +10,8 @@ namespace GameMode
             Started = true;
     
             auto Playlist = UObject::FindObject<UFortPlaylistAthena>(
-                    // L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo"
-                    L"/Game/Athena/Playlists/Playlist_DefaultDuo.Playlist_DefaultDuo"
+                    L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo"
+                    // L"/Game/Athena/Playlists/Playlist_DefaultDuo.Playlist_DefaultDuo"
                     // L"/Game/Athena/Playlists/Playground/Playlist_Playground.Playlist_Playground"
                     );
 #if 0
@@ -87,9 +82,6 @@ namespace GameMode
             }
             Inventory->Update();
         }
-
-        if (GameVersion > 12.0f)
-            Pawn->SetbCanBeDamaged(false);
 
         return Pawn;
     }

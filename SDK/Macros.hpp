@@ -106,6 +106,14 @@ public: \
         return Offset_##Name != -1; \
     }
 
+#define BASIC_UFUNC(FuncName) \
+public: \
+    void FuncName() \
+    { \
+        static auto Func = ClassPrivate->GetFunction(#FuncName); \
+        ProcessEvent(Func); \
+    }
+
 /// STRUCT
 
 #define STRUCT_UTILS(Type) \

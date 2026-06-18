@@ -31,6 +31,7 @@ extern inline float GameVersion = -1.0f;
 #include "Unreal/CurveTable.hpp"
 #include "Unreal/ScalableFloat.hpp"
 #include "Unreal/DataTable.hpp"
+#include "Unreal/Delegate.hpp"
 
 #include "Unreal/KismetStringLibrary.hpp"
 #include "Unreal/KismetSystemLibrary.hpp"
@@ -162,6 +163,8 @@ static void InitSDK(bool IsServer)
         FFastArraySerializer::Init();
         AFortPlayerState::Init();
         ABuildingSMActor::Init();
+        FGameplayTagCountContainer::Init();
+        FMulticastInlineDelegate::Init();
     }
 
     MH_Initialize();

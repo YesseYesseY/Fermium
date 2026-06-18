@@ -2,6 +2,7 @@ class AFortPawn : public ACharacter
 {
 public:
     PROP_REF_REFLECTION(AFortWeapon*, CurrentWeapon);
+    PROP_REF_REFLECTION(UAbilitySystemComponent*, AbilitySystemComponent);
 
     AFortWeapon* EquipWeaponDefinition(UFortItemDefinition* ItemDef, const FGuid& ItemEntryGuid)
     {
@@ -19,6 +20,10 @@ public:
 
 class AFortPlayerPawn : public AFortPawn
 {
+    PROP_BIT_REFLECTION(bIsInsideSafeZone);
+    PROP_REF_REFLECTION(FMulticastInlineDelegate, OnSafeZoneOccupancyChangedEvent);
+
+    BASIC_UFUNC(OnRep_IsInsideSafeZone);
 };
 
 class AFortPlayerPawnAthena : public AFortPlayerPawn
