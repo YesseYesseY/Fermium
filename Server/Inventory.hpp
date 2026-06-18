@@ -46,6 +46,15 @@ namespace Inventory
         FinishedTargetSplineOriginal(Pickup);
     }
 
+    void GivePickupToPlayer(AFortPickup* Pickup, int64 a2, char a3)
+    {
+        auto PlayerController = Pickup->GetPickupLocationData().GetPickupTarget()->GetControllerAs<AFortPlayerControllerAthena>();
+        auto Inventory = PlayerController->GetWorldInventory();
+        Inventory->GiveItem(Pickup->GetPrimaryPickupItemEntry());
+        Inventory->Update();
+        Pickup->DestroyActor();
+    }
+
     void Init()
     {
         auto PC = AFortPlayerControllerAthena::StaticClass();
@@ -54,8 +63,15 @@ namespace Inventory
         PC->VTableHook("ServerAttemptInventoryDrop", ServerAttemptInventoryDrop);
         P->VTableHook("ServerHandlePickup", ServerHandlePickup);
 
-        // FinishedTargetSpline
-        // NOTE: I don't like spamming patterns like this but this function is so annoying to find otherwise
+        // FinishedTargetSpline/GivePickupToPlayer
+        auto SetTargetFunc = UObject::FindFunction(L"/Script/FortniteGame.FortPickup:BlueprintSetPickupTarget");
+        if (GameVersion >= 17.30f && SetTargetFunc) // Idk when it turned virtual. Somewhere between 15.30 and 17.30
+        {
+            auto Idx = SetTargetFunc->GetVTableIndex();
+            Idx += 2;
+            Hook::AllVTables(AFortPickup::StaticClass(), Idx, GivePickupToPlayer);
+        }
+        else
         {
             // 19.40
             auto Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 55 57 41 57 48 8D AC 24 ? ? ? ? 48 81 EC A0 01 00 00 48 8B 05 ? ? ? ? 48 33 C4 48 89 85 ? ? ? ? 48 8B B9").Get();

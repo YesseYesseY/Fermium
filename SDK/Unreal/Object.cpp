@@ -53,14 +53,23 @@ void UObject::Init()
 {
     // StaticFindObject
     {
-        // ScanFor bytes will probably change
-        auto Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 55 41 54 41 55 41 56 41 57 48 8B EC 48 83 EC 60 45 33 ED 45 8A F9").Get();
-
-        if (!Addr)
-            Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 4C 89 64 24 ? 55 41 55 41 57 48 8B EC 48 83 EC 50 4C 8B E9").Get();
-        
-        if (!Addr)
-            Addr = Memcury::Scanner::FindStringRef(L"Illegal call to StaticFindObject() while serializing object data!").ScanFor({ 0x48, 0x89, 0x5C }, false).Get();
+        uintptr_t Addr = 0;
+        auto Scanner = Memcury::Scanner::FindStringRef(L"GlobalUMGSequenceTickManager");
+        if (Scanner.IsValid())
+        {
+            auto StrAddr = Scanner.Get();
+            Scanner.ScanFor({ 0xE8 }, false);
+            if (Scanner.Get() != StrAddr)
+                Addr = Scanner.RelativeOffset(1).Get();
+        }
+        else
+        {
+            Scanner = Memcury::Scanner::FindStringRef(L"Illegal call to StaticFindObject() while serializing object data!");
+            auto StrAddr = Scanner.Get();
+            Scanner.ScanFor({ 0x48, 0x89, 0x5C }, false);
+            if (Scanner.Get() != StrAddr)
+                Addr = Scanner.Get();
+        }
 
         if (!Addr) {
             MsgBox("Failed to find StaticFindObject");
@@ -74,7 +83,7 @@ void UObject::Init()
     {
         auto Addr = Memcury::Scanner::FindPattern("40 55 56 57 41 54 41 55 41 56 41 57 48 81 EC F0 00 00 00").Get();
 
-        if (!Addr) // 18.40
+        if (!Addr) // 18.40, 17.50
             Addr = Memcury::Scanner::FindPattern("40 55 53 56 57 41 54 41 56 41 57 48 81 EC 40 01 00 00").Get();
 
         if (!Addr) // 19.40

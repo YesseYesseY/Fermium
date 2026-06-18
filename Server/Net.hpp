@@ -144,7 +144,7 @@ namespace Net
 
         // AOnlineBeaconHost::InitHost + UNetDriver::SetWorld
         {
-            auto Addr = Memcury::Scanner::FindStringRef(L"BeaconPort=").ScanFor({ 0x48, 0x8B, 0xC4 }, false);
+            auto Addr = Memcury::Scanner::FindStringRef(L"BeaconPort=").ScanForEither({{ 0x48, 0x8B, 0xC4 }, { 0x48, 0x89, 0x5C }}, false);
 
             if (!Addr.IsValid())
             {

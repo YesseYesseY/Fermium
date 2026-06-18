@@ -227,11 +227,19 @@ namespace GameMode
             }
             else
             {
-                Scanner = Memcury::Scanner::FindStringRef(L"FortGameModeAthena: No MegaStorm on SafeZone[%d].  GridCellThickness is less than 1.0.");
-                StrAddr = Scanner.Get();
+                // 17.50, 17.30
+                // NOTE: I should really add like a ScanForUeLog or something lol
+                Addr = Memcury::Scanner::FindPattern("48 8B C4 48 89 58 ? 48 89 70 ? 48 89 78 ? 55 41 54 41 55 41 56 41 57 48 8D 68 ? 48 81 EC ? 01 00 00 0F 29 70 ? 0F 29 78 ? 44 0F 29 40 ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 45 ? 44 8B F2").Get();
 
-                Addr = Scanner.ScanForLongRange({ 0x40, 0x55, 0x53, 0x56 }, false).Get();;
+                if (!Addr)
 
+                if (!Addr)
+                {
+                    Scanner = Memcury::Scanner::FindStringRef(L"FortGameModeAthena: No MegaStorm on SafeZone[%d].  GridCellThickness is less than 1.0.");
+                    StrAddr = Scanner.Get();
+
+                    Addr = Scanner.ScanForLongRange({ 0x40, 0x55, 0x53, 0x56 }, false).Get();;
+                }
             }
 
             if (Addr != StrAddr)

@@ -38,6 +38,9 @@ public:
         {
             auto Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 81 EC 80 00 00 00 80 B9").Get();
 
+            if (!Addr) // 17.50
+                Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 ? 48 81 EC B0 00 00 00 80 B9 ? ? ? ? ? 4C 8B EA").Get();
+
             if (!Addr) // 19.40
                 Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 83 EC 70 80 B9 ? ? ? ? ? 4C 8B E2").Get();
 

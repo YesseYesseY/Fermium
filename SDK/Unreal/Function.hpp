@@ -14,11 +14,17 @@ public:
         {
             Scanner.ScanFor({ 0x84, 0xC0 });
         }
-        Scanner.ScanForEither({{ 0xFF, 0x90 }, { 0xFF, 0x50 }}, true, 0, &idx);
+        Scanner.ScanForEither({{ 0xFF, 0x90 }, { 0xFF, 0x50 }, { 0xFF, 0x93 }, { 0xFF, 0xD7 }}, true, 0, &idx);
         if (idx != -1)
         {
             if (idx == 1)
                 return *Scanner.AbsoluteOffset(2).GetAs<int8*>() / 8;
+
+            if (idx == 3) // I should really learn more about assembly so i don't have 15 indexes here by the end of the project
+            {
+                Scanner.ScanFor({ 0x48, 0x8B, 0xB8 }, false);
+                return *Scanner.AbsoluteOffset(3).GetAs<int32*>() / 8;
+            }
 
             return *Scanner.AbsoluteOffset(2).GetAs<int32*>() / 8;
         }
