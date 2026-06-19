@@ -3,6 +3,11 @@ struct FVector
     float X, Y, Z;
 
     FVector(float x = 0, float y = 0, float z = 0) : X(x), Y(y), Z(z) { }
+
+    FVector operator+(const FVector& a) const
+    {
+        return { X + a.X, Y + a.Y, Z + a.Z };
+    }
 };
 
 struct FRotator

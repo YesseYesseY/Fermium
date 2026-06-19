@@ -25,7 +25,7 @@ namespace Building
         {
             for (auto thing : args.ExistingBuildings)
             {
-                thing->DestroyActor();
+                thing->K2_DestroyActor();
             }
         }
         return ret;

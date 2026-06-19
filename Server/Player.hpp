@@ -43,7 +43,7 @@ namespace Player
         }
         else if (Msg == L"tpalltome")
         {
-            auto Pos = PlayerController->GetPawn()->GetActorLocation();
+            auto Pos = PlayerController->GetPawn()->K2_GetActorLocation();
             for (auto Player : UWorld::GetWorld()->GetNetDriver()->GetClientConnections())
             {
                 Player->GetPlayerController()->GetPawn()->TeleportTo(Pos);
@@ -121,13 +121,13 @@ namespace Player
         }
         else if (auto Pawn = PlayerController->GetPawn())
         {
-            *Location = Pawn->GetActorLocation();
+            *Location = Pawn->K2_GetActorLocation();
             *Rotation = PlayerController->GetControlRotation();
         }
         else
         {
-            *Location = PlayerController->GetActorLocation();
-            *Rotation = PlayerController->GetActorRotation();
+            *Location = PlayerController->K2_GetActorLocation();
+            *Rotation = PlayerController->K2_GetActorRotation();
         }
     }
 

@@ -16,7 +16,7 @@ namespace Inventory
         auto Inventory = PlayerController->GetWorldInventory();
         if (auto ItemEntry = Inventory->FindItemEntry(ItemGuid))
         {
-            AFortPickup::SpawnFromItemEntry(PlayerController->GetPawn()->GetActorLocation(), ItemEntry, Count, PlayerController->GetPawnAs<AFortPawn>());
+            AFortPickup::SpawnFromItemEntry(PlayerController->GetPawn()->K2_GetActorLocation(), ItemEntry, Count, PlayerController->GetPawnAs<AFortPawn>());
             Inventory->RemoveItem(ItemEntry, Count);
         }
     }
@@ -52,7 +52,7 @@ namespace Inventory
         auto Inventory = PlayerController->GetWorldInventory();
         Inventory->GiveItem(Pickup->GetPrimaryPickupItemEntry());
         Inventory->Update();
-        Pickup->DestroyActor();
+        Pickup->K2_DestroyActor();
     }
 
     void Init()

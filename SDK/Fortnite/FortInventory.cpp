@@ -19,7 +19,7 @@ void AFortInventory::GiveItem(FFortItemEntry& ItemEntry)
             else
             {
                 auto Pawn = GetOwnerAs<AFortPlayerController>()->GetPawnAs<AFortPawn>();
-                AFortPickup::SpawnFromItemEntry(Pawn->GetActorLocation(), &ItemEntry, -1, Pawn);
+                AFortPickup::SpawnFromItemEntry(Pawn->K2_GetActorLocation(), &ItemEntry, -1, Pawn);
                 return;
             }
         }
@@ -63,7 +63,7 @@ JustAddTheItem:
 void AFortInventory::Clear(bool Drop)
 {
     auto Pawn = ((AFortPlayerController*)GetOwner())->GetPawnAs<AFortPawn>();
-    auto Pos = Pawn->GetActorLocation();
+    auto Pos = Pawn->K2_GetActorLocation();
     for (int i = 0; i < Num(); i++)
     {
         auto& ItemEntry = GetInventory().GetReplicatedEntries().Get(i, FFortItemEntry::Size());

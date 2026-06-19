@@ -82,6 +82,8 @@ public:
     PROP_REF_REFLECTION(uint8, FoundationEnabledState);
     PROP_REF_REFLECTION_SAFE(FDynamicBuildingFoundationRepData, DynamicFoundationRepData);
 
+    PROP_REF_REFLECTION(FTransform, DynamicFoundationTransform);
+
     BASIC_UFUNC(OnRep_LevelToStream);
     BASIC_UFUNC(OnRep_DynamicFoundationRepData);
     BASIC_UFUNC(OnRep_FoundationEnabled);
@@ -107,12 +109,10 @@ public:
         FRAME_PROP(FTransform, NewTransform);
         FRAME_END();
 
-        return;
-
         FRotator Rot;
         UKismetMathLibrary::BreakTransform(NewTransform, nullptr, &Rot, nullptr);
 
-        Foundation->TeleportTo(NewTransform.Translation, Rot);
+        Foundation->GetDynamicFoundationTransform() = NewTransform;
 
         Foundation->GetDynamicFoundationRepData().GetTranslation() = NewTransform.Translation;
         Foundation->GetDynamicFoundationRepData().GetRotation() = Rot;

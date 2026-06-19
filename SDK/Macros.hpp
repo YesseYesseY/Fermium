@@ -114,6 +114,24 @@ public: \
         ProcessEvent(Func); \
     }
 
+#define BASIC_UFUNC_RET(RetType, FuncName) \
+public: \
+    RetType FuncName() \
+    { \
+        static auto Func = ClassPrivate->GetFunction(#FuncName); \
+        RetType Ret; \
+        ProcessEvent(Func, &Ret); \
+        return Ret; \
+    }
+
+#define UFUNC_START(RetType, FuncName, ...) \
+public: \
+    RetType FuncName() \
+    { \
+        static auto Func = ClassPrivate->GetFunction(#FuncName);
+
+    
+
 /// STRUCT
 
 #define STRUCT_UTILS(Type) \

@@ -5,55 +5,14 @@ class AActor : public UObject
     PROP_BIT_REFLECTION(bCanBeDamaged);
 
 public:
-    FTransform GetTransform()
-    {
-        static auto Func = ClassPrivate->GetFunction("GetTransform");
-        FTransform Ret;
-        ProcessEvent(Func, &Ret);
-        return Ret;
-    }
-
-    FVector GetActorLocation()
-    {
-        static auto Func = ClassPrivate->GetFunction("K2_GetActorLocation");
-        FVector Ret;
-        ProcessEvent(Func, &Ret);
-        return Ret;
-    }
-
-    FRotator GetActorRotation()
-    {
-        static auto Func = ClassPrivate->GetFunction("K2_GetActorRotation");
-        FRotator Ret;
-        ProcessEvent(Func, &Ret);
-        return Ret;
-    }
-
-    void DestroyActor()
-    {
-        static auto Func = ClassPrivate->GetFunction("K2_DestroyActor");
-        ProcessEvent(Func);
-    }
-
-    void FlushNetDormancy()
-    {
-        static auto Func = ClassPrivate->GetFunction("FlushNetDormancy");
-        ProcessEvent(Func);
-    }
-
-    void ForceNetUpdate()
-    {
-        static auto Func = ClassPrivate->GetFunction("ForceNetUpdate");
-        ProcessEvent(Func);
-    }
-
-    AActor* GetOwner()
-    {
-        static auto Func = ClassPrivate->GetFunction("GetOwner");
-        AActor* Ret;
-        ProcessEvent(Func, &Ret);
-        return Ret;
-    }
+    BASIC_UFUNC_RET(FTransform, GetTransform);
+    BASIC_UFUNC_RET(FVector, K2_GetActorLocation);
+    BASIC_UFUNC_RET(FRotator, K2_GetActorRotation);
+    BASIC_UFUNC(K2_DestroyActor);
+    BASIC_UFUNC(FlushNetDormancy);
+    BASIC_UFUNC(ForceNetUpdate);
+    BASIC_UFUNC_RET(AActor*, GetOwner);
+    BASIC_UFUNC_RET(float, GetGameTimeSinceCreation);
 
     template <typename T>
     T* GetOwnerAs()
@@ -78,14 +37,6 @@ public:
         return (T*)_GetComponentByClass(ComponentClass);
     }
 
-    float GetGameTimeSinceCreation()
-    {
-        static auto Func = ClassPrivate->GetFunction("GetGameTimeSinceCreation");
-        float Ret;
-        ProcessEvent(Func, &Ret);
-        return Ret;
-    }
-
     bool TeleportTo(FVector DestLocation, FRotator DestRotation = {})
     {
         static auto Func = ClassPrivate->GetFunction("K2_TeleportTo");
@@ -97,5 +48,16 @@ public:
         } args { DestLocation, DestRotation };
         ProcessEvent(Func, &args);
         return args.Ret;
+    }
+
+    void K2_SetActorLocationAndRotation(const FVector& NewLocation, const FRotator& NewRotation, bool bTeleport)
+    {
+        static auto Func = ClassPrivate->GetFunction("K2_SetActorLocationAndRotation");
+        ARGS_NEW();
+        ARGS_PROP(FVector, NewLocation, NewLocation);
+        ARGS_PROP(FRotator, NewRotation, NewRotation);
+        ARGS_PROP(bool, bTeleport, bTeleport);
+        ProcessEvent(Func, &args);
+        ARGS_FREE();
     }
 };
