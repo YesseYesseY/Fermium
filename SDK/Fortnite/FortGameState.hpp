@@ -36,6 +36,8 @@ public:
     PROP_REF_REFLECTION(EAthenaGamePhase, GamePhase);
     PROP_REF_REFLECTION_SAFE(bool, bCraftingEnabled);
     PROP_REF_REFLECTION(AFortAthenaMapInfo*, MapInfo);
+    PROP_REF_REFLECTION(float, WarmupCountdownStartTime);
+    PROP_REF_REFLECTION(float, WarmupCountdownEndTime);
 
     void OnRep_GamePhase(EAthenaGamePhase OldPhase)
     {

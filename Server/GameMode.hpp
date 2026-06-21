@@ -49,6 +49,13 @@ namespace GameMode
             Events::Init();
             if (GameState->HasbCraftingEnabled())
                 GameState->GetbCraftingEnabled() = GameVersion < 19.00f; // TODO Get from GameData or something maybe
+
+            auto Time = UGameplayStatics::GetTimeSeconds();
+            GameState->GetWarmupCountdownStartTime() = Time;
+            GameState->GetWarmupCountdownEndTime() = Time + 60.0f;
+            GameMode->GetWarmupCountdownDuration() = 60.0f;
+            GameMode->GetWarmupEarlyCountdownDuration() = 60.0f;
+
             GameMode->SetbWorldIsReady(true);
             return true;
         }
@@ -170,6 +177,12 @@ namespace GameMode
         }
     }
 
+    void GetPlaylistEnableBotsHook(UObject* Obj, FFrame* Stack, bool* Ret)
+    {
+        FRAME_END();
+        *Ret = false;
+    }
+
     void Init()
     {
         auto GameModeBR = UObject::FindClass(L"/Script/FortniteGame.FortGameModeBR");
@@ -179,6 +192,8 @@ namespace GameMode
         GameModeBR->VTableHook("ReadyToStartMatch", ReadyToStartMatchHook);
         GameModeBR->VTableHook("SpawnDefaultPawnFor", SpawnDefaultPawnForHook);
         GameModeBR->VTableHook("HandleStartingNewPlayer", HandleStartingNewPlayer, &HandleStartingNewPlayerOriginal);
+
+        UObject::FindFunction(L"/Script/FortniteGame.FortGameModeAthena:GetPlaylistEnableBots")->Hook(GetPlaylistEnableBotsHook);
 
         // StartAircraftPhase
         {

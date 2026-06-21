@@ -21,4 +21,6 @@ class AFortGameModeAthena : public AFortGamePvPBase
     PROP_REF_REFLECTION(int32, WarmupRequiredPlayerCount);
     PROP_REF_REFLECTION(AFortSafeZoneIndicator*, SafeZoneIndicator);
     PROP_REF_REFLECTION(int32, SafeZonePhase);
+    PROP_REF_REFLECTION(float, WarmupCountdownDuration);
+    PROP_REF_REFLECTION(float, WarmupEarlyCountdownDuration);
 };

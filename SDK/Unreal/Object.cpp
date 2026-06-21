@@ -54,11 +54,11 @@ void UObject::Init()
     // StaticFindObject
     {
         uintptr_t Addr = 0;
-        auto Scanner = Memcury::Scanner::FindStringRef(L"GlobalUMGSequenceTickManager");
+        auto Scanner = Memcury::Scanner::FindStringRef(L"GlobalUMGSequenceTickManager", true);
         if (Scanner.IsValid())
         {
             auto StrAddr = Scanner.Get();
-            Scanner.ScanFor({ 0xE8 }, false);
+            Scanner.ScanFor({ 0xE8 });
             if (Scanner.Get() != StrAddr)
                 Addr = Scanner.RelativeOffset(1).Get();
         }

@@ -38,8 +38,25 @@ namespace Player
         {
             Events::Start();
         }
-        else if (Msg == L"storm")
+        else if (Msg == L"foundations")
         {
+            std::ofstream outfile("foundations.txt");
+            for (int i = 0; i < UObject::Objects->Num(); i++)
+            {
+                if (auto Object = UObject::Objects->Get(i))
+                {
+                    if (!Object || Object->HasObjectFlag(EObjectFlags::ClassDefaultObject) || !Object->IsA(ABuildingFoundation::StaticClass()))
+                        continue;
+
+                    auto Foundation = (ABuildingFoundation*)Object;
+
+                    if (Foundation->GetDynamicFoundationType() == 0)
+                        continue;
+
+                    outfile << std::format("[{}] = \"{}\"\n", Foundation->GetDynamicFoundationType(), Foundation->GetFullName());
+                }
+            }
+            outfile.close();
         }
         else if (Msg == L"tpalltome")
         {
