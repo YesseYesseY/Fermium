@@ -41,7 +41,6 @@ namespace Inventory
         auto PlayerController = Pickup->GetPickupLocationData().GetPickupTarget()->GetControllerAs<AFortPlayerControllerAthena>();
         auto Inventory = PlayerController->GetWorldInventory();
         Inventory->GiveItem(Pickup->GetPrimaryPickupItemEntry());
-        Inventory->Update();
 
         FinishedTargetSplineOriginal(Pickup);
     }
@@ -51,7 +50,6 @@ namespace Inventory
         auto PlayerController = Pickup->GetPickupLocationData().GetPickupTarget()->GetControllerAs<AFortPlayerControllerAthena>();
         auto Inventory = PlayerController->GetWorldInventory();
         Inventory->GiveItem(Pickup->GetPrimaryPickupItemEntry());
-        Inventory->Update();
         Pickup->K2_DestroyActor();
     }
 

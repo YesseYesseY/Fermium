@@ -29,6 +29,7 @@ class UFortWorldItem : public UFortItem
 
 class AFortWeapon : public AActor
 {
+    PROP_REF_REFLECTION(FGuid, ItemEntryGuid);
 };
 
 struct FFortItemList : FFastArraySerializer
@@ -48,7 +49,7 @@ class AFortInventory : public AActor
         return (int32)((int64(ItemEntry) - int64(GetInventory().GetReplicatedEntries().GetData())) / FFortItemEntry::Size());
     }
 
-    FFortItemEntry* FindItemEntry(const FGuid& ItemGuid)
+    FFortItemEntry* FindItemEntry(const FGuid& ItemGuid, int* Idx = nullptr)
     {
         auto& Entries = GetInventory().GetReplicatedEntries();
         for (int i = 0; i < Entries.Num(); i++)
@@ -56,6 +57,9 @@ class AFortInventory : public AActor
             auto& Entry = Entries.Get(i, FFortItemEntry::Size());
             if (Entry.GetItemGuid() == ItemGuid)
             {
+                if (Idx)
+                    *Idx = i;
+
                 return &Entry;
             }
         }
@@ -88,6 +92,8 @@ class AFortInventory : public AActor
             GetInventory().MarkArrayDirty();
     }
 
+    void GiveItem(FFortItemEntry& ItemEntry);
+
     void GiveItem(UFortItemDefinition* ItemDef, int32 Count = -1)
     {
         if (Count == 0 || !ItemDef)
@@ -96,23 +102,21 @@ class AFortInventory : public AActor
         if (Count == -1)
             Count = ItemDef->GetMaxStackSize();
 
-        auto Item = (UFortWorldItem*)ItemDef->CreateTemporaryItemInstanceBP(Count);
-        auto& ItemEntry = Item->GetItemEntry();
+        auto NewEntry = FFortItemEntry::New();
+        NewEntry->GetCount() = Count;
+        NewEntry->GetItemDefinition() = ItemDef;
 
         if (ItemDef->IsA(UFortWeaponItemDefinition::StaticClass()))
         {
             auto WeaponDef = (UFortWeaponItemDefinition*)ItemDef;
             if (auto WeaponStats = WeaponDef->GetWeaponStatHandle().Get<FFortBaseWeaponStats>())
             {
-                ItemEntry.GetLoadedAmmo() = WeaponStats->GetClipSize();
+                NewEntry->GetLoadedAmmo() = WeaponStats->GetClipSize();
             }
         }
 
-        GetInventory().GetReplicatedEntries().Add(ItemEntry, FFortItemEntry::Size());
-        GetInventory().GetItemInstances().Add(Item);
+        GiveItem(*NewEntry);
     }
-
-    void GiveItem(FFortItemEntry& ItemEntry);
 
     void RemoveItem(FFortItemEntry* ItemEntry, int32 Count)
     {

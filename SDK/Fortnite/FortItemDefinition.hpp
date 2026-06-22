@@ -36,6 +36,42 @@ public:
 class UFortWorldItemDefinition : public UFortItemDefinition
 {
     PROP_BIT_REFLECTION(bCanBeDropped);
+    PROP_REF_REFLECTION_SAFE(uint8, NumberOfSlotsToTake);
+
+    bool GoesInPrimaryQuickbar()
+    {
+        // TODO Using EFortItemType is probably faster but it changes every build so i have to add STATIC_ENUM() and stuff and i really dont feel like doing that rn so we doing it this way :)))
+        static std::vector<UClass*> ClassesToCheck = {
+            UObject::FindClass(L"/Script/FortniteGame.FortResourceItemDefinition"),
+            UObject::FindClass(L"/Script/FortniteGame.FortAmmoItemDefinition"),
+            UObject::FindClass(L"/Script/FortniteGame.FortBuildingItemDefinition"),
+            UObject::FindClass(L"/Script/FortniteGame.FortEditToolItemDefinition"),
+            UObject::FindClass(L"/Script/FortniteGame.FortTrapItemDefinition"),
+        };
+
+        for (auto Class : ClassesToCheck)
+        {
+            if (Class && IsA(Class))
+                return false;
+        }
+
+        return true;
+    }
+
+    uint8 GetSlotSize()
+    {
+        if (!GoesInPrimaryQuickbar())
+            return 0;
+
+        if (HasNumberOfSlotsToTake())
+        {
+            if (GetNumberOfSlotsToTake() > 1)
+                MsgBox("{}", GetNumberOfSlotsToTake());
+            return GetNumberOfSlotsToTake();
+        }
+
+        return 1;
+    }
 };
 
 class UFortWeaponItemDefinition : public UFortWorldItemDefinition

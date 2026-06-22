@@ -45,7 +45,7 @@ namespace Player
             {
                 if (auto Object = UObject::Objects->Get(i))
                 {
-                    if (!Object || Object->HasObjectFlag(EObjectFlags::ClassDefaultObject) || !Object->IsA(ABuildingFoundation::StaticClass()))
+                    if (Object->HasObjectFlag(EObjectFlags::ClassDefaultObject) || !Object->IsA(ABuildingFoundation::StaticClass()))
                         continue;
 
                     auto Foundation = (ABuildingFoundation*)Object;

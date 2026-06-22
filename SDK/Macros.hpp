@@ -146,6 +146,10 @@ public: \
         auto Ret = (Type*)FMemory::Malloc(StructSize); \
         memset(Ret, 0, StructSize); \
         return Ret; \
+    } \
+    void CopyFrom(Type& Other) \
+    { \
+        memcpy(this, &Other, Size()); \
     }
 
 #define STATIC_STRUCT(Type, Name) \

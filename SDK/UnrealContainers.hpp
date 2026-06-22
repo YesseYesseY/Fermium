@@ -339,6 +339,14 @@ namespace UC
             return *(ArrayElementType*)(__int64(Data) + (ElemSize * Index));
         }
 
+        inline void Set(int32 Index, ArrayElementType& Val, int32 ElemSize = sizeof(ArrayElementType))
+        {
+            if (!IsValidIndex(Index))
+                return;
+
+            memcpy((ArrayElementType*)(int64(Data) + (Index * ElemSize)), &Val, ElemSize);
+        }
+
 	public:
         inline ArrayElementType* GetData() const { return Data; }
 		inline int32 Num() const { return NumElements; }
