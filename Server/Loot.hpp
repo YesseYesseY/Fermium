@@ -371,22 +371,20 @@ namespace Loot
             }
         }
 
-        // if (false)
         {
+            auto ChestClass = UObject::FindClass(L"/Game/Building/ActorBlueprints/Containers/Tiered_Chest_Athena.Tiered_Chest_Athena_C");
             auto FloorLootClass = UObject::FindClass(L"/Game/Athena/Environments/Blueprints/Tiered_Athena_FloorLoot_01.Tiered_Athena_FloorLoot_01_C");
-            auto FloorLootSpawners = UGameplayStatics::GetAllActorsOfClass<ABuildingContainer>(FloorLootClass);
-            for (auto Spawner : FloorLootSpawners)
-                SpawnLoot(Spawner);
-            FloorLootSpawners.Free();
-        }
+            auto FloorLootWarmupClass = UObject::FindClass(L"/Game/Athena/Environments/Blueprints/Tiered_Athena_FloorLoot_Warmup.Tiered_Athena_FloorLoot_Warmup_C");
 
-        // if (false)
-        {
-            auto FloorLootClass = UObject::FindClass(L"/Game/Athena/Environments/Blueprints/Tiered_Athena_FloorLoot_Warmup.Tiered_Athena_FloorLoot_Warmup_C");
-            auto FloorLootSpawners = UGameplayStatics::GetAllActorsOfClass<ABuildingContainer>(FloorLootClass);
-            for (auto Spawner : FloorLootSpawners)
-                SpawnLoot(Spawner);
-            FloorLootSpawners.Free();
+            auto Containers = UGameplayStatics::GetAllActorsOfClass<ABuildingContainer>(ABuildingContainer::StaticClass());
+            for (auto Container : Containers)
+            {
+                Container->ApplyRandomUpgrades();
+
+                if (Container->IsA(FloorLootClass) || Container->IsA(FloorLootWarmupClass))
+                    SpawnLoot(Container);
+            }
+            Containers.Free();
         }
 
         if (GameVersion < 11.0f)

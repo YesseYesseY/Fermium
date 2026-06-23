@@ -41,4 +41,9 @@ struct FScalableFloat
     {
         return (int32)GetValueAtLevel(Level);
     }
+
+    bool GetValueAsBool(float Level)
+    {
+        return GetValueAtLevel(Level) != 0.0f;
+    }
 };

@@ -128,6 +128,15 @@ class ABuildingTimeOfDayLights : public ABuildingAutoNav
 {
 };
 
+struct FRandomUpgradeData
+{
+    STATIC_STRUCT(FRandomUpgradeData, L"/Script/FortniteGame.RandomUpgradeData");
+
+    STRUCT_PROP_REF_REFLECTION(FName, LootTierGroupIfApplied);
+    STRUCT_PROP_REF_REFLECTION(FScalableFloat, Enabled);
+    STRUCT_PROP_REF_REFLECTION(FScalableFloat, ChanceToApplyPerContainer);
+};
+
 class ABuildingContainer : public ABuildingTimeOfDayLights
 {
     STATIC_CLASS(L"/Script/FortniteGame.BuildingContainer");
@@ -139,11 +148,62 @@ class ABuildingContainer : public ABuildingTimeOfDayLights
     PROP_REF_REFLECTION(float, LootTossConeHalfAngle_Athena);
     PROP_REF_REFLECTION(FRotator, LootTossDirection_Athena);
     PROP_REF_REFLECTION(float, LootTossSpeed_Athena);
+    PROP_REF_REFLECTION(int32, ReplicatedLootTier);
+    PROP_REF_REFLECTION_SAFE(TArray<FRandomUpgradeData>, PotentialRandomUpgrades);
+    PROP_REF_REFLECTION_SAFE(int32, ChosenRandomUpgrade);
 
-    void OnRep_bAlreadySearched()
+    BASIC_UFUNC(OnRep_bAlreadySearched);
+    BASIC_UFUNC(OnRep_LootTier);
+    BASIC_UFUNC(OnRep_ChosenRandomUpgrade);
+
+    void SetLootTier(int32 NewLootTier)
     {
-        static auto Func = ClassPrivate->GetFunction("OnRep_bAlreadySearched");
-        ProcessEvent(Func);
+        auto& ReplicatedLootTier = GetReplicatedLootTier();
+        if (ReplicatedLootTier == NewLootTier)
+            return;
+
+        ReplicatedLootTier = NewLootTier;
+        OnRep_LootTier();
+    }
+
+    void SetChosenRandomUpgrade(int32 Idx)
+    {
+        auto& ChosenRandomUpgrade = GetChosenRandomUpgrade();
+        if (Idx == ChosenRandomUpgrade)
+            return;
+
+        ChosenRandomUpgrade = Idx;
+        OnRep_ChosenRandomUpgrade();
+    }
+
+    void ApplyRandomUpgrades()
+    {
+        if (!HasPotentialRandomUpgrades())
+            return;
+
+        auto& PRU = GetPotentialRandomUpgrades();
+        for (int i = 0; i < PRU.Num(); i++)
+        {
+            auto& RU = PRU.Get(i, FRandomUpgradeData::Size());
+
+            if (!RU.GetEnabled().GetValueAsBool(0.0f))
+                continue;
+
+            auto SpawnPercentage = RU.GetChanceToApplyPerContainer().GetValueAtLevel(0.0f);
+            if (SpawnPercentage <= 0.0f)
+                continue;
+
+            SpawnPercentage /= 100.0f;
+
+            if (!UKismetMathLibrary::RandomBoolWithWeight(SpawnPercentage))
+                continue;
+
+            GetSearchLootTierGroup() = RU.GetLootTierGroupIfApplied();
+            SetChosenRandomUpgrade(i);
+            SetLootTier(i + 2);
+
+            break;
+        }
     }
 };
 

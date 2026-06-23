@@ -68,6 +68,18 @@ class UKismetMathLibrary : public UObject
         return args.Ret;
     }
 
+    static bool RandomBoolWithWeight(float Weight)
+    {
+        static auto Func = StaticClass()->GetFunction("RandomBoolWithWeight");
+        struct
+        {
+            float Weight;
+            bool Ret;
+        } args { Weight };
+        Default()->ProcessEvent(Func, &args);
+        return args.Ret;
+    }
+
     static FVector TransformLocation(const FTransform& T, const FVector& Location)
     {
         static auto Func = StaticClass()->GetFunction("TransformLocation");
