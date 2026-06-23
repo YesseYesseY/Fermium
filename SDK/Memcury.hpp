@@ -912,6 +912,36 @@ namespace Memcury
             return *this;
         }
 
+        auto ScanForShortRange(std::vector<uint8_t> opcodesToFind, bool forward = true, int toSkip = 0) -> Scanner
+        {
+            const auto scanBytes = _address.GetAs<std::uint8_t*>();
+
+            for (auto i = (forward ? 1 : -1); forward ? (i < 128) : (i > -128); forward ? i++ : i--)
+            {
+                bool found = true;
+
+                for (int k = 0; k < opcodesToFind.size() && found; k++)
+                {
+                    // if (opcodesToFind[k] == -1)
+                    //     continue;
+                    found = opcodesToFind[k] == scanBytes[i + k];
+                }
+
+                if (found)
+                {
+                    _address = &scanBytes[i];
+                    if (toSkip != 0)
+                    {
+                        return ScanFor(opcodesToFind, forward, toSkip - 1);
+                    }
+
+                    break;
+                }
+            }
+
+            return *this;
+        }
+
         auto ScanForLongRange(std::vector<uint8_t> opcodesToFind, bool forward = true, int toSkip = 0) -> Scanner
         {
             const auto scanBytes = _address.GetAs<std::uint8_t*>();

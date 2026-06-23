@@ -382,7 +382,9 @@ namespace Loot
                 Container->ApplyRandomUpgrades();
 
                 if (Container->IsA(FloorLootClass) || Container->IsA(FloorLootWarmupClass))
+                {
                     SpawnLoot(Container);
+                }
             }
             Containers.Free();
         }

@@ -13,6 +13,14 @@ struct FFortPickupLocationData
     STRUCT_PROP_REF_REFLECTION(uint8, TossState);
 };
 
+struct FFortPickupRequestInfo
+{
+    STATIC_STRUCT(FFortPickupRequestInfo, L"/Script/FortniteGame.FortPickupRequestInfo");
+
+    STRUCT_PROP_REF_REFLECTION(float, FlyTime)
+    STRUCT_PROP_REF_REFLECTION(FVector, Direction)
+};
+
 class AFortPickup : public AActor
 {
     STATIC_CLASS(L"/Script/FortniteGame.FortPickup");
@@ -22,6 +30,8 @@ class AFortPickup : public AActor
     PROP_REF_REFLECTION(bool, bPickedUp);
     PROP_REF_REFLECTION(FFortPickupLocationData, PickupLocationData);
     PROP_REF_REFLECTION(AFortPawn*, PawnWhoDroppedPickup);
+    PROP_REF_REFLECTION(bool, bForceDefaultFlyTime);
+    PROP_REF_REFLECTION(float, DefaultFlyTime);
 
     void TossPickup(const FVector& FinalLocation, AFortPawn* ItemOwner, int32 OverrideMaxStackCount, bool bToss, uint8 InPickupSourceTypeFlags, uint8 InPickupSpawnSource)
     {

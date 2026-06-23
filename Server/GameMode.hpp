@@ -2,9 +2,11 @@ namespace GameMode
 {
     bool ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
     {
-        auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
-        if (!GameState->GetMapInfo())
+        static auto StartClass = UObject::FindClass(L"/Script/FortniteGame.FortPlayerStartWarmup");
+        if (UGameplayStatics::GetNumActorsOfClass(StartClass) <= 0)
             return false;
+
+        auto GameState = (AFortGameStateAthena*)GameMode->GetGameState();
     
         static bool Started = false;
         if (!Started)

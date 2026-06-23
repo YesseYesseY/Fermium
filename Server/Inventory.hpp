@@ -21,24 +21,33 @@ namespace Inventory
         }
     }
 
-    void ServerHandlePickup(AFortPlayerPawn* Pawn, AFortPickup* Pickup, float InFlyTime, const FVector& InStartDirection, bool bPlayPickupSound)
+    static void (*SetPickupTarget)(AFortPickup*, AFortPawn*, float, FVector&) = nullptr;
+
+    void ServerHandlePickup(AFortPlayerPawn* Pawn, AFortPickup* Pickup, float InFlyTime, FVector& InStartDirection, bool bPlayPickupSound)
     {
         if (!Pickup)
             return;
 
-        // MsgBox("InFlyTime: {}", InFlyTime);
-        Pickup->GetPickupLocationData().GetPickupTarget() = Pawn;
-        Pickup->GetPickupLocationData().GetFlyTime() /= 4;
-        Pickup->OnRep_PickupLocationData();
-        Pickup->GetbPickedUp() = true;
-        Pickup->OnRep_bPickedUp();
-        // TODO Fix animation on 5.30 and below
+        SetPickupTarget(Pickup, Pawn, InFlyTime / 3, InStartDirection); // 3 looks correct when comparing to old videos
+    }
+
+    void ServerHandlePickupInfo(AFortPlayerPawn* Pawn, AFortPickup* Pickup, FFortPickupRequestInfo& Params)
+    {
+        if (!Pickup)
+            return;
+
+        SetPickupTarget(Pickup, Pawn, Params.GetFlyTime() / 3, Params.GetDirection());
     }
 
     void (*FinishedTargetSplineOriginal)(AFortPickup* Pickup);
     void FinishedTargetSpline(AFortPickup* Pickup)
     {
-        auto PlayerController = Pickup->GetPickupLocationData().GetPickupTarget()->GetControllerAs<AFortPlayerControllerAthena>();
+        auto Pawn = Pickup->GetPickupLocationData().GetPickupTarget();
+        if (!Pawn)
+            return;
+        auto PlayerController = Pawn->GetControllerAs<AFortPlayerControllerAthena>();
+        if (!PlayerController)
+            return;
         auto Inventory = PlayerController->GetWorldInventory();
         Inventory->GiveItem(Pickup->GetPrimaryPickupItemEntry());
 
@@ -47,7 +56,12 @@ namespace Inventory
 
     void GivePickupToPlayer(AFortPickup* Pickup, int64 a2, char a3)
     {
-        auto PlayerController = Pickup->GetPickupLocationData().GetPickupTarget()->GetControllerAs<AFortPlayerControllerAthena>();
+        auto Pawn = Pickup->GetPickupLocationData().GetPickupTarget();
+        if (!Pawn)
+            return;
+        auto PlayerController = Pawn->GetControllerAs<AFortPlayerControllerAthena>();
+        if (!PlayerController)
+            return;
         auto Inventory = PlayerController->GetWorldInventory();
         Inventory->GiveItem(Pickup->GetPrimaryPickupItemEntry());
         Pickup->K2_DestroyActor();
@@ -59,7 +73,49 @@ namespace Inventory
         auto P = AFortPlayerPawnAthena::StaticClass();
         PC->VTableHook("ServerExecuteInventoryItem", ServerExecuteInventoryItem);
         PC->VTableHook("ServerAttemptInventoryDrop", ServerAttemptInventoryDrop);
-        P->VTableHook("ServerHandlePickup", ServerHandlePickup);
+        if (P->GetFunction("ServerHandlePickupInfo"))
+            P->VTableHook("ServerHandlePickupInfo", ServerHandlePickupInfo);
+        else
+            P->VTableHook("ServerHandlePickup", ServerHandlePickup);
+
+        // SetPickupTarget
+        {
+            uintptr_t Addr = 0;
+
+            auto Scanner = Memcury::Scanner::FindStringRef("AFortPickup::SetPickupTarget");
+
+            if (!Scanner.IsValid())
+                Scanner = Memcury::Scanner::FindStringRef(L"Attempted to spawn non-world item %s!");
+
+            if (Scanner.IsValid())
+            {
+                auto CurAddr = Scanner.Get();
+                Scanner.ScanForShortRange({ 0x48, 0x83, 0xEC }, false);
+                auto NewAddr = Scanner.Get();
+                if (NewAddr != CurAddr)
+                {
+                    Scanner = Memcury::Scanner::FindPatternRel("E8", NewAddr);
+                    if (Scanner.IsValid())
+                        goto SetPickupTargetBackSearch;
+                }
+                else
+                {
+SetPickupTargetBackSearch:
+                    Scanner.ScanForEither({{ 0x48, 0x8B, 0xC4 }, { 0x40, 0x55, 0x53 }}, false);
+
+                    Addr = Scanner.Get();
+                }
+            }
+
+            if (Addr)
+            {
+                SetPickupTarget = decltype(SetPickupTarget)(Addr);
+            }
+            else
+            {
+                MsgBox("Failed to find SetPickupTarget");
+            }
+        }
 
         // FinishedTargetSpline/GivePickupToPlayer
         auto SetTargetFunc = UObject::FindFunction(L"/Script/FortniteGame.FortPickup:BlueprintSetPickupTarget");

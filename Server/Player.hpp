@@ -110,7 +110,9 @@ namespace Player
             auto ItemDef = Pickup->GetPrimaryPickupItemEntry().GetItemDefinition();
             if (ItemDef->IsA(UFortResourceItemDefinition::StaticClass()) || ItemDef->IsA(UFortAmmoItemDefinition::StaticClass()))
             {
-                Inventory::ServerHandlePickup(Pawn, Pickup, 0.0f, {}, true);
+                static FVector yes = { 1, 0, 0 };
+                static float FlyTime = 0.47692192f; // TODO
+                Inventory::ServerHandlePickup(Pawn, Pickup, FlyTime, yes, true);
             }
         }
     }
