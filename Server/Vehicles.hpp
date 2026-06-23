@@ -15,6 +15,10 @@ namespace Vehicles
 
     void Init()
     {
+        auto GameState = UGameplayStatics::GetGameState();
+
+        auto DagwoodManager = GameState->GetComponentByClass<UFortDagwoodVehicleManager>();
+
         auto SpawnerClass = AFortAthenaVehicleSpawner::StaticClass();
         if (SpawnerClass)
         {
@@ -25,7 +29,39 @@ namespace Vehicles
                 if (!VehicleClass)
                     continue;
 
-                UGameplayStatics::SpawnActor(VehicleClass, Spawner->GetTransform());
+                UFortVehicleItemDefinition* VID = nullptr;
+                if (Spawner->HasCachedFortVehicleItemDef())
+                    VID = Spawner->GetCachedFortVehicleItemDef();
+
+                if (VID && Spawner->HasbForceSpawnAlways() && !Spawner->GetbForceSpawnAlways())
+                {
+                    auto MinSpawnPercentage = VID->GetVehicleMinSpawnPercent().GetValueAtLevel(0.0f);
+                    auto MaxSpawnPercentage = VID->GetVehicleMaxSpawnPercent().GetValueAtLevel(0.0f);
+
+                    auto SpawnPercentage = UKismetMathLibrary::RandomFloatInRange(MinSpawnPercentage, MaxSpawnPercentage) / 100.0f;
+                    if (!UKismetMathLibrary::RandomBoolWithWeight(SpawnPercentage))
+                        continue;
+                }
+
+                auto Vehicle = UGameplayStatics::SpawnActor(VehicleClass, Spawner->GetTransform());
+
+                if (!Vehicle->IsA(AFortDagwoodVehicle::StaticClass()))
+                    continue;
+
+                auto DagwoodVehicle = (AFortDagwoodVehicle*)Vehicle;
+
+                if (DagwoodManager)
+                    DagwoodManager->OnVehicleSpawned(Vehicle);
+
+                if (!VID)
+                    continue;
+
+                auto MinInoperablePercentage = VID->GetMinPercentInoperable().GetValueAtLevel(0.0f);
+                auto MaxInoperablePercentage = VID->GetMaxPercentInoperable().GetValueAtLevel(0.0f);
+
+                auto SpawnPercentage = UKismetMathLibrary::RandomFloatInRange(MinInoperablePercentage, MaxInoperablePercentage) / 100.0f;
+                if (UKismetMathLibrary::RandomBoolWithWeight(SpawnPercentage))
+                    DagwoodVehicle->MakeInoperable();
             }
         }
 

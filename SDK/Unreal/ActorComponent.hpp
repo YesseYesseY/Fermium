@@ -61,3 +61,11 @@ public:
         ProcessEvent(Func, &args);
     }
 };
+
+class UGameFrameworkComponent : public UActorComponent
+{
+};
+
+class UGameStateComponent : public UGameFrameworkComponent
+{
+};

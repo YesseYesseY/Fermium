@@ -42,6 +42,11 @@ namespace Player
             static auto ItemDef = UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Gameplay/Lotus/Mustache/AGID_Lotus_Mustache.AGID_Lotus_Mustache");
             PlayerController->GetWorldInventory()->GiveItem(ItemDef, 1);
         }
+        else if (Msg == L"offroad")
+        {
+            static auto ItemDef = UObject::FindObject<UFortItemDefinition>(L"/ValetMods/Mods/TiresOffRoad/Thrown/ID_ValetMod_Tires_OffRoad_Thrown.ID_ValetMod_Tires_OffRoad_Thrown");
+            PlayerController->GetWorldInventory()->GiveItem(ItemDef, 1);
+        }
         else if (Msg == L"foundations")
         {
             std::ofstream outfile("foundations.txt");

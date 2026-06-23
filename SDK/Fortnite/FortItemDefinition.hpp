@@ -218,3 +218,13 @@ public:
 class UAthenaGadgetItemDefinition : public UFortGadgetItemDefinition
 {
 };
+
+class UFortVehicleItemDefinition : public UFortWorldItemDefinition
+{
+    PROP_REF_REFLECTION(FScalableFloat, VehicleMinSpawnPercent);
+    PROP_REF_REFLECTION(FScalableFloat, VehicleMaxSpawnPercent);
+    PROP_REF_REFLECTION(FScalableFloat, MinPercentWithGas);
+    PROP_REF_REFLECTION(FScalableFloat, MaxPercentWithGas);
+    PROP_REF_REFLECTION(FScalableFloat, MinPercentInoperable);
+    PROP_REF_REFLECTION(FScalableFloat, MaxPercentInoperable);
+};

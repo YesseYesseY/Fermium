@@ -32,7 +32,7 @@ public:
     }
 
     template <typename T = UActorComponent>
-    T* GetComponentByClass(UClass* ComponentClass)
+    T* GetComponentByClass(UClass* ComponentClass = T::StaticClass())
     {
         return (T*)_GetComponentByClass(ComponentClass);
     }

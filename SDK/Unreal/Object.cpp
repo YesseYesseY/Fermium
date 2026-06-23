@@ -37,7 +37,7 @@ std::string UObject::GetFullName()
 
 bool UObject::IsA(UClass* Class)
 {
-    if (!ClassPrivate)
+    if (!ClassPrivate || !Class)
         return false;
 
     for (auto Struct = (UStruct*)ClassPrivate; Struct; Struct = Struct->GetSuperStruct())
