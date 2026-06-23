@@ -84,13 +84,16 @@
     <ClInclude Include="..\SDK\Fortnite\FortWeaponStats.hpp">
       <Filter>..\SDK\Fortnite</Filter>
     </ClInclude>
-    <ClInclude Include="..\SDK\Fortnite\Pickle.hpp">
+    <ClInclude Include="..\SDK\Fortnite\MapInfo.hpp">
       <Filter>..\SDK\Fortnite</Filter>
     </ClInclude>
     <ClInclude Include="..\SDK\Fortnite\PlaylistPropertyArray.hpp">
       <Filter>..\SDK\Fortnite</Filter>
     </ClInclude>
     <ClInclude Include="..\SDK\Fortnite\Rocket.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\SafeZoneIndicator.hpp">
       <Filter>..\SDK\Fortnite</Filter>
     </ClInclude>
     <ClInclude Include="..\SDK\Fortnite\Snow.hpp">
@@ -135,7 +138,13 @@
     <ClInclude Include="..\SDK\Unreal\DataTable.hpp">
       <Filter>..\SDK\Unreal</Filter>
     </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Delegate.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
     <ClInclude Include="..\SDK\Unreal\Engine.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\Enum.hpp">
       <Filter>..\SDK\Unreal</Filter>
     </ClInclude>
     <ClInclude Include="..\SDK\Unreal\FastArraySerializer.hpp">
@@ -266,6 +275,9 @@
     </ClCompile>
     <ClCompile Include="..\SDK\Fortnite\FortPlayerState.cpp">
       <Filter>..\SDK\Fortnite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SDK\Memcury.cpp">
+      <Filter>..\SDK</Filter>
     </ClCompile>
     <ClCompile Include="..\SDK\Unreal\Class.cpp">
       <Filter>..\SDK\Unreal</Filter>

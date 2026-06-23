@@ -88,6 +88,8 @@ DWORD MainThread(HMODULE Module)
     while (!(GetAsyncKeyState(VK_F5) & 0x8000)) Sleep(100);
 
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogFortInventory VeryVerbose");
+    UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogPhysics None"); // Fix S17 random lag
+
     UKismetSystemLibrary::ExecuteConsoleCommand(L"open 127.0.0.1");
 
     return 0;

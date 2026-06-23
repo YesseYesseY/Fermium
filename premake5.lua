@@ -21,7 +21,7 @@ project "FermiumClient"
         "SDK",
         "minhook/include"
     }
-    buildoptions { "/wd4369", "/wd4309" }
+    buildoptions { "/wd4369", "/wd4309", "/wd4544", "/wd4244" }
     architecture "x64"
 
 project "FermiumServer"
@@ -44,5 +44,5 @@ project "FermiumServer"
         "SDK",
         "minhook/include"
     }
-    buildoptions { "/wd4369", "/wd4309" }
+    buildoptions { "/wd4369", "/wd4309", "/wd4544", "/wd4244" }
     architecture "x64"
