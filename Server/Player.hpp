@@ -32,11 +32,15 @@ namespace Player
         {
             static auto ItemDef = UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Weapons/Prototype/WID_Launcher_Petrol.WID_Launcher_Petrol");
             PlayerController->GetWorldInventory()->GiveItem(ItemDef, 1);
-            PlayerController->GetWorldInventory()->Update();
         }
         else if (Msg == L"event")
         {
             Events::Start();
+        }
+        else if (Msg == L"mustache")
+        {
+            static auto ItemDef = UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Gameplay/Lotus/Mustache/AGID_Lotus_Mustache.AGID_Lotus_Mustache");
+            PlayerController->GetWorldInventory()->GiveItem(ItemDef, 1);
         }
         else if (Msg == L"foundations")
         {

@@ -51,6 +51,8 @@ void AFortInventory::GiveItem(FFortItemEntry& ItemEntry)
 
         if (PrimaryItem && SlotsOccupied >= 6)
         {
+            if (!Pawn)
+                break;
             auto CurrentWeapon = Pawn->GetCurrentWeapon();
             auto RepEntry = FindItemEntry(CurrentWeapon->GetItemEntryGuid(), &IndexToReplace);
             if (RepEntry && !((UFortWorldItemDefinition*)RepEntry->GetItemDefinition())->GetbCanBeDropped())
@@ -72,7 +74,8 @@ void AFortInventory::GiveItem(FFortItemEntry& ItemEntry)
             AFortPickup::SpawnFromItemEntry(Pawn->K2_GetActorLocation(), &Entries.Get(IndexToReplace, FFortItemEntry::Size()), -1, Pawn);
             Entries.Set(IndexToReplace, Item->GetItemEntry(), FFortItemEntry::Size());
             Instances[IndexToReplace] = Item;
-            Update(&Entries.Get(IndexToReplace, FFortItemEntry::Size()));
+            auto& NewEntry = Entries.Get(IndexToReplace, FFortItemEntry::Size());
+            Update(&NewEntry);
             Count = 0;
             break;
         }
@@ -93,7 +96,7 @@ void AFortInventory::GiveItem(FFortItemEntry& ItemEntry)
     if (ShouldUpdate)
         Update();
 
-    if (Count > 0)
+    if (Count > 0 && Pawn)
     {
         AFortPickup::SpawnFromItemEntry(Pawn->K2_GetActorLocation(), &ItemEntry, -1, Pawn);
     }

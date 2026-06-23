@@ -23,6 +23,7 @@ extern inline float GameVersion = -1.0f;
 #include "Unreal/Field.hpp"
 #include "Unreal/Property.hpp"
 #include "Unreal/Struct.hpp"
+#include "Unreal/Enum.hpp"
 #include "Unreal/Class.hpp"
 #include "Unreal/Function.hpp"
 #include "Unreal/Frame.hpp"
@@ -155,6 +156,7 @@ static void InitSDK(bool IsServer)
     UFunction::Init();
     UDataTable::Init();
     UCurveTable::Init();
+    UEnum::Init();
 
     if (IsServer)
     {

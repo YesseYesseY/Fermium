@@ -1,5 +1,16 @@
 class UFortItem;
 
+struct EFortItemType
+{
+    STATIC_ENUM(uint8, L"/Script/FortniteGame.EFortItemType");
+
+    ENUM_PROP(Ammo);
+    ENUM_PROP(EditTool);
+    ENUM_PROP(Trap);
+    ENUM_PROP(WorldResource)
+    ENUM_PROP(BuildingPiece);
+};
+
 class UMcpItemDefinitionBase : public UObject
 {
 };
@@ -7,6 +18,7 @@ class UMcpItemDefinitionBase : public UObject
 class UFortItemDefinition : public UMcpItemDefinitionBase
 {
     PROP_BIT_REFLECTION(bAllowMultipleStacks);
+    PROP_REF_REFLECTION(uint8, ItemType);
 
 public:
     UFortItem* CreateTemporaryItemInstanceBP(int32 Count, int32 Level = 1)
@@ -40,18 +52,27 @@ class UFortWorldItemDefinition : public UFortItemDefinition
 
     bool GoesInPrimaryQuickbar()
     {
-        // TODO Using EFortItemType is probably faster but it changes every build so i have to add STATIC_ENUM() and stuff and i really dont feel like doing that rn so we doing it this way :)))
-        static std::vector<UClass*> ClassesToCheck = {
-            UObject::FindClass(L"/Script/FortniteGame.FortResourceItemDefinition"),
-            UObject::FindClass(L"/Script/FortniteGame.FortAmmoItemDefinition"),
-            UObject::FindClass(L"/Script/FortniteGame.FortBuildingItemDefinition"),
-            UObject::FindClass(L"/Script/FortniteGame.FortEditToolItemDefinition"),
-            UObject::FindClass(L"/Script/FortniteGame.FortTrapItemDefinition"),
-        };
+        static std::vector<uint8> InvalidTypes;
 
-        for (auto Class : ClassesToCheck)
+        if (InvalidTypes.size() == 0)
         {
-            if (Class && IsA(Class))
+            if (EFortItemType::HasAmmo())
+                InvalidTypes.push_back(EFortItemType::GetAmmo());
+            if (EFortItemType::HasEditTool())
+                InvalidTypes.push_back(EFortItemType::GetEditTool());
+            if (EFortItemType::HasTrap())
+                InvalidTypes.push_back(EFortItemType::GetTrap());
+            if (EFortItemType::HasWorldResource())
+                InvalidTypes.push_back(EFortItemType::GetWorldResource());
+            if (EFortItemType::HasBuildingPiece())
+                InvalidTypes.push_back(EFortItemType::GetBuildingPiece());
+        }
+
+        auto ItemType = GetItemType();
+
+        for (auto Type : InvalidTypes)
+        {
+            if (ItemType == Type)
                 return false;
         }
 
@@ -65,8 +86,6 @@ class UFortWorldItemDefinition : public UFortItemDefinition
 
         if (HasNumberOfSlotsToTake())
         {
-            if (GetNumberOfSlotsToTake() > 1)
-                MsgBox("{}", GetNumberOfSlotsToTake());
             return GetNumberOfSlotsToTake();
         }
 

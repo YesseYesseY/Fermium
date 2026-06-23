@@ -32,6 +32,9 @@ AFortPickup* AFortPickup::SpawnFromItemEntry(const FVector& Pos, FFortItemEntry*
 
 AFortPickup* AFortPickup::SpawnFromContainer(ABuildingContainer* Container, UFortItemDefinition* ItemDef, int32 Count)
 {
+    if (Count == 0)
+        return nullptr;
+
     auto Pos = UKismetMathLibrary::TransformLocation(Container->GetTransform(), Container->GetLootSpawnLocation_Athena());
     auto Ret = UGameplayStatics::SpawnActor<AFortPickup>(AFortPickupAthena::StaticClass(), Pos);
     Ret->GetPrimaryPickupItemEntry().GetItemDefinition() = ItemDef;

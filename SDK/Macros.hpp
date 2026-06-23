@@ -206,6 +206,29 @@ public: \
         return (*(uint8*)(int64(this) + Offset) & FieldMask) != 0; \
     }
 
+// ENUM
+
+#define STATIC_ENUM(Type, Name) \
+    using EnumType = Type; \
+    static UEnum* StaticEnum() \
+    { \
+        static UEnum* Ret = UObject::FindEnum(Name); \
+        return Ret; \
+    }
+
+// If you get to the point where you need to use STATIC_ENUM you probably want Has[Name] so imma just implement it by default
+#define ENUM_PROP(Name) \
+    static bool Has##Name() \
+    { \
+        int64 Ret = StaticEnum()->GetValue(#Name); \
+        return Ret != -1; \
+    } \
+    static EnumType Get##Name() \
+    { \
+        EnumType Ret = (EnumType)StaticEnum()->GetValue(#Name); \
+        return Ret; \
+    }
+
 // FRAME
 
 #define FRAME_PROP(Type, Name) \

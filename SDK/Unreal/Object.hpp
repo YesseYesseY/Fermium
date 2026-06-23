@@ -1,4 +1,5 @@
 class UStruct;
+class UEnum;
 class UClass;
 class UFunction;
 
@@ -62,6 +63,12 @@ public:
     {
         static UClass* StructClass = FindObject<UClass>(L"/Script/CoreUObject.Struct");
         return (UStruct*)StaticFindObject(StructClass, nullptr, Name, false);
+    }
+
+    static UEnum* FindEnum(const wchar_t* Name)
+    {
+        static UClass* EnumClass = FindObject<UClass>(L"/Script/CoreUObject.Enum");
+        return (UEnum*)StaticFindObject(EnumClass, nullptr, Name, false);
     }
 
     template <typename T = UObject>

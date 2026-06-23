@@ -116,6 +116,8 @@ class AFortInventory : public AActor
         }
 
         GiveItem(*NewEntry);
+
+        FMemory::Free(NewEntry);
     }
 
     void RemoveItem(FFortItemEntry* ItemEntry, int32 Count)
