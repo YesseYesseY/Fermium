@@ -24,12 +24,26 @@ struct FFortLootPackageData
     STRUCT_PROP_REF_REFLECTION(TSoftObjectPtr<UFortItemDefinition>, ItemDefinition);
 };
 
+struct FWeaponPickupAmmoCountData
+{
+    STATIC_STRUCT(FWeaponPickupAmmoCountData, L"/Script/FortniteGame.WeaponPickupAmmoCountData");
+
+    STRUCT_PROP_REF_REFLECTION(FGameplayTag, AmmoItemDefinitionTag);
+    STRUCT_PROP_REF_REFLECTION(FScalableFloat, SpawnCount);
+};
+
+class UFortWeaponPickupSpawnAmmoData : public UObject
+{
+    PROP_REF_REFLECTION(TArray<FWeaponPickupAmmoCountData>, WeaponPickupAmmoCountArray);
+};
+
 struct LootTierData
 {
     float Weight;
     FName LootPackage;
     float NumLootPackageDrops;
     int32 LootTier;
+    std::vector<int32> MinArray;
 
     LootTierData(FFortLootTierData* Data)
     {
@@ -37,12 +51,8 @@ struct LootTierData
         LootPackage = Data->GetLootPackage();
         NumLootPackageDrops = Data->GetNumLootPackageDrops();
         LootTier = Data->GetLootTier();
-
-        // TODO Whyy is this needed
-        if (LootPackage.ToString().contains("WorldPKG.AthenaLoot.Weapon") && Data->GetTierGroup().ToString().contains("FloorLoot")) 
-        {
-            NumLootPackageDrops = 2.0f;
-        }
+        for (auto thing : Data->GetLootPackageCategoryMinArray())
+            MinArray.push_back(thing);
     }
 };
 
@@ -111,6 +121,11 @@ struct WeightedContainer
     bool IsValid()
     {
         return Items.size() > 0 && TotalWeight > 0.0f;
+    }
+
+    int32 Num()
+    {
+        return Items.size();
     }
 
     T& GetRandomItem()
@@ -201,7 +216,7 @@ namespace Loot
     std::unordered_map<FName, LootTierDataContainer> LootTiers;
     std::unordered_map<FName, LootPackageDataContainer> LootPackages;
 
-    // TODO Change to TArray<FFortItemEntry>?
+    // TODO Rewrite this
     std::vector<std::pair<UFortItemDefinition*, int32>> Get(FName TierGroup, int32 InLootTier = -1)
     {
         // Loot_Treasure -> Loot_AthenaTreasure
@@ -249,23 +264,66 @@ namespace Loot
         }
         else
         {
-            for (int i = 0; i < LTI.NumLootPackageDrops; i++)
+            int Added = 0;
+            for (int i = 0; i < BaseLootPackage.Num(); i++)
             {
-                if (!LootPackages.contains(BaseLootPackage.Items[i].LootPackageCall))
-                {
-                    // MsgBox("LootPackageCall {} not in LootPackages", BaseLootPackage.Items[i].LootPackageCall.ToString());
-                    return Ret;
-                }
+                if (Added >= LTI.NumLootPackageDrops)
+                    break;
 
-                auto RealLootPackage = LootPackages[BaseLootPackage.Items[i].LootPackageCall];
-                if (RealLootPackage.Items.size() <= 0)
+                for (int j = 0; j < LTI.MinArray[i]; j++)
                 {
-                    // MsgBox("{}", BaseLootPackage.Items[i].LootPackageCall.ToString());
-                    continue;
+                    if (!LootPackages.contains(BaseLootPackage.Items[i].LootPackageCall))
+                    {
+                        // MsgBox("LootPackageCall {} not in LootPackages", BaseLootPackage.Items[i].LootPackageCall.ToString());
+                        return Ret;
+                    }
+
+                    auto RealLootPackage = LootPackages[BaseLootPackage.Items[i].LootPackageCall];
+                    if (RealLootPackage.Items.size() <= 0)
+                    {
+                        // MsgBox("{}", BaseLootPackage.Items[i].LootPackageCall.ToString());
+                        continue;
+                    }
+                    auto toadd = RealLootPackage.GetRandomItem();
+                    Ret.push_back({ toadd.ItemDef, toadd.Count });
+                    Added++;
+
+                    static auto FWPSAD = UObject::FindObject<UFortWeaponPickupSpawnAmmoData>(L"/Game/Athena/Balance/Pickups/FortWeaponPickupSpawnAmmoData.FortWeaponPickupSpawnAmmoData");
+
+                    if (!toadd.ItemDef->IsA(UFortWeaponItemDefinition::StaticClass()))
+                    {
+                        continue;
+                    }
+
+                    if (!FWPSAD)
+                    {
+                        // MsgBox("No FWPSAD");
+                        continue;
+                    }
+
+                    auto WeaponDef = (UFortWeaponItemDefinition*)toadd.ItemDef;
+                    auto AmmoData = WeaponDef->GetAmmoData().Get();
+                    if (!AmmoData)
+                    {
+                        // MsgBox("No AmmoData");
+                        continue;
+                    }
+                    
+                    auto& AmmoTags = AmmoData->GetGameplayTags();
+                    auto& WPACA = FWPSAD->GetWeaponPickupAmmoCountArray();
+                    for (int k = 0; k < WPACA.Num(); k++)
+                    {
+                        auto& WPACD = WPACA.Get(k, FWeaponPickupAmmoCountData::Size());
+                        if (AmmoTags.HasTag(WPACD.GetAmmoItemDefinitionTag()))
+                        {
+                            Ret.push_back({ AmmoData, WPACD.GetSpawnCount().GetValueAsInteger(0.0f) });
+                            break;
+                        }
+                    }
                 }
-                auto toadd = RealLootPackage.GetRandomItem();
-                Ret.push_back({ toadd.ItemDef, toadd.Count });
             }
+            // if (Added < LTI.NumLootPackageDrops)
+            //     MsgBox("Added < LTI.NumLootPackageDrops");
         }
 
         return Ret;
@@ -349,50 +407,20 @@ namespace Loot
         FRAME_PROP(int32, OverrideMaxStackCount);
         FRAME_PROP(bool, bToss);
         FRAME_PROP(bool, bRandomRotation);
-
-        // Above is on both 4.1 and 19.40
+        FRAME_PROP_SAFE(bool, bBlockedFromAutoPickup, false);
+        FRAME_PROP_SAFE(int32, PickupInstigatorHandle, -1);
+        FRAME_PROP_SAFE(uint8, SourceType, 0);
+        FRAME_PROP_SAFE(uint8, Source, 0);
+        FRAME_PROP_SAFE(AFortPlayerController*, OptionalOwnerPC, nullptr);
+        FRAME_PROP_SAFE(bool, bPickupOnlyRelevantToOwner, false);
+        FRAME_END();
 
         auto Pickup = AFortPickup::SpawnFromItemDef(Position, ItemDefinition, NumberToSpawn, false);
         Pickup->GetbRandomRotation() = bRandomRotation;
 
-        uint8 SourceType = 0;
-        uint8 Source = 0;
-
-        static bool HasBFAP = Func->GetPropOffset("bBlockedFromAutoPickup") != -1;
-        if (HasBFAP)
-        {
-            FRAME_PROP(bool, bBlockedFromAutoPickup);
-        }
-        static bool HasPIH = Func->GetPropOffset("PickupInstigatorHandle") != -1;
-        if (HasPIH)
-        {
-            FRAME_PROP(int32, PickupInstigatorHandle)
-        }
-
-        static bool HasST = Func->GetPropOffset("SourceType") != -1;
-        if (HasST)
-            Stack->Step(&SourceType);
-
-        static bool HasS = Func->GetPropOffset("Source") != -1;
-        if (HasS)
-            Stack->Step(&Source);
-
-        static bool HasOOPC = Func->GetPropOffset("OptionalOwnerPC") != -1;
-        AFortPlayerController* OptionalOwnerPC = nullptr;
-        if (HasOOPC)
-            Stack->Step(&OptionalOwnerPC);
-
         AFortPawn* Owner = OptionalOwnerPC ? OptionalOwnerPC->GetPawnAs<AFortPawn>() : nullptr;
 
         Pickup->TossPickup(Position, Owner, OverrideMaxStackCount, bToss, SourceType, Source);
-
-        static bool HasPORTO = Func->GetPropOffset("bPickupOnlyRelevantToOwner") != -1;
-        if (HasPORTO)
-        {
-            FRAME_PROP(bool, bPickupOnlyRelevantToOwner);
-        }
-
-        FRAME_END();
 
         *Ret = Pickup;
     }
@@ -410,6 +438,8 @@ namespace Loot
         Pickup->TossPickup(Position, TriggeringPawn, 0, true, 4, 3);
         *Ret = Pickup;
     }
+
+    // TODO Fishing works on early ch2 builds, sometime in like s13 they changed it from K2_SpawnPickupInWorld to SpawnItemVariantPickupInWorld
 
     void Init()
     {

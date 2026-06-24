@@ -19,6 +19,7 @@ class UFortItemDefinition : public UMcpItemDefinitionBase
 {
     PROP_BIT_REFLECTION(bAllowMultipleStacks);
     PROP_REF_REFLECTION(uint8, ItemType);
+    PROP_REF_REFLECTION(FGameplayTagContainer, GameplayTags);
 
 public:
     UFortItem* CreateTemporaryItemInstanceBP(int32 Count, int32 Level = 1)
@@ -43,12 +44,6 @@ public:
 
         return (int32)((FScalableFloat*)(int64(this) + Offset))->GetValueAsInteger(0.0f);
     }
-};
-
-class UFortWorldItemDefinition : public UFortItemDefinition
-{
-    PROP_BIT_REFLECTION(bCanBeDropped);
-    PROP_REF_REFLECTION_SAFE(uint8, NumberOfSlotsToTake);
 
     bool GoesInPrimaryQuickbar()
     {
@@ -79,6 +74,13 @@ class UFortWorldItemDefinition : public UFortItemDefinition
         return true;
     }
 
+};
+
+class UFortWorldItemDefinition : public UFortItemDefinition
+{
+    PROP_BIT_REFLECTION(bCanBeDropped);
+    PROP_REF_REFLECTION_SAFE(uint8, NumberOfSlotsToTake);
+
     uint8 GetSlotSize()
     {
         if (!GoesInPrimaryQuickbar())
@@ -98,6 +100,7 @@ class UFortWeaponItemDefinition : public UFortWorldItemDefinition
     STATIC_CLASS(L"/Script/FortniteGame.FortWeaponItemDefinition");
 
     PROP_REF_REFLECTION(FDataTableRowHandle, WeaponStatHandle);
+    PROP_REF_REFLECTION(TSoftObjectPtr<UFortWorldItemDefinition>, AmmoData);
 };
 
 class UFortWeaponMeleeItemDefinition : public UFortWeaponItemDefinition

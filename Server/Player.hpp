@@ -47,6 +47,23 @@ namespace Player
             static auto ItemDef = UObject::FindObject<UFortItemDefinition>(L"/ValetMods/Mods/TiresOffRoad/Thrown/ID_ValetMod_Tires_OffRoad_Thrown.ID_ValetMod_Tires_OffRoad_Thrown");
             PlayerController->GetWorldInventory()->GiveItem(ItemDef, 1);
         }
+        else if (Msg == L"devkit")
+        {
+            static std::vector<UFortItemDefinition*> Items = {
+                UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/WoodItemData.WoodItemData"),
+                UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/StoneItemData.StoneItemData"),
+                UObject::FindObject<UFortItemDefinition>(L"/Game/Items/ResourcePickups/MetalItemData.MetalItemData"),
+                UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Ammo/AthenaAmmoDataShells.AthenaAmmoDataShells"),
+                UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Ammo/AthenaAmmoDataBulletsHeavy.AthenaAmmoDataBulletsHeavy"),
+                UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Ammo/AthenaAmmoDataBulletsMedium.AthenaAmmoDataBulletsMedium"),
+                UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Ammo/AthenaAmmoDataBulletsLight.AthenaAmmoDataBulletsLight"),
+                UObject::FindObject<UFortItemDefinition>(L"/Game/Athena/Items/Ammo/AmmoDataRockets.AmmoDataRockets"),
+                UObject::FindObject<UFortItemDefinition>(L"/PrimalGameplay/Items/Ammo/AthenaAmmoDataArrows.AthenaAmmoDataArrows"),
+            };
+
+            for (auto ItemDef : Items)
+                PlayerController->GetWorldInventory()->GiveItem(ItemDef);
+        }
         else if (Msg == L"foundations")
         {
             std::ofstream outfile("foundations.txt");
@@ -108,7 +125,7 @@ namespace Player
                 return;
 
             auto ItemDef = Pickup->GetPrimaryPickupItemEntry().GetItemDefinition();
-            if (ItemDef->IsA(UFortResourceItemDefinition::StaticClass()) || ItemDef->IsA(UFortAmmoItemDefinition::StaticClass()))
+            if (!ItemDef->GoesInPrimaryQuickbar())
             {
                 static FVector yes = { 1, 0, 0 };
                 static float FlyTime = 0.47692192f; // TODO

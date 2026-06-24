@@ -235,6 +235,12 @@ public: \
     Type Name; \
     Stack->Step(&Name);
 
+#define FRAME_PROP_SAFE(Type, Name, Default) \
+    static bool Has_##Name = Func->GetPropOffset(#Name); \
+    Type Name = Default; \
+    if (Has_##Name) \
+        Stack->Step(&Name);
+
 #define FRAME_PROP_STRUCT(Type, Name) \
     Type* Name = Type::New(); \
     Stack->Step(Name);
