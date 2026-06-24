@@ -30,8 +30,7 @@ class AFortPickup : public AActor
     PROP_REF_REFLECTION(bool, bPickedUp);
     PROP_REF_REFLECTION(FFortPickupLocationData, PickupLocationData);
     PROP_REF_REFLECTION(AFortPawn*, PawnWhoDroppedPickup);
-    PROP_REF_REFLECTION(bool, bForceDefaultFlyTime);
-    PROP_REF_REFLECTION(float, DefaultFlyTime);
+    PROP_REF_REFLECTION(bool, bRandomRotation);
 
     void TossPickup(const FVector& FinalLocation, AFortPawn* ItemOwner, int32 OverrideMaxStackCount, bool bToss, uint8 InPickupSourceTypeFlags, uint8 InPickupSpawnSource)
     {
@@ -98,7 +97,7 @@ class AFortPickup : public AActor
         ProcessEvent(Func);
     }
 
-    static AFortPickup* SpawnFromItemDef(const FVector& Pos, UFortItemDefinition* ItemDef, int32 Count);
+    static AFortPickup* SpawnFromItemDef(const FVector& Pos, UFortItemDefinition* ItemDef, int32 Count, bool Toss = false);
     static AFortPickup* SpawnFromItemEntry(const FVector& Pos, FFortItemEntry* ItemEntry, int32 CountOverride = -1, AFortPawn* Pawn = nullptr);
     static AFortPickup* SpawnFromContainer(ABuildingContainer* Container, UFortItemDefinition* ItemDef, int32 Count);
 };

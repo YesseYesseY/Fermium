@@ -108,6 +108,11 @@ struct WeightedContainer
     float TotalWeight = 0.0f;
     std::vector<T> Items;
 
+    bool IsValid()
+    {
+        return Items.size() > 0 && TotalWeight > 0.0f;
+    }
+
     T& GetRandomItem()
     {
         float Randy = UKismetMathLibrary::RandomFloatInRange(0, TotalWeight);
@@ -222,6 +227,8 @@ namespace Loot
         }
 
         auto LootTier = LootTiers[TierGroup];
+        if (!LootTier.IsValid())
+            return Ret;
         auto LTI = InLootTier == -1 ? LootTier.GetRandomItem() : LootTier.GetRandomItemWithLootTier(InLootTier);
 
         if (!LootPackages.contains(LTI.LootPackage))
@@ -305,6 +312,105 @@ namespace Loot
         }
     }
 
+    void PickLootDrops(UObject* Obj, FFrame* Stack, bool* Ret)
+    {
+        static bool ContainsWCO = Obj->ClassPrivate->GetFunction("PickLootDrops")->GetPropOffset("WorldContextObject") != -1;
+
+        if (ContainsWCO)
+        {
+            FRAME_PROP(UObject*, WorldContextObject);
+        }
+
+        FRAME_PROP_REF(TArray<FFortItemEntry>, OutLootToDrop);
+        FRAME_PROP(FName, TierGroupName);
+        FRAME_PROP(int32, WorldLevel);
+        FRAME_PROP(int32, ForcedLootTier);
+        FRAME_END();
+
+        for (auto& thing : Get(TierGroupName, ForcedLootTier))
+        {
+            auto& Entry = OutLootToDrop.AddDefault(FFortItemEntry::Size());
+            Entry.GetItemDefinition() = thing.first;
+            Entry.GetCount() = thing.second;
+        }
+
+        *Ret = true;
+    }
+
+    void K2_SpawnPickupInWorld(UObject* Object, FFrame* Stack, AFortPickup** Ret)
+    {
+        static auto Func = Object->ClassPrivate->GetFunction("K2_SpawnPickupInWorld");
+        
+        FRAME_PROP(UObject*, WorldContextObject);
+        FRAME_PROP(UFortWorldItemDefinition*, ItemDefinition);
+        FRAME_PROP(int32, NumberToSpawn);
+        FRAME_PROP(FVector, Position);
+        FRAME_PROP(FVector, Direction);
+        FRAME_PROP(int32, OverrideMaxStackCount);
+        FRAME_PROP(bool, bToss);
+        FRAME_PROP(bool, bRandomRotation);
+
+        // Above is on both 4.1 and 19.40
+
+        auto Pickup = AFortPickup::SpawnFromItemDef(Position, ItemDefinition, NumberToSpawn, false);
+        Pickup->GetbRandomRotation() = bRandomRotation;
+
+        uint8 SourceType = 0;
+        uint8 Source = 0;
+
+        static bool HasBFAP = Func->GetPropOffset("bBlockedFromAutoPickup") != -1;
+        if (HasBFAP)
+        {
+            FRAME_PROP(bool, bBlockedFromAutoPickup);
+        }
+        static bool HasPIH = Func->GetPropOffset("PickupInstigatorHandle") != -1;
+        if (HasPIH)
+        {
+            FRAME_PROP(int32, PickupInstigatorHandle)
+        }
+
+        static bool HasST = Func->GetPropOffset("SourceType") != -1;
+        if (HasST)
+            Stack->Step(&SourceType);
+
+        static bool HasS = Func->GetPropOffset("Source") != -1;
+        if (HasS)
+            Stack->Step(&Source);
+
+        static bool HasOOPC = Func->GetPropOffset("OptionalOwnerPC") != -1;
+        AFortPlayerController* OptionalOwnerPC = nullptr;
+        if (HasOOPC)
+            Stack->Step(&OptionalOwnerPC);
+
+        AFortPawn* Owner = OptionalOwnerPC ? OptionalOwnerPC->GetPawnAs<AFortPawn>() : nullptr;
+
+        Pickup->TossPickup(Position, Owner, OverrideMaxStackCount, bToss, SourceType, Source);
+
+        static bool HasPORTO = Func->GetPropOffset("bPickupOnlyRelevantToOwner") != -1;
+        if (HasPORTO)
+        {
+            FRAME_PROP(bool, bPickupOnlyRelevantToOwner);
+        }
+
+        FRAME_END();
+
+        *Ret = Pickup;
+    }
+
+    void SupplyDropSpawnPickup(AActor* SupplyDrop, FFrame* Stack, AFortPickup** Ret)
+    {
+        FRAME_PROP(UFortWorldItemDefinition*, ItemDefinition);
+        FRAME_PROP(int32, NumberToSpawn);
+        FRAME_PROP(AFortPawn*, TriggeringPawn);
+        FRAME_PROP(FVector, Position);
+        FRAME_PROP(FVector, Direction);
+        FRAME_END();
+
+        auto Pickup = AFortPickup::SpawnFromItemDef(Position, ItemDefinition, NumberToSpawn, false);
+        Pickup->TossPickup(Position, TriggeringPawn, 0, true, 4, 3);
+        *Ret = Pickup;
+    }
+
     void Init()
     {
         auto GameState = UGameplayStatics::GetGameState();
@@ -347,6 +453,10 @@ namespace Loot
                 AddLPD(Data->GetDefaultLootTableData().LootPackageData.Get());
             }
         }
+
+        UObject::FindFunction(L"/Script/FortniteGame.FortKismetLibrary:PickLootDrops")->Hook(PickLootDrops);
+        UObject::FindFunction(L"/Script/FortniteGame.FortKismetLibrary:K2_SpawnPickupInWorld")->Hook(K2_SpawnPickupInWorld);
+        UObject::FindFunction(L"/Script/FortniteGame.FortAthenaSupplyDrop:SpawnPickup")->Hook(SupplyDropSpawnPickup);
 
         // ABuildingContainer::SpawnLoot
         {

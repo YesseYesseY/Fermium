@@ -239,6 +239,11 @@ public: \
     Type* Name = Type::New(); \
     Stack->Step(Name);
 
+#define FRAME_PROP_REF(Type, Name) \
+    Type Temp_##Name; \
+    Type& Name = Stack->StepRef<Type>(&Temp_##Name);
+
+
 #define FRAME_END() Stack->End();
 
 // FUNCTION ARGS

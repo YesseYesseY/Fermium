@@ -298,9 +298,17 @@ namespace UC
 				Reserve(3, ElemSize);
 
             memcpy((ArrayElementType*)(int64(Data) + (NumElements * ElemSize)), &Element, ElemSize);
-			// Data[NumElements] = Element;
 			NumElements++;
 		}
+
+        inline ArrayElementType& AddDefault(int32 ElemSize = ElementSize)
+        {
+			if (GetSlack() <= 0)
+				Reserve(3, ElemSize);
+
+            memset((ArrayElementType*)(int64(Data) + (NumElements * ElemSize)), 0, ElemSize);
+            return *(ArrayElementType*)(int64(Data) + (NumElements++ * ElemSize));
+        }
 
 		inline bool Remove(int32 Index, int32 ElemSize = ElementSize)
 		{

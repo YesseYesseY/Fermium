@@ -1,6 +1,6 @@
 #include "../SDK.hpp"
 
-AFortPickup* AFortPickup::SpawnFromItemDef(const FVector& Pos, UFortItemDefinition* ItemDef, int32 Count)
+AFortPickup* AFortPickup::SpawnFromItemDef(const FVector& Pos, UFortItemDefinition* ItemDef, int32 Count, bool Toss)
 {
     auto Ret = UGameplayStatics::SpawnActor<AFortPickup>(AFortPickupAthena::StaticClass(), Pos);
     Ret->GetPrimaryPickupItemEntry().GetItemDefinition() = ItemDef;
@@ -13,7 +13,10 @@ AFortPickup* AFortPickup::SpawnFromItemDef(const FVector& Pos, UFortItemDefiniti
             Ret->GetPrimaryPickupItemEntry().GetLoadedAmmo() = WeaponStats->GetClipSize();
         }
     }
-    Ret->TossPickup(Pos, nullptr, 0, true, 16, 0);
+
+    if (Toss)
+        Ret->TossPickup(Pos, nullptr, 0, true, 16, 0);
+
     return Ret;
 }
 
