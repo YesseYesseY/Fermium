@@ -98,6 +98,8 @@ extern inline float GameVersion = -1.0f;
 
 #include "Fortnite/FortVehicles.hpp"
 
+#include "Fortnite/Curie.hpp"
+
 #include "Fortnite/Festivus.hpp"
 #include "Fortnite/Snow.hpp"
 #include "Fortnite/Cube.hpp"

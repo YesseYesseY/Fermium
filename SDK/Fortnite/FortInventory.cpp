@@ -105,7 +105,13 @@ void AFortInventory::GiveItem(FFortItemEntry& ItemEntry)
 void AFortInventory::Clear(bool Drop)
 {
     auto Pawn = ((AFortPlayerController*)GetOwner())->GetPawnAs<AFortPawn>();
-    auto Pos = Pawn->K2_GetActorLocation();
+
+    FVector Pos = { 0, 0, 0 };
+    if (Pawn)
+        Pos = Pawn->K2_GetActorLocation();
+    else
+        Drop = false;
+
     for (int i = 0; i < Num(); i++)
     {
         auto& ItemEntry = GetInventory().GetReplicatedEntries().Get(i, FFortItemEntry::Size());

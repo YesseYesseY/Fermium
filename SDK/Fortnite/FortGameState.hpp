@@ -13,9 +13,19 @@ class AFortGameStateBase : public AGameState
 {
 };
 
+struct FAdditionalLevelStreamed
+{
+    STATIC_STRUCT(FAdditionalLevelStreamed, L"/Script/FortniteGame.AdditionalLevelStreamed");
+
+    STRUCT_PROP_REF_REFLECTION(FName, LevelName);
+    STRUCT_PROP_REF_REFLECTION(bool, bIsServerOnly);
+};
+
 class AFortGameState : public AFortGameStateBase
 {
     PROP_REF_REFLECTION(TArray<AFortTeamInfo*>, Teams);
+
+    BASIC_UFUNC(OnRep_AdditionalPlaylistLevelsStreamed);
 };
 
 class AFortGameStateZone : public AFortGameState

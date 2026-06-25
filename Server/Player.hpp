@@ -47,6 +47,12 @@ namespace Player
             static auto ItemDef = UObject::FindObject<UFortItemDefinition>(L"/ValetMods/Mods/TiresOffRoad/Thrown/ID_ValetMod_Tires_OffRoad_Thrown.ID_ValetMod_Tires_OffRoad_Thrown");
             PlayerController->GetWorldInventory()->GiveItem(ItemDef, 1);
         }
+        else if (Msg == L"skye")
+        {
+            static auto SkyeClass = UObject::LoadClass(L"/Game/Athena/AI/MANG/BP_MangPlayerPawn_Boss_AdventureGirl.BP_MangPlayerPawn_Boss_AdventureGirl_C");
+            FVector offset = { 0, 0, 10000 };
+            UGameplayStatics::SpawnActor(SkyeClass, PlayerController->K2_GetActorLocation() + offset);
+        }
         else if (Msg == L"devkit")
         {
             static std::vector<UFortItemDefinition*> Items = {

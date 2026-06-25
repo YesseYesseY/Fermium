@@ -155,6 +155,11 @@ DWORD MainThread(HMODULE Module)
         Hook::Function(Scanner.Get(), ReturnHook);
     }
 
+    // Fire crashes my pc :)
+    auto CG = UObject::FindObject<UCurieGlobals>(L"/Script/Curie.Default__CurieGlobals");
+    if (CG)
+        CG->GetbEnableCurie() = false;
+
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogPackageLocalizationCache None");
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogFortUIDirector None");
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogFortSignificance None");

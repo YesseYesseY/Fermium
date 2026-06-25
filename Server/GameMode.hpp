@@ -15,9 +15,13 @@ namespace GameMode
     
             auto Playlist = UObject::FindObject<UFortPlaylistAthena>(
                     // L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo"
-                    L"/Game/Athena/Playlists/Playlist_DefaultDuo.Playlist_DefaultDuo"
+                    // L"/Game/Athena/Playlists/Playlist_DefaultDuo.Playlist_DefaultDuo"
                     // L"/Game/Athena/Playlists/Playground/Playlist_Playground.Playlist_Playground"
+                    L"/Game/Athena/Playlists/BattleLab/Playlist_BattleLab.Playlist_BattleLab"
                     );
+
+            if (!Playlist)
+                Playlist = UObject::FindObject<UFortPlaylistAthena>(L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo");
 #if 0
             if (Playlist->HasbSkipAircraft())
             {
@@ -36,6 +40,52 @@ namespace GameMode
             {
                 GameState->GetCurrentPlaylistData() = Playlist;
                 GameState->OnRep_CurrentPlaylistData();
+            }
+
+            auto APLSOffset = GameState->ClassPrivate->GetPropOffset("AdditionalPlaylistLevelsStreamed");
+            if (APLSOffset != -1)
+            {
+                bool UseFName = FAdditionalLevelStreamed::StaticStruct() == nullptr;
+
+                auto& LevelsFName = *(TArray<FName>*)(int64(GameState) + APLSOffset);
+                auto& LevelsStruct = *(TArray<FAdditionalLevelStreamed>*)(int64(GameState) + APLSOffset);
+
+                if (Playlist->HasAdditionalLevels())
+                {
+                    for (auto& SoftLevel : Playlist->GetAdditionalLevels())
+                    {
+                        if (UseFName)
+                        {
+                            LevelsFName.Add(SoftLevel.SoftObjectPtr.ObjectID.AssetPathName);
+                        }
+                        else
+                        {
+                            auto& thing = LevelsStruct.AddDefault(FAdditionalLevelStreamed::Size());
+                            thing.GetLevelName() = SoftLevel.SoftObjectPtr.ObjectID.AssetPathName;
+                            thing.GetbIsServerOnly() = false;
+                        }
+                    }
+
+                }
+
+                if (Playlist->HasAdditionalLevelsServerOnly())
+                {
+                    for (auto& SoftLevel : Playlist->GetAdditionalLevelsServerOnly())
+                    {
+                        if (UseFName)
+                        {
+                            LevelsFName.Add(SoftLevel.SoftObjectPtr.ObjectID.AssetPathName);
+                        }
+                        else
+                        {
+                            auto& thing = LevelsStruct.AddDefault(FAdditionalLevelStreamed::Size());
+                            thing.GetLevelName() = SoftLevel.SoftObjectPtr.ObjectID.AssetPathName;
+                            thing.GetbIsServerOnly() = true;
+                        }
+                    }
+                }
+
+                GameState->OnRep_AdditionalPlaylistLevelsStreamed();
             }
     
             Net::Listen();
@@ -153,7 +203,15 @@ namespace GameMode
         auto Players = UWorld::GetWorld()->GetNetDriver()->GetClientConnections();
         for (auto Player : Players)
         {
-            Player->GetPlayerControllerAs<AFortPlayerControllerAthena>()->GetWorldInventory()->Clear();
+            auto Controller = Player->GetPlayerControllerAs<AFortPlayerControllerAthena>();
+            if (!Controller)
+                continue;
+
+            auto Inventory = Controller->GetWorldInventory();
+            if (!Inventory)
+                continue;
+
+            Inventory->Clear();
         }
 
         Events::PostInit();
