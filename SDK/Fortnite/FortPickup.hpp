@@ -34,7 +34,7 @@ class AFortPickup : public AActor
 
     void TossPickup(const FVector& FinalLocation, AFortPawn* ItemOwner, int32 OverrideMaxStackCount, bool bToss, uint8 InPickupSourceTypeFlags, uint8 InPickupSpawnSource)
     {
-        static auto Func = ClassPrivate->GetFunction("TossPickup");
+        static auto Func = GetClass()->GetFunction("TossPickup");
         static bool ExtraBool = Func->GetPropOffset("bShouldCombinePickupsWhenTossCompletes") != -1;
         struct {
             FVector Pos;
@@ -73,29 +73,10 @@ class AFortPickup : public AActor
         ProcessEvent(Func, &args);
     }
 
-    void OnRep_PrimaryPickupItemEntry()
-    {
-        static auto Func = ClassPrivate->GetFunction("OnRep_PrimaryPickupItemEntry");
-        ProcessEvent(Func);
-    }
-
-    void OnRep_TossedFromContainer()
-    {
-        static auto Func = ClassPrivate->GetFunction("OnRep_TossedFromContainer");
-        ProcessEvent(Func);
-    }
-
-    void OnRep_bPickedUp()
-    {
-        static auto Func = ClassPrivate->GetFunction("OnRep_bPickedUp");
-        ProcessEvent(Func);
-    }
-
-    void OnRep_PickupLocationData()
-    {
-        static auto Func = ClassPrivate->GetFunction("OnRep_PickupLocationData");
-        ProcessEvent(Func);
-    }
+    BASIC_UFUNC(OnRep_PrimaryPickupItemEntry);
+    BASIC_UFUNC(OnRep_TossedFromContainer);
+    BASIC_UFUNC(OnRep_bPickedUp);
+    BASIC_UFUNC(OnRep_PickupLocationData);
 
     static AFortPickup* SpawnFromItemDef(const FVector& Pos, UFortItemDefinition* ItemDef, int32 Count, bool Toss = false);
     static AFortPickup* SpawnFromItemEntry(const FVector& Pos, FFortItemEntry* ItemEntry, int32 CountOverride = -1, AFortPawn* Pawn = nullptr);

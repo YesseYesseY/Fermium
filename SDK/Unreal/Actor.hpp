@@ -22,7 +22,7 @@ public:
 
     UActorComponent* _GetComponentByClass(UClass* ComponentClass)
     {
-        static auto Func = ClassPrivate->GetFunction("GetComponentByClass");
+        static auto Func = GetClass()->GetFunction("GetComponentByClass");
         struct {
             UClass* ComponentClass;
             UActorComponent* Ret;
@@ -39,7 +39,7 @@ public:
 
     bool TeleportTo(FVector DestLocation, FRotator DestRotation = {})
     {
-        static auto Func = ClassPrivate->GetFunction("K2_TeleportTo");
+        static auto Func = GetClass()->GetFunction("K2_TeleportTo");
         struct
         {
             FVector DestLocation;
@@ -52,7 +52,7 @@ public:
 
     void K2_SetActorLocationAndRotation(const FVector& NewLocation, const FRotator& NewRotation, bool bTeleport)
     {
-        static auto Func = ClassPrivate->GetFunction("K2_SetActorLocationAndRotation");
+        static auto Func = GetClass()->GetFunction("K2_SetActorLocationAndRotation");
         ARGS_NEW();
         ARGS_PROP(FVector, NewLocation, NewLocation);
         ARGS_PROP(FRotator, NewRotation, NewRotation);

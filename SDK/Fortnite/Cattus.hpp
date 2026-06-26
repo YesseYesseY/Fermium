@@ -4,13 +4,13 @@ class ABP_CattusDoggus_Scripting_C : public AActor
 
     void LoadCattusLevel()
     {
-        static auto Func = ClassPrivate->GetFunction("LoadCattusLevel");
+        static auto Func = GetClass()->GetFunction("LoadCattusLevel");
         ProcessEvent(Func);
     }
 
     void StartEvent()
     {
-        static auto Func = ClassPrivate->GetFunction("startevent");
+        static auto Func = GetClass()->GetFunction("startevent");
         ProcessEvent(Func);
     }
 };

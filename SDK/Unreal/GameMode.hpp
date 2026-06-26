@@ -4,7 +4,7 @@ class AGameModeBase : public AInfo
 
     APawn* SpawnDefaultPawnAtTransform(AController* NewPlayer, const FTransform& SpawnTransform)
     {
-        static auto Func = ClassPrivate->GetFunction("SpawnDefaultPawnAtTransform");
+        static auto Func = GetClass()->GetFunction("SpawnDefaultPawnAtTransform");
         struct {
             AController* NewPlayer;
             uint8 pad1[8];

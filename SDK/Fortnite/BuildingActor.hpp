@@ -3,7 +3,7 @@ class ABuildingActor : public AActor
 public:
     void InitializeBuildingActor(AFortPlayerController* SpawningController, bool bUsePlayerBuildAnimations, ABuildingActor* ReplacedBuilding = nullptr)
     {
-        static auto Func = ClassPrivate->GetFunction("InitializeKismetSpawnedBuildingActor");
+        static auto Func = GetClass()->GetFunction("InitializeKismetSpawnedBuildingActor");
         struct {
             ABuildingActor* BuildingOwner;
             AFortPlayerController* SpawningController;
@@ -15,7 +15,7 @@ public:
 
     float GetHealthPercent()
     {
-        static auto Func = ClassPrivate->GetFunction("GetHealthPercent");
+        static auto Func = GetClass()->GetFunction("GetHealthPercent");
         float Ret;
         ProcessEvent(Func, &Ret);
         return Ret;
@@ -37,13 +37,13 @@ public:
 
     void OnRep_EditingPlayer()
     {
-        static auto Func = ClassPrivate->GetFunction("OnRep_EditingPlayer");
+        static auto Func = GetClass()->GetFunction("OnRep_EditingPlayer");
         ProcessEvent(Func);
     }
 
     void RepairBuilding(AFortPlayerController* RepairingController, int32 ResourcesSpent)
     {
-        static auto Func = ClassPrivate->GetFunction("RepairBuilding");
+        static auto Func = GetClass()->GetFunction("RepairBuilding");
         struct {
             AFortPlayerController* RepairingController;
             int32 ResourcesSpent;

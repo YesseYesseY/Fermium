@@ -15,6 +15,8 @@ public:
 
 public:
     void** VTable;
+
+private:
     EObjectFlags ObjectFlags;
     int32 InternalIndex;
     UClass* ClassPrivate;
@@ -36,6 +38,32 @@ public:
     bool HasObjectFlag(EObjectFlags Flag)
     {
         return (ObjectFlags & Flag) != EObjectFlags::NoFlags;
+    }
+
+public:
+    FORCEINLINE EObjectFlags GetObjectFlags() const
+    {
+        return this->ObjectFlags;
+    }
+
+    FORCEINLINE int32 GetIndex() const
+    {
+        return InternalIndex;
+    }
+
+    FORCEINLINE UClass* GetClass() const
+    {
+        return ClassPrivate;
+    }
+
+    FORCEINLINE FName GetFName() const
+    {
+        return NamePrivate;
+    }
+
+    FORCEINLINE UObject* GetOuterPrivate() const
+    {
+        return OuterPrivate;
     }
 
 public:

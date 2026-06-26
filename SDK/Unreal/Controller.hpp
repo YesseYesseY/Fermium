@@ -8,13 +8,13 @@ class AController : public AActor
 
     void Possess(APawn* Pawn)
     {
-        static auto Func = ClassPrivate->GetFunction("Possess");
+        static auto Func = GetClass()->GetFunction("Possess");
         ProcessEvent(Func, &Pawn);
     }
 
     void ClientSetRotation(const FRotator& NewRotation, bool bResetCamera)
     {
-        static auto Func = ClassPrivate->GetFunction("ClientSetRotation");
+        static auto Func = GetClass()->GetFunction("ClientSetRotation");
         struct {
             FRotator Rot;
             bool bResetCamera;
@@ -24,7 +24,7 @@ class AController : public AActor
 
     FRotator GetControlRotation()
     {
-        static auto Func = ClassPrivate->GetFunction("GetControlRotation");
+        static auto Func = GetClass()->GetFunction("GetControlRotation");
         FRotator Ret;
         ProcessEvent(Func, &Ret);
         return Ret;

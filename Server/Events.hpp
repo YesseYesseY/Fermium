@@ -42,7 +42,7 @@ namespace Events
             auto Conv64Prop = Func->GetProp("CallFunc_Conv_IntToInt64_ReturnValue");
             auto LessEqualProp = Func->GetProp("CallFunc_Conv_IntToBool_ReturnValue");
             auto FloatProp = Func->GetProp("CallFunc_Conv_IntToBool_ReturnValue");
-            auto ProgressProp = SleepyProp->ClassPrivate->GetProp("Progress");
+            auto ProgressProp = SleepyProp->GetClass()->GetProp("Progress");
 
             Writer.Let(FTruncProp);
             Writer.VarL(FTruncProp);
@@ -93,7 +93,7 @@ namespace Events
         else if (GameVersion == 8.50f)
         {
             auto Sneezy = ABP_Sneezy_FloorProp_Area_C::Get();
-            auto Func = Sneezy->ClassPrivate->GetFunction("ExecuteUbergraph_BP_Sneezy_FloorProp_Area");
+            auto Func = Sneezy->GetClass()->GetFunction("ExecuteUbergraph_BP_Sneezy_FloorProp_Area");
             auto& Script = Func->GetScript();
             auto ScriptSize = Script.Num();
             auto Writer = ScriptWriter(Script.GetData());
@@ -104,11 +104,11 @@ namespace Events
             Writer = ScriptWriter(Script.GetData());
             Writer.Skip(ScriptSize);
 
-            auto DancerCountProp = Sneezy->ClassPrivate->GetProp("DancerCount");
+            auto DancerCountProp = Sneezy->GetClass()->GetProp("DancerCount");
             auto IntToFloatProp = Func->GetProp("CallFunc_Abs_ReturnValue");
             auto DivideProp = Func->GetProp("CallFunc_Divide_FloatFloat_ReturnValue");
 
-            Writer.FinalFunction(Sneezy->ClassPrivate->GetFunction("FlushNetDormancy"));
+            Writer.FinalFunction(Sneezy->GetClass()->GetFunction("FlushNetDormancy"));
             Writer.EndFunction();
 
             Writer.Let(IntToFloatProp);
@@ -124,7 +124,7 @@ namespace Events
             Writer.FloatConst((float)UGameplayStatics::GetGameMode()->GetNumPlayers());
             Writer.EndFunction();
 
-            Writer.FinalFunction(Sneezy->ClassPrivate->GetFunction("EdgeServerMeterLevel"));
+            Writer.FinalFunction(Sneezy->GetClass()->GetFunction("EdgeServerMeterLevel"));
             Writer.VarL(DivideProp);
             Writer.EndFunction();
 

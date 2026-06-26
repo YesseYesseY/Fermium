@@ -7,7 +7,7 @@ class AFortAthenaVehicleSpawner : public AActor
 
     UClass* GetVehicleClass()
     {
-        static auto Func = ClassPrivate->GetFunction("GetVehicleClass");
+        static auto Func = GetClass()->GetFunction("GetVehicleClass");
         UClass* Ret;
         ProcessEvent(Func, &Ret);
         return Ret;
@@ -37,7 +37,7 @@ class UFortDagwoodVehicleManager : public UGameStateComponent
 
     void OnVehicleSpawned(void* Vehicle)
     {
-        static auto Func = ClassPrivate->GetFunction("OnVehicleSpawned");
+        static auto Func = GetClass()->GetFunction("OnVehicleSpawned");
         ProcessEvent(Func, &Vehicle);
     }
 };

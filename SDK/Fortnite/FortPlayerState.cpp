@@ -10,7 +10,7 @@ void AFortPlayerState::ApplyCharacterParts(TArray<UCustomCharacterPart*>& Parts)
         for (auto Part : Parts)
             GetCharacterParts().Parts[Part->GetCharacterPartType()] = Part;
 
-        static auto OnRepFunc = ClassPrivate->GetFunction("OnRep_CharacterParts");
+        static auto OnRepFunc = GetClass()->GetFunction("OnRep_CharacterParts");
         ProcessEvent(OnRepFunc);
     }
     else if (HasCharacterData())
@@ -21,7 +21,7 @@ void AFortPlayerState::ApplyCharacterParts(TArray<UCustomCharacterPart*>& Parts)
         for (auto Part : Parts)
             GetCharacterData().GetParts()[Part->GetCharacterPartType()] = Part;
 
-        static auto OnRepFunc = ClassPrivate->GetFunction("OnRep_CharacterData");
+        static auto OnRepFunc = GetClass()->GetFunction("OnRep_CharacterData");
         ProcessEvent(OnRepFunc);
     }
 }

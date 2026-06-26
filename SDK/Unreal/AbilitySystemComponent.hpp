@@ -10,7 +10,7 @@ public:
 
     FGameplayTagCountContainer& GetGameplayTagCountContainer()
     {
-        static int32 Offset = ClassPrivate->GetPropOffset("BlockedAbilityBindings") + 0x10;
+        static int32 Offset = GetClass()->GetPropOffset("BlockedAbilityBindings") + 0x10;
         return *(FGameplayTagCountContainer*)(int64(this) + Offset);
     }
 
@@ -62,7 +62,7 @@ public:
 
     void ClientActivateAbilityFailed(FGameplayAbilitySpecHandle AbilityToActivate, int16 PredictionKey)
     {
-        static auto Func = ClassPrivate->GetFunction("ClientActivateAbilityFailed");
+        static auto Func = GetClass()->GetFunction("ClientActivateAbilityFailed");
         struct {
             FGameplayAbilitySpecHandle a1;
             int16 a2;

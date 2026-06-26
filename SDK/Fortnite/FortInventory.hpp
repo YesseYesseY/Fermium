@@ -15,7 +15,7 @@ class UFortItem : public UObject
 public:
     FGuid GetItemGuid()
     {
-        static auto Func = ClassPrivate->GetFunction("GetItemGuid");
+        static auto Func = GetClass()->GetFunction("GetItemGuid");
         FGuid Ret;
         ProcessEvent(Func, &Ret);
         return Ret;
@@ -84,7 +84,7 @@ class AFortInventory : public AActor
 
     void Update(FFortItemEntry* ItemEntry = nullptr)
     {
-        static auto Func = ClassPrivate->GetFunction("HandleInventoryLocalUpdate");
+        static auto Func = GetClass()->GetFunction("HandleInventoryLocalUpdate");
         ProcessEvent(Func);
         if (ItemEntry)
             GetInventory().MarkItemDirty(ItemEntry);

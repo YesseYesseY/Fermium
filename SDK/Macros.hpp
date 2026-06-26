@@ -49,42 +49,42 @@ public: \
 
 #define PROP_REF_REFLECTION(Type, Name) \
 public: \
-    Type& Get##Name() \
+    FORCEINLINE Type& Get##Name() const \
     { \
-        static int32 Offset = ClassPrivate->GetPropOffset(#Name); \
+        static int32 Offset = GetClass()->GetPropOffset(#Name); \
         return *(Type*)(int64(this) + Offset); \
     }
 
 #define PROP_REF_REFLECTION_AS(Type, Name) \
     PROP_REF_REFLECTION(Type, Name); \
     template <typename T> \
-    T* Get##Name##As() \
+    FORCEINLINE T* Get##Name##As() const \
     { \
         return (T*)Get##Name(); \
     }
 
 #define PROP_BIT_REFLECTION(Name) \
 public: \
-    void Set##Name(bool val) \
+    FORCEINLINE void Set##Name(bool val) \
     { \
-        static int32 Offset = ClassPrivate->GetPropOffset(#Name); \
-        static uint8 FieldMask = ClassPrivate->GetPropFieldMask(#Name); \
+        static int32 Offset = GetClass()->GetPropOffset(#Name); \
+        static uint8 FieldMask = GetClass()->GetPropFieldMask(#Name); \
         if (val) \
             *(uint8*)(int64(this) + Offset) |= FieldMask; \
         else \
             *(uint8*)(int64(this) + Offset) &= ~FieldMask; \
     } \
-    bool Get##Name() \
+    FORCEINLINE bool Get##Name() const \
     {\
-        static int32 Offset = ClassPrivate->GetPropOffset(#Name); \
-        static uint8 FieldMask = ClassPrivate->GetPropFieldMask(#Name); \
+        static int32 Offset = GetClass()->GetPropOffset(#Name); \
+        static uint8 FieldMask = GetClass()->GetPropFieldMask(#Name); \
         return (*(uint8*)(int64(this) + Offset) & FieldMask) != 0; \
     }
 
 #define PROP_BIT_REFLECTION_SAFE(Name) \
-    bool Has##Name() \
+    FORCEINLINE bool Has##Name() const \
     { \
-        static int32 Offset = ClassPrivate->GetPropOffset(#Name); \
+        static int32 Offset = GetClass()->GetPropOffset(#Name); \
         return Offset != -1; \
     } \
     PROP_BIT_REFLECTION(Name);
@@ -93,16 +93,16 @@ public: \
 private: \
     static inline int32 Offset_##Name = -1; \
 public: \
-    Type& Get##Name() \
+    FORCEINLINE Type& Get##Name() const \
     { \
         if (Offset_##Name == -1) \
-            Offset_##Name = ClassPrivate->GetPropOffset(#Name); \
+            Offset_##Name = GetClass()->GetPropOffset(#Name); \
         return *(Type*)(int64(this) + Offset_##Name); \
     } \
-    bool Has##Name() \
+    FORCEINLINE bool Has##Name() const \
     { \
         if (Offset_##Name == -1) \
-            Offset_##Name = ClassPrivate->GetPropOffset(#Name); \
+            Offset_##Name = GetClass()->GetPropOffset(#Name); \
         return Offset_##Name != -1; \
     }
 
@@ -110,17 +110,19 @@ public: \
 public: \
     void FuncName() \
     { \
-        static auto Func = ClassPrivate->GetFunction(#FuncName); \
-        ProcessEvent(Func); \
+        static auto Func = GetClass()->GetFunction(#FuncName); \
+        if (Func) \
+            ProcessEvent(Func); \
     }
 
 #define BASIC_UFUNC_RET(RetType, FuncName) \
 public: \
     RetType FuncName() \
     { \
-        static auto Func = ClassPrivate->GetFunction(#FuncName); \
+        static auto Func = GetClass()->GetFunction(#FuncName); \
         RetType Ret; \
-        ProcessEvent(Func, &Ret); \
+        if (Func) \
+            ProcessEvent(Func, &Ret); \
         return Ret; \
     }
 
@@ -128,7 +130,7 @@ public: \
 public: \
     RetType FuncName() \
     { \
-        static auto Func = ClassPrivate->GetFunction(#FuncName);
+        static auto Func = GetClass()->GetFunction(#FuncName);
 
     
 

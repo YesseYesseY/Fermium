@@ -3,7 +3,7 @@ class UActorComponent : public UObject
 public:
     AActor* GetOwner()
     {
-        static auto Func = ClassPrivate->GetFunction("GetOwner");
+        static auto Func = GetClass()->GetFunction("GetOwner");
         AActor* Ret;
         ProcessEvent(Func, &Ret);
         return Ret;
@@ -25,7 +25,7 @@ class USceneComponent : public UActorComponent
 public:
     void SetWorldTransform(FTransform& NewTransform, bool bTeleport)
     {
-        static auto Func = ClassPrivate->GetFunction("K2_SetWorldTransform");
+        static auto Func = GetClass()->GetFunction("K2_SetWorldTransform");
         ARGS_NEW();
         ARGS_PROP(FTransform, NewTransform, NewTransform);
         ARGS_PROP(bool, bTeleport, bTeleport);
@@ -41,7 +41,7 @@ class UPrimitiveComponent : public USceneComponent
 public:
     void SetAllPhysicsLinearVelocity(const FVector& NewVel, bool bAddToCurrent)
     {
-        static auto Func = ClassPrivate->GetFunction("SetAllPhysicsLinearVelocity");
+        static auto Func = GetClass()->GetFunction("SetAllPhysicsLinearVelocity");
         struct
         {
             FVector NewVel;
@@ -52,7 +52,7 @@ public:
 
     void SetAllPhysicsAngularVelocityInDegrees(const FVector& NewAngVel, bool bAddToCurrent)
     {
-        static auto Func = ClassPrivate->GetFunction("SetAllPhysicsAngularVelocityInDegrees");
+        static auto Func = GetClass()->GetFunction("SetAllPhysicsAngularVelocityInDegrees");
         struct
         {
             FVector NewVel;

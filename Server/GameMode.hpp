@@ -42,7 +42,7 @@ namespace GameMode
                 GameState->OnRep_CurrentPlaylistData();
             }
 
-            auto APLSOffset = GameState->ClassPrivate->GetPropOffset("AdditionalPlaylistLevelsStreamed");
+            auto APLSOffset = GameState->GetClass()->GetPropOffset("AdditionalPlaylistLevelsStreamed");
             if (APLSOffset != -1)
             {
                 bool UseFName = FAdditionalLevelStreamed::StaticStruct() == nullptr;

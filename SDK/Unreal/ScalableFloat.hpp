@@ -12,7 +12,7 @@ struct FScalableFloat
 
     float GetValue()
     {
-        static UFunction* Func = StaticLib()->ClassPrivate->GetFunction("GetValue");
+        static UFunction* Func = StaticLib()->GetClass()->GetFunction("GetValue");
         ARGS_NEW();
         ARGS_PROP_COPY(Input, this);
 
@@ -25,7 +25,7 @@ struct FScalableFloat
 
     float GetValueAtLevel(float Level)
     {
-        static UFunction* Func = StaticLib()->ClassPrivate->GetFunction("GetValueAtLevel");
+        static UFunction* Func = StaticLib()->GetClass()->GetFunction("GetValueAtLevel");
         ARGS_NEW();
         ARGS_PROP_COPY(Input, this);
         ARGS_PROP(float, Level, Level);

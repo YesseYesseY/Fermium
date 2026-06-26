@@ -51,21 +51,12 @@ public:
 
     void OnRep_GamePhase(EAthenaGamePhase OldPhase)
     {
-        static auto Func = ClassPrivate->GetFunction("OnRep_GamePhase");
+        static auto Func = GetClass()->GetFunction("OnRep_GamePhase");
         ProcessEvent(Func, &OldPhase);
     }
 
-    void OnRep_CurrentPlaylistInfo()
-    {
-        static auto Func = ClassPrivate->GetFunction("OnRep_CurrentPlaylistInfo");
-        ProcessEvent(Func);
-    }
-
-    void OnRep_CurrentPlaylistData()
-    {
-        static auto Func = ClassPrivate->GetFunction("OnRep_CurrentPlaylistData");
-        ProcessEvent(Func);
-    }
+    BASIC_UFUNC(OnRep_CurrentPlaylistInfo);
+    BASIC_UFUNC(OnRep_CurrentPlaylistData);
 
     UFortPlaylistAthena* GetCurrentPlaylist()
     {

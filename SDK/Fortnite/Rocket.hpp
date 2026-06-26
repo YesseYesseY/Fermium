@@ -4,7 +4,7 @@ class ABP_GeodeScripting_C : public AActor
 
     void TestLaunch(float Seconds)
     {
-        static auto Func = ClassPrivate->GetFunction("TestLaunch");
+        static auto Func = GetClass()->GetFunction("TestLaunch");
         ProcessEvent(Func, &Seconds);
     }
 };

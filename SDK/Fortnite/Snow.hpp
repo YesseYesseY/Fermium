@@ -10,7 +10,7 @@ class ABP_SnowAlwaysRelevant_C : public AActor
 
     void LoadSleepy()
     {
-        static auto Func = ClassPrivate->GetFunction("LoadSleepy");
+        static auto Func = GetClass()->GetFunction("LoadSleepy");
         ProcessEvent(Func);
     }
 };
@@ -28,13 +28,13 @@ class ABP_Sleepy_Prop_C : public AActor
 
     void EdgeServerSetProgress(float Progress)
     {
-        static auto Func = ClassPrivate->GetFunction("EdgeServerSetProgress");
+        static auto Func = GetClass()->GetFunction("EdgeServerSetProgress");
         ProcessEvent(Func, &Progress);
     }
 
     void EdgeServerApplyDamage(int32 Damage)
     {
-        static auto Func = ClassPrivate->GetFunction("EdgeServerApplyDamage");
+        static auto Func = GetClass()->GetFunction("EdgeServerApplyDamage");
         ProcessEvent(Func, &Damage);
     }
 };
@@ -45,19 +45,19 @@ class ABP_Sneezy_FloorProp_Area_C : public AActor
 
     void SetDancefloorEnabled(bool Enabled)
     {
-        static auto Func = ClassPrivate->GetFunction("SetDancefloorEnabled");
+        static auto Func = GetClass()->GetFunction("SetDancefloorEnabled");
         ProcessEvent(Func, &Enabled);
     }
 
     void EdgeServerMeterLevel(float MeterLevel)
     {
-        static auto Func = ClassPrivate->GetFunction("EdgeServerMeterLevel");
+        static auto Func = GetClass()->GetFunction("EdgeServerMeterLevel");
         ProcessEvent(Func, &MeterLevel);
     }
 
     void UpdateMeterLevelAudio(float MeterLevel)
     {
-        static auto Func = ClassPrivate->GetFunction("UpdateMeterLevelAudio");
+        static auto Func = GetClass()->GetFunction("UpdateMeterLevelAudio");
         ProcessEvent(Func, &MeterLevel);
     }
 };

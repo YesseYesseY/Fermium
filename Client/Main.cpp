@@ -56,7 +56,7 @@ DWORD MainThread(HMODULE Module)
     if (GameVersion >= 9.0f && GameVersion < 11.0f)
     {
         auto Settings = UObject::FindObject<UObject>(L"/Script/Engine.Default__InputSettings");
-        **(FName**)(int64(Settings) + Settings->ClassPrivate->GetPropOffset("ConsoleKeys")) = UKismetStringLibrary::Conv_StringToName(L"F8");
+        **(FName**)(int64(Settings) + Settings->GetClass()->GetPropOffset("ConsoleKeys")) = UKismetStringLibrary::Conv_StringToName(L"F8");
     }
 
     // UWorld::Exec

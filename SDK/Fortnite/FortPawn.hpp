@@ -6,7 +6,7 @@ public:
 
     AFortWeapon* EquipWeaponDefinition(UFortItemDefinition* ItemDef, const FGuid& ItemEntryGuid)
     {
-        static auto Func = ClassPrivate->GetFunction("EquipWeaponDefinition");
+        static auto Func = GetClass()->GetFunction("EquipWeaponDefinition");
         ARGS_NEW();
         ARGS_PROP(UFortItemDefinition*, WeaponData, ItemDef);
         ARGS_PROP(FGuid, ItemEntryGuid, ItemEntryGuid);

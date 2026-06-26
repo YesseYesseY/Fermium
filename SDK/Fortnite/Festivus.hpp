@@ -5,13 +5,13 @@ class ABP_FestivusManager_C : public AActor
 public:
     void LoadMap()
     {
-        static auto Func = ClassPrivate->GetFunction("LoadMap");
+        static auto Func = GetClass()->GetFunction("LoadMap");
         ProcessEvent(Func);
     }
 
     void ExecuteUbergraph(int EntryPoint)
     {
-        static auto Func = ClassPrivate->GetFunction("ExecuteUbergraph_BP_FestivusManager");
+        static auto Func = GetClass()->GetFunction("ExecuteUbergraph_BP_FestivusManager");
         ProcessEvent(Func, &EntryPoint);
     }
 };

@@ -54,11 +54,7 @@ public:
         }
     }
 
-    void OnRep_PlayerTeam()
-    {
-        static auto Func = ClassPrivate->GetFunction("OnRep_PlayerTeam");
-        ProcessEvent(Func);
-    }
+    BASIC_UFUNC(OnRep_PlayerTeam);
 
     void ApplyCharacterParts(TArray<UCustomCharacterPart*>& Parts);
     void ApplyCID(UAthenaCharacterItemDefinition* CID);
@@ -79,14 +75,10 @@ class AFortPlayerStateAthena : public AFortPlayerStatePvP
 
     void OnRep_TeamIndex(uint8 Old)
     {
-        static auto Func = ClassPrivate->GetFunction("OnRep_TeamIndex");
+        static auto Func = GetClass()->GetFunction("OnRep_TeamIndex");
         if (Func)
             ProcessEvent(Func, &Old);
     }
 
-    void OnRep_SquadId()
-    {
-        static auto Func = ClassPrivate->GetFunction("OnRep_SquadId");
-        ProcessEvent(Func);
-    }
+    BASIC_UFUNC(OnRep_SquadId);
 };

@@ -34,7 +34,7 @@ class UGameDataCosmetics : public UObject
 public:
     TArray<UAthenaCharacterItemDefinition*>& GetRandomCharacters()
     {
-        static int32 Offset = ClassPrivate->GetPropOffset("RandomCharacters");
+        static int32 Offset = GetClass()->GetPropOffset("RandomCharacters");
 
         // TODO 19.01 uses TArray<UAthenaCharacterItemDefinition*>
         //      19.40 uses TArray<FPrimaryAssetId>

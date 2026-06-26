@@ -372,7 +372,7 @@ namespace Loot
 
     void PickLootDrops(UObject* Obj, FFrame* Stack, bool* Ret)
     {
-        static bool ContainsWCO = Obj->ClassPrivate->GetFunction("PickLootDrops")->GetPropOffset("WorldContextObject") != -1;
+        static bool ContainsWCO = Obj->GetClass()->GetFunction("PickLootDrops")->GetPropOffset("WorldContextObject") != -1;
 
         if (ContainsWCO)
         {
@@ -397,7 +397,7 @@ namespace Loot
 
     void K2_SpawnPickupInWorld(UObject* Object, FFrame* Stack, AFortPickup** Ret)
     {
-        static auto Func = Object->ClassPrivate->GetFunction("K2_SpawnPickupInWorld");
+        static auto Func = Object->GetClass()->GetFunction("K2_SpawnPickupInWorld");
         
         FRAME_PROP(UObject*, WorldContextObject);
         FRAME_PROP(UFortWorldItemDefinition*, ItemDefinition);

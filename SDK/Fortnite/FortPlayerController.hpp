@@ -7,7 +7,7 @@ public:
 
     void ClientFailedToBeginEditingBuildingActor(ABuildingSMActor* BuildingActorToStopEditing)
     {
-        static auto Func = ClassPrivate->GetFunction("ClientFailedToBeginEditingBuildingActor");
+        static auto Func = GetClass()->GetFunction("ClientFailedToBeginEditingBuildingActor");
         ProcessEvent(Func, &BuildingActorToStopEditing);
     }
 
@@ -37,7 +37,7 @@ class AFortPlayerControllerAthena : public AFortPlayerControllerPvP
 public:
     bool IsInAircraft()
     {
-        static auto Func = ClassPrivate->GetFunction("IsInAircraft");
+        static auto Func = GetClass()->GetFunction("IsInAircraft");
         bool Ret;
         ProcessEvent(Func, &Ret);
         return Ret;

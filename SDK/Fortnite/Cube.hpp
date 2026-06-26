@@ -4,19 +4,19 @@ class ACUBE_C : public ABuildingGameplayActor
 
     void SpawnCube()
     {
-        static auto Func = ClassPrivate->GetFunction("SpawnCube");
+        static auto Func = GetClass()->GetFunction("SpawnCube");
         ProcessEvent(Func);
     }
 
     void PlayFinalSink()
     {
-        static auto Func = ClassPrivate->GetFunction("PlayFinalSink");
+        static auto Func = GetClass()->GetFunction("PlayFinalSink");
         ProcessEvent(Func);
     }
 
     void Next(int Step)
     {
-        static auto Func = ClassPrivate->GetFunction("Next");
+        static auto Func = GetClass()->GetFunction("Next");
         ProcessEvent(Func, &Step);
     }
 };

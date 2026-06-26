@@ -24,7 +24,7 @@ class UFortItemDefinition : public UMcpItemDefinitionBase
 public:
     UFortItem* CreateTemporaryItemInstanceBP(int32 Count, int32 Level = 1)
     {
-        static auto Func = ClassPrivate->GetFunction("CreateTemporaryItemInstanceBP");
+        static auto Func = GetClass()->GetFunction("CreateTemporaryItemInstanceBP");
         struct {
             int32 Count;
             int32 Level;
@@ -36,7 +36,7 @@ public:
 
     int32 GetMaxStackSize()
     {
-        static void* Prop = ClassPrivate->GetProp("MaxStackSize");
+        static void* Prop = GetClass()->GetProp("MaxStackSize");
         static int32 PropSize = EngineVersion >= 4.25f ? ((FProperty*)Prop)->ElementSize : ((UProperty*)Prop)->ElementSize;
         static int32 Offset = EngineVersion >= 4.25f ? ((FProperty*)Prop)->Offset : ((UProperty*)Prop)->Offset;
         if (PropSize == 4)
@@ -189,21 +189,21 @@ class UFortGadgetItemDefinition : public UFortWorldItemDefinition
 public:
     bool HasbDropAllOnEquip()
     {
-        static int32 Offset = ClassPrivate->GetPropOffset("bDropAllOnEquip");
+        static int32 Offset = GetClass()->GetPropOffset("bDropAllOnEquip");
         return Offset != -1;
     }
 
     bool GetbDropAllOnEquip()
     {
-        static int32 Offset = ClassPrivate->GetPropOffset("bDropAllOnEquip");
-        static uint8 FieldMask = ClassPrivate->GetPropFieldMask("bDropAllOnEquip");
+        static int32 Offset = GetClass()->GetPropOffset("bDropAllOnEquip");
+        static uint8 FieldMask = GetClass()->GetPropFieldMask("bDropAllOnEquip");
         return FieldMask == 0xFF ? *(bool*)(int64(this) + Offset) != 0 : (*(uint8*)(int64(this) + Offset) & FieldMask) != 0;
     }
 
     void SetbDropAllOnEquip(bool Value)
     {
-        static int32 Offset = ClassPrivate->GetPropOffset("bDropAllOnEquip");
-        static uint8 FieldMask = ClassPrivate->GetPropFieldMask("bDropAllOnEquip");
+        static int32 Offset = GetClass()->GetPropOffset("bDropAllOnEquip");
+        static uint8 FieldMask = GetClass()->GetPropFieldMask("bDropAllOnEquip");
         if (FieldMask == 0xFF)
         {
             *(bool*)(int64(this) + Offset) = Value;

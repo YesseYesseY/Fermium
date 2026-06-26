@@ -2,7 +2,7 @@ namespace Player
 {
     void ServerAttemptAircraftJump(UActorComponent* Component, const FRotator& ClientRotation)
     {
-        static auto CurrentAircraftOffset = Component->ClassPrivate->GetPropOffset("CurrentAircraft");
+        static auto CurrentAircraftOffset = Component->GetClass()->GetPropOffset("CurrentAircraft");
         auto CurrentAircraft = *(AActor**)(int64(Component) + CurrentAircraftOffset);
         auto PlayerController = Component->GetOwnerAs<AFortPlayerControllerAthena>();
         auto Pawn = (AFortPlayerPawnAthena*)GameMode::SpawnDefaultPawnForHook(UGameplayStatics::GetGameMode(), PlayerController, CurrentAircraft);
