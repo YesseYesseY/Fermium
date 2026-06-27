@@ -661,6 +661,7 @@ namespace Memcury
         template <typename T>
         auto GetAs() -> T { return _address.GetAs<T>(); }
         auto Get() -> uintptr_t { return _address.Get(); }
+        auto GetRelative(uint32_t offset) -> uintptr_t { return PE::Address(Get()).RelativeOffset(offset).Get(); }
 
         auto IsValid() -> bool { return _address.IsValid(); }
     };

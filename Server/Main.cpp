@@ -36,51 +36,28 @@ DWORD MainThread(HMODULE Module)
     }
 
     // GIsClient + GIsServer
-    // if (GameVersion != 9.41f) // TODO Remake this mess
     {
         auto Scanner = Memcury::Scanner::FindStringRef(L"AllowCommandletRendering");
         auto StrBase = Scanner.Get();
         // 44 88 2D is used on 7.30
         // C6 05    is used on 8.51 and 10.40
-        Scanner.ScanFor({ 0x44, 0x88, 0x2D }, false);
-        if (Scanner.Get() != StrBase)
+
+        std::vector<std::vector<uint8_t>> codes = {{ 0x44, 0x88, 0x2D }, { 0xC6, 0x05 }, { 0x88, 0x1D }};
+
+        int Idx = -1;
+        Scanner.ScanForEither(codes, false, 0, &Idx);
+
+        if (Idx != -1)
         {
-            Scanner.ScanFor({ 0x44, 0x88, 0x2D }, false); // GIsServer
-            auto yes = Scanner.Get();
-            *(bool*)(Scanner.RelativeOffset(3).Get()) = true;
-            Scanner = Memcury::Scanner(yes);
-            Scanner.ScanFor({ 0x44, 0x88, 0x2D }, false); // GIsClient
-            *(bool*)(Scanner.RelativeOffset(3).Get()) = false;
-        }
-        else
-        {
-            Scanner.ScanFor({ 0xC6, 0x05 }, false);
-            if (Scanner.Get() != StrBase)
-            {
-                Scanner.ScanFor({ 0xC6, 0x05 }, false); // GIsServer
-                auto yes = Scanner.Get();
-                *(bool*)(Scanner.RelativeOffset(2).AbsoluteOffset(1).Get()) = true;
-                Scanner = Memcury::Scanner(yes);
-                Scanner.ScanFor({ 0xC6, 0x05 }, false); // GIsClient
-                *(bool*)(Scanner.RelativeOffset(2).AbsoluteOffset(1).Get()) = false;
-            }
-            else
-            {
-                Scanner.ScanFor({ 0x88, 0x1D }, false);
-                if (Scanner.Get() != StrBase)
-                {
-                    Scanner.ScanFor({ 0x88, 0x1D }, false); // GIsServer
-                    auto yes = Scanner.Get();
-                    *(bool*)(Scanner.RelativeOffset(2).Get()) = true;
-                    Scanner = Memcury::Scanner(yes);
-                    Scanner.ScanFor({ 0x88, 0x1D }, false); // GIsClient
-                    *(bool*)(Scanner.RelativeOffset(2).Get()) = false;
-                }
-                else
-                {
-                    MsgBox("Couldn't find GIsClient + GIsServer");
-                }
-            }
+            int RelOff = 2;
+            if (Idx == 0)
+                RelOff = 3;
+
+            Scanner.ScanFor(codes[Idx], false);
+            *(bool*)(Scanner.GetRelative(RelOff)) = true;
+
+            Scanner.ScanFor(codes[Idx], false);
+            *(bool*)(Scanner.RelativeOffset(RelOff).Get()) = false;
         }
     }
 
