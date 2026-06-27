@@ -20,10 +20,23 @@ public:
 
 class AFortPlayerPawn : public AFortPawn
 {
+    STATIC_CLASS(L"/Script/FortniteGame.FortPlayerPawn");
+
     PROP_BIT_REFLECTION(bIsInsideSafeZone);
     PROP_REF_REFLECTION(FMulticastInlineDelegate, OnSafeZoneOccupancyChangedEvent);
 
     BASIC_UFUNC(OnRep_IsInsideSafeZone);
+
+    static void ServerHandlePickupHook(AFortPlayerPawn* Pawn, AFortPickup* Pickup, float InFlyTime, FVector& InStartDirection, bool bPlayPickupSound);
+    static void ServerHandlePickupInfoHook(AFortPlayerPawn* Pawn, AFortPickup* Pickup, FFortPickupRequestInfo& Params);
+
+    static void Init()
+    {
+        if (StaticClass()->GetFunction("ServerHandlePickupInfo"))
+            Hook::AllVTables(StaticClass(), "ServerHandlePickupInfo", ServerHandlePickupInfoHook);
+        else
+            Hook::AllVTables(StaticClass(), "ServerHandlePickup", ServerHandlePickupHook);
+    }
 };
 
 class AFortPlayerPawnAthena : public AFortPlayerPawn

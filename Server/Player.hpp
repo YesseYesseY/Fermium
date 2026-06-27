@@ -135,7 +135,7 @@ namespace Player
             {
                 static FVector yes = { 1, 0, 0 };
                 static float FlyTime = 0.47692192f; // TODO
-                Inventory::ServerHandlePickup(Pawn, Pickup, FlyTime, yes, true);
+                AFortPlayerPawn::ServerHandlePickupHook(Pawn, Pickup, FlyTime, yes, true);
             }
         }
     }

@@ -25,7 +25,7 @@ public: \
 
 #define STATIC_CLASS(Name) \
 public: \
-    static UClass* StaticClass() \
+    static inline UClass* StaticClass() \
     { \
         static UClass* Ret = UObject::FindClass(Name); \
         return Ret; \

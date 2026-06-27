@@ -266,7 +266,13 @@
     <ClCompile Include="..\SDK\Fortnite\FortInventory.cpp">
       <Filter>..\SDK\Fortnite</Filter>
     </ClCompile>
+    <ClCompile Include="..\SDK\Fortnite\FortPawn.cpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClCompile>
     <ClCompile Include="..\SDK\Fortnite\FortPickup.cpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SDK\Fortnite\FortPlayerController.cpp">
       <Filter>..\SDK\Fortnite</Filter>
     </ClCompile>
     <ClCompile Include="..\SDK\Fortnite\FortPlayerState.cpp">

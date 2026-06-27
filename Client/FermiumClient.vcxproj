@@ -133,7 +133,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\SDK\Fortnite\FortInventory.cpp" />
+    <ClCompile Include="..\SDK\Fortnite\FortPawn.cpp" />
     <ClCompile Include="..\SDK\Fortnite\FortPickup.cpp" />
+    <ClCompile Include="..\SDK\Fortnite\FortPlayerController.cpp" />
     <ClCompile Include="..\SDK\Fortnite\FortPlayerState.cpp" />
     <ClCompile Include="..\SDK\Memcury.cpp" />
     <ClCompile Include="..\SDK\Unreal\Class.cpp" />

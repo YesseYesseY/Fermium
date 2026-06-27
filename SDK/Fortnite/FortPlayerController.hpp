@@ -2,6 +2,8 @@ class ABuildingSMActor;
 
 class AFortPlayerController : public APlayerController
 {
+    STATIC_CLASS(L"/Script/FortniteGame.FortPlayerController");
+
 public:
     PROP_REF_REFLECTION(AFortInventory*, WorldInventory);
 
@@ -15,6 +17,15 @@ public:
     {
         auto Pawn = GetPawnAs<AFortPlayerPawn>(); 
         return Pawn->EquipWeaponDefinition(ItemEntry->GetItemDefinition(), ItemEntry->GetItemGuid());
+    }
+
+    static void ServerExecuteInventoryItemHook(AFortPlayerController* PlayerController, const FGuid& ItemGuid);
+    static void ServerAttemptInventoryDropHook(AFortPlayerController* PlayerController, const FGuid& ItemGuid, int32 Count);
+
+    static void Init()
+    {
+        Hook::AllVTables(StaticClass(), "ServerExecuteInventoryItem", ServerExecuteInventoryItemHook);
+        Hook::AllVTables(StaticClass(), "ServerAttemptInventoryDrop", ServerAttemptInventoryDropHook);
     }
 };
 

@@ -28,6 +28,35 @@ extern inline float GameVersion = -1.0f;
 #include "Unreal/Function.hpp"
 #include "Unreal/Frame.hpp"
 
+namespace Hook
+{
+    static void AllVTables(UClass* ObjectClass, int32 Idx, void* Hook)
+    {
+        for (int i = 0; i < UObject::Objects->Num(); i++)
+        {
+            auto Object = UObject::Objects->Get(i);
+            if (!Object || !Object->IsA(UClass::StaticClass())) continue;
+
+            auto Class = (UClass*)Object;
+            auto Default = Class->GetDefaultObject();
+            if (Class->IsChildOf(ObjectClass) && Default)
+            {
+                Hook::VTable((void**)Default->VTable, Idx, Hook);
+            }
+        }
+    }
+
+    static void AllVTables(UClass* ObjectClass, const std::string& FuncName, void* Hook)
+    {
+        auto Func = ObjectClass->GetFunction(FuncName);
+        if (Func)
+        {
+            auto Idx = Func->GetVTableIndex();
+            AllVTables(ObjectClass, Idx, Hook);
+        }
+    }
+}
+
 #include "Unreal/MathStructs.hpp"
 #include "Unreal/CurveTable.hpp"
 #include "Unreal/ScalableFloat.hpp"
@@ -107,25 +136,6 @@ extern inline float GameVersion = -1.0f;
 #include "Fortnite/Rocket.hpp"
 #include "Fortnite/Cattus.hpp"
 
-namespace Hook
-{
-    static void AllVTables(UClass* ObjectClass, int32 Idx, void* Hook)
-    {
-        for (int i = 0; i < UObject::Objects->Num(); i++)
-        {
-            auto Object = UObject::Objects->Get(i);
-            if (!Object || !Object->IsA(UClass::StaticClass())) continue;
-
-            auto Class = (UClass*)Object;
-            auto Default = Class->GetDefaultObject();
-            if (Class->IsChildOf(ObjectClass) && Default)
-            {
-                Hook::VTable((void**)Default->VTable, Idx, Hook);
-            }
-        }
-    }
-}
-
 static void ReturnHook()
 {
     return;
@@ -177,5 +187,8 @@ static void InitSDK(bool IsServer)
         UReplicationDriver::Init();
         UWorld::Init();
         AGameSession::Init();
+        AFortPlayerPawn::Init();
+        AFortPlayerControllerAthena::Init();
+        AFortPickup::Init();
     }
 }

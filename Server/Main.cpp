@@ -4,7 +4,6 @@
 
 #include <SDK.hpp>
 
-#include "Inventory.hpp"
 #include "Building.hpp"
 #include "Vehicles.hpp"
 #include "GameFeatures.hpp"
@@ -25,7 +24,6 @@ DWORD MainThread(HMODULE Module)
 
     GameMode::Init();
     Player::Init();
-    Inventory::Init();
     Building::Init();
     Abilities::Init();
 
