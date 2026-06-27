@@ -36,6 +36,9 @@
     <ClInclude Include="..\SDK\Fortnite\Cube.hpp">
       <Filter>..\SDK\Fortnite</Filter>
     </ClInclude>
+    <ClInclude Include="..\SDK\Fortnite\Curie.hpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClInclude>
     <ClInclude Include="..\SDK\Fortnite\Festivus.hpp">
       <Filter>..\SDK\Fortnite</Filter>
     </ClInclude>
@@ -171,6 +174,9 @@
     <ClInclude Include="..\SDK\Unreal\GameMode.hpp">
       <Filter>..\SDK\Unreal</Filter>
     </ClInclude>
+    <ClInclude Include="..\SDK\Unreal\GameSession.hpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClInclude>
     <ClInclude Include="..\SDK\Unreal\GameState.hpp">
       <Filter>..\SDK\Unreal</Filter>
     </ClInclude>
@@ -262,7 +268,6 @@
     <ClInclude Include="GameMode.hpp" />
     <ClInclude Include="Inventory.hpp" />
     <ClInclude Include="Loot.hpp" />
-    <ClInclude Include="Net.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="Vehicles.hpp" />
   </ItemGroup>
@@ -291,10 +296,16 @@
     <ClCompile Include="..\SDK\Unreal\Name.cpp">
       <Filter>..\SDK\Unreal</Filter>
     </ClCompile>
+    <ClCompile Include="..\SDK\Unreal\NetDriver.cpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClCompile>
     <ClCompile Include="..\SDK\Unreal\Object.cpp">
       <Filter>..\SDK\Unreal</Filter>
     </ClCompile>
     <ClCompile Include="..\SDK\Unreal\Struct.cpp">
+      <Filter>..\SDK\Unreal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SDK\Unreal\World.cpp">
       <Filter>..\SDK\Unreal</Filter>
     </ClCompile>
     <ClCompile Include="..\minhook\src\buffer.c">

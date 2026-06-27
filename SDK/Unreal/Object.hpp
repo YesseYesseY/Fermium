@@ -30,6 +30,15 @@ public:
     std::string GetFullName();
     bool IsA(UClass* Class);
 
+    template <typename T>
+    T* Cast()
+    {
+        if (IsA(T::StaticClass()))
+            return (T*)this;
+
+        return nullptr;
+    }
+
     void ProcessEvent(UFunction* Function, void* Args = nullptr)
     {
         ProcEven(this, Function, Args);

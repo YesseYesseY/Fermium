@@ -58,6 +58,7 @@ extern inline float GameVersion = -1.0f;
 #include "Unreal/World.hpp"
 
 #include "Unreal/Url.hpp"
+#include "Unreal/GameSession.hpp"
 #include "Unreal/ReplicationDriver.hpp"
 #include "Unreal/NetDriver.hpp"
 #include "Unreal/Beacon.hpp"
@@ -153,6 +154,8 @@ static void InitSDK(bool IsServer)
         EngineVersion = 4.261f;
     // MsgBox("{}\n{}", EngineVersion, GameVersion);
 
+    MH_Initialize();
+
     UStruct::Init();
     UClass::Init();
     UFunction::Init();
@@ -168,8 +171,11 @@ static void InitSDK(bool IsServer)
         ABuildingSMActor::Init();
         FGameplayTagCountContainer::Init();
         FMulticastInlineDelegate::Init();
+        AOnlineBeacon::Init();
+        AOnlineBeaconHost::Init();
+        UNetDriver::Init((uintptr_t)AOnlineBeaconHost::IH);
+        UReplicationDriver::Init();
+        UWorld::Init();
+        AGameSession::Init();
     }
-
-    MH_Initialize();
-
 }

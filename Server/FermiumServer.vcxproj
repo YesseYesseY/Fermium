@@ -55,6 +55,7 @@
     <ClInclude Include="..\SDK\Fortnite\BuildingClassData.hpp" />
     <ClInclude Include="..\SDK\Fortnite\Cattus.hpp" />
     <ClInclude Include="..\SDK\Fortnite\Cube.hpp" />
+    <ClInclude Include="..\SDK\Fortnite\Curie.hpp" />
     <ClInclude Include="..\SDK\Fortnite\Festivus.hpp" />
     <ClInclude Include="..\SDK\Fortnite\FortAbilitySet.hpp" />
     <ClInclude Include="..\SDK\Fortnite\FortAssetManager.hpp" />
@@ -100,6 +101,7 @@
     <ClInclude Include="..\SDK\Unreal\GameFeatures.hpp" />
     <ClInclude Include="..\SDK\Unreal\GameInstance.hpp" />
     <ClInclude Include="..\SDK\Unreal\GameMode.hpp" />
+    <ClInclude Include="..\SDK\Unreal\GameSession.hpp" />
     <ClInclude Include="..\SDK\Unreal\GameState.hpp" />
     <ClInclude Include="..\SDK\Unreal\GameViewportClient.hpp" />
     <ClInclude Include="..\SDK\Unreal\GameplayAbilitySpec.hpp" />
@@ -135,7 +137,6 @@
     <ClInclude Include="GameMode.hpp" />
     <ClInclude Include="Inventory.hpp" />
     <ClInclude Include="Loot.hpp" />
-    <ClInclude Include="Net.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="Vehicles.hpp" />
   </ItemGroup>
@@ -148,8 +149,10 @@
     <ClCompile Include="..\SDK\Unreal\GameplayStatics.cpp" />
     <ClCompile Include="..\SDK\Unreal\KismetSystemLibrary.cpp" />
     <ClCompile Include="..\SDK\Unreal\Name.cpp" />
+    <ClCompile Include="..\SDK\Unreal\NetDriver.cpp" />
     <ClCompile Include="..\SDK\Unreal\Object.cpp" />
     <ClCompile Include="..\SDK\Unreal\Struct.cpp" />
+    <ClCompile Include="..\SDK\Unreal\World.cpp" />
     <ClCompile Include="..\minhook\src\buffer.c" />
     <ClCompile Include="..\minhook\src\hde\hde32.c" />
     <ClCompile Include="..\minhook\src\hde\hde64.c" />

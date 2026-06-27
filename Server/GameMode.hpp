@@ -22,13 +22,6 @@ namespace GameMode
 
             if (!Playlist)
                 Playlist = UObject::FindObject<UFortPlaylistAthena>(L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo");
-#if 0
-            if (Playlist->HasbSkipAircraft())
-            {
-                Playlist->GetbSkipAircraft() = true;
-                Playlist->GetbSkipWarmup() = true;
-            }
-#endif
     
             if (GameState->HasCurrentPlaylistInfo())
             {
@@ -88,7 +81,7 @@ namespace GameMode
                 GameState->OnRep_AdditionalPlaylistLevelsStreamed();
             }
     
-            Net::Listen();
+            UWorld::GetWorld()->Listen();
     
             GameMode->GetWarmupRequiredPlayerCount() = 1;
         }

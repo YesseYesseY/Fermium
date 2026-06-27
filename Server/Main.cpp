@@ -4,7 +4,6 @@
 
 #include <SDK.hpp>
 
-#include "Net.hpp"
 #include "Inventory.hpp"
 #include "Building.hpp"
 #include "Vehicles.hpp"
@@ -24,7 +23,6 @@ DWORD MainThread(HMODULE Module)
 
     InitSDK(true);
 
-    Net::Init();
     GameMode::Init();
     Player::Init();
     Inventory::Init();
