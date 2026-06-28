@@ -20,4 +20,9 @@ namespace Hook
         vTable[Index] = Hook;
         VirtualProtect(Addr, 8, yes, &yes);
     }
+
+    static bool ReturnTrueHook()
+    {
+        return true;
+    }
 }

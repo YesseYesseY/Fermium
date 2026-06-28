@@ -42,5 +42,13 @@ namespace Abilities
             auto ComponentAthena = UObject::FindClass(L"/Script/FortniteGame.FortAbilitySystemComponentAthena");
             ComponentAthena->VTableHook(RealIdx / 8, InternalServerTryActivateAbility);
         }
+
+        // CanActivateAbility for 18.40 because im a bad programmer
+        if (GameVersion == 18.40f)
+        {
+            auto Addr = Memcury::Scanner::FindPattern("48 8B C4 48 89 58 ? 48 89 70 ? 48 89 78 ? 55 41 54 41 55 41 56 41 57 48 8D 68 ? 48 81 EC 90 00 00 00 4C 8B F1 B9 00 00 01 00").Get();
+            if (Addr)
+                Hook::Function(Addr, Hook::ReturnTrueHook);
+        }
     }
 }

@@ -148,6 +148,8 @@ DWORD MainThread(HMODULE Module)
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogFortUIDirector None");
     UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogFortSignificance None");
 
+    UKismetSystemLibrary::ExecuteConsoleCommand(L"log LogAbilitySystem VeryVerbose");
+
     UWorld::GetWorld()->GetOwningGameInstance()->GetLocalPlayers().Remove(0);
     if (GameVersion < 11.0f) UKismetSystemLibrary::ExecuteConsoleCommand(L"open Athena_Terrain");
     else if (GameVersion < 19.0f) UKismetSystemLibrary::ExecuteConsoleCommand(L"open Apollo_Terrain");
