@@ -265,13 +265,14 @@
     <ClInclude Include="Building.hpp" />
     <ClInclude Include="Events.hpp" />
     <ClInclude Include="GameFeatures.hpp" />
-    <ClInclude Include="GameMode.hpp" />
-    <ClInclude Include="Inventory.hpp" />
     <ClInclude Include="Loot.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="Vehicles.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\SDK\Fortnite\FortGameMode.cpp">
+      <Filter>..\SDK\Fortnite</Filter>
+    </ClCompile>
     <ClCompile Include="..\SDK\Fortnite\FortInventory.cpp">
       <Filter>..\SDK\Fortnite</Filter>
     </ClCompile>

@@ -132,6 +132,7 @@
     <ClInclude Include="..\SDK\UnrealContainers.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\SDK\Fortnite\FortGameMode.cpp" />
     <ClCompile Include="..\SDK\Fortnite\FortInventory.cpp" />
     <ClCompile Include="..\SDK\Fortnite\FortPawn.cpp" />
     <ClCompile Include="..\SDK\Fortnite\FortPickup.cpp" />

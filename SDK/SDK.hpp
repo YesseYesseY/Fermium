@@ -46,12 +46,16 @@ namespace Hook
         }
     }
 
-    static void AllVTables(UClass* ObjectClass, const std::string& FuncName, void* Hook)
+    template <typename T = void*>
+    static void AllVTables(UClass* ObjectClass, const std::string& FuncName, void* Hook, T* Original = nullptr)
     {
         auto Func = ObjectClass->GetFunction(FuncName);
         if (Func)
         {
             auto Idx = Func->GetVTableIndex();
+            if (Original)
+                *Original = (T)ObjectClass->GetDefaultObject()->VTable[Idx];
+
             AllVTables(ObjectClass, Idx, Hook);
         }
     }
@@ -190,5 +194,6 @@ static void InitSDK(bool IsServer)
         AFortPlayerPawn::Init();
         AFortPlayerControllerAthena::Init();
         AFortPickup::Init();
+        AFortGameModeAthena::Init();
     }
 }

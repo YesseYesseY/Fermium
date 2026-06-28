@@ -15,7 +15,7 @@ public:
 
     void Listen();
 
-    static uint8 GetNetModeHook(UWorld* World)
+    static int64 GetNetModeHook(UWorld* World)
     {
         return 1;
     }

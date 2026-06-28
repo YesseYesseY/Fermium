@@ -5,7 +5,7 @@ namespace Player
         static auto CurrentAircraftOffset = Component->GetClass()->GetPropOffset("CurrentAircraft");
         auto CurrentAircraft = *(AActor**)(int64(Component) + CurrentAircraftOffset);
         auto PlayerController = Component->GetOwnerAs<AFortPlayerControllerAthena>();
-        auto Pawn = (AFortPlayerPawnAthena*)GameMode::SpawnDefaultPawnForHook(UGameplayStatics::GetGameMode(), PlayerController, CurrentAircraft);
+        auto Pawn = (AFortPlayerPawnAthena*)AFortGameModeAthena::SpawnDefaultPawnForHook(UGameplayStatics::GetGameMode(), PlayerController, CurrentAircraft);
         PlayerController->Possess(Pawn);
         PlayerController->ClientSetRotation(ClientRotation, false);
         PlayerController->GetWorldInventory()->Clear();

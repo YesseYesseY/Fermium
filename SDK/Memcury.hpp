@@ -661,6 +661,8 @@ namespace Memcury
         template <typename T>
         auto GetAs() -> T { return _address.GetAs<T>(); }
         auto Get() -> uintptr_t { return _address.Get(); }
+        template <typename T>
+        auto GetRelativeAs(uint32_t offset) -> T { return PE::Address(Get()).RelativeOffset(offset).GetAs<T>(); }
         auto GetRelative(uint32_t offset) -> uintptr_t { return PE::Address(Get()).RelativeOffset(offset).Get(); }
 
         auto IsValid() -> bool { return _address.IsValid(); }
@@ -670,7 +672,7 @@ namespace Memcury
     auto Scanner::ScanForRanged(std::vector<uint8_t> opcodesToFind, bool forward, int toSkip) -> Scanner
     {
         const auto scanBytes = _address.GetAs<std::uint8_t*>();
-    
+
         for (auto i = (forward ? 1 : -1); forward ? (i < range) : (i > -range); forward ? i++ : i--)
         {
             bool found = true;

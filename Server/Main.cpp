@@ -9,9 +9,21 @@
 #include "GameFeatures.hpp"
 #include "Loot.hpp"
 #include "Events.hpp"
-#include "GameMode.hpp"
 #include "Player.hpp"
 #include "Abilities.hpp"
+
+// Temporary lol
+void OnReadyToStartMatch()
+{
+    GameFeatures::Init();
+    Loot::Init();
+    Vehicles::Init();
+    Events::Init();
+}
+void OnStartAircraft()
+{
+    Events::PostInit();
+}
 
 DWORD MainThread(HMODULE Module)
 {
@@ -22,7 +34,8 @@ DWORD MainThread(HMODULE Module)
 
     InitSDK(true);
 
-    GameMode::Init();
+    AFortGameModeAthena::OnReadyToStartMatch = OnReadyToStartMatch;
+    AFortGameModeAthena::OnStartAircraft = OnStartAircraft;
     Player::Init();
     Building::Init();
     Abilities::Init();
@@ -47,15 +60,13 @@ DWORD MainThread(HMODULE Module)
 
         if (Idx != -1)
         {
-            int RelOff = 2;
-            if (Idx == 0)
-                RelOff = 3;
+            int RelOff = codes[Idx].size();
 
             Scanner.ScanFor(codes[Idx], false);
-            *(bool*)(Scanner.GetRelative(RelOff)) = true;
+            *Scanner.GetRelativeAs<bool*>(RelOff) = true;
 
             Scanner.ScanFor(codes[Idx], false);
-            *(bool*)(Scanner.RelativeOffset(RelOff).Get()) = false;
+            *Scanner.GetRelativeAs<bool*>(RelOff) = false;
         }
     }
 
