@@ -61,12 +61,13 @@ DWORD MainThread(HMODULE Module)
         if (Idx != -1)
         {
             int RelOff = codes[Idx].size();
+            int ExtraOffset = Idx == 1 ? 1 : 0;
 
             Scanner.ScanFor(codes[Idx], false);
-            *Scanner.GetRelativeAs<bool*>(RelOff) = true;
+            *(Scanner.GetRelativeAs<bool*>(RelOff) + ExtraOffset) = true;
 
             Scanner.ScanFor(codes[Idx], false);
-            *Scanner.GetRelativeAs<bool*>(RelOff) = false;
+            *(Scanner.GetRelativeAs<bool*>(RelOff) + ExtraOffset) = false;
         }
     }
 
