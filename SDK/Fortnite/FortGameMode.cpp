@@ -82,10 +82,12 @@ bool AFortGameModeAthena::ReadyToStartMatchHook(AFortGameModeAthena* GameMode)
         Started = true;
 
         auto Playlist = UObject::FindObject<UFortPlaylistAthena>(
-                L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo"
+                // L"/Game/Athena/Playlists/Playlist_DefaultSolo.Playlist_DefaultSolo"
                 // L"/Game/Athena/Playlists/Playlist_DefaultDuo.Playlist_DefaultDuo"
-                // L"/Game/Athena/Playlists/Playground/Playlist_Playground.Playlist_Playground"
+                L"/Game/Athena/Playlists/Playground/Playlist_Playground.Playlist_Playground"
                 // L"/Game/Athena/Playlists/BattleLab/Playlist_BattleLab.Playlist_BattleLab"
+                // L"/Game/Athena/Playlists/Fritter/Playlist_Fritter_High.Playlist_Fritter_High"
+                // L"/Game/Athena/Playlists/Music/Playlist_Music_High.Playlist_Music_High"
                 );
 
         if (!Playlist)
