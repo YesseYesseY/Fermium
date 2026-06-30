@@ -110,16 +110,12 @@ public:
         SASMBL(this, 0);
     }
 
-    // ISSUES: Schrodinger's Agency
+    // ISSUES: 12.41 specific: When you enter a vehicle at the agency you get insta eliminated
     //         At some point the foundations stop loading in and become stuck as HLOD 
     static void SetDynamicFoundationEnabledHook(ABuildingFoundation* Foundation, FFrame* Stack)
     {
         FRAME_PROP(bool, Enabled);
         FRAME_END();
-
-        // I understand why midas blew up the agency now
-        if (std::floor(GameVersion) == 12)
-            return;
 
         if (Enabled)
             Foundation->SelectAndSetupMyBuildingLevel();
@@ -134,8 +130,12 @@ public:
 
         if (Foundation->HasDynamicFoundationRepData())
         {
-            Foundation->GetDynamicFoundationRepData().GetEnabledState() = EnabledState;
-            Foundation->OnRep_DynamicFoundationRepData();
+            auto& RepData = Foundation->GetDynamicFoundationRepData();
+            if (RepData.GetEnabledState() != EnabledState)
+            {
+                RepData.GetEnabledState() = EnabledState;
+                Foundation->OnRep_DynamicFoundationRepData();
+            }
         }
     }
 
