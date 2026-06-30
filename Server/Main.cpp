@@ -25,18 +25,6 @@ void OnStartAircraft()
     Events::PostInit();
 }
 
-void SetFoundationEnabled730(ABuildingFoundation* Foundation, FFrame* Stack)
-{
-    FRAME_PROP(bool, Enabled);
-    FRAME_END();
-
-    static void (*SASMBL)(ABuildingFoundation*, int64) = decltype(SASMBL)((uintptr_t)GetModuleHandleW(NULL) + 0xE576F0);
-    if (Enabled) // Idk when to call this, every time? only enabled? or another condition? who knows!
-        SASMBL(Foundation, 0);
-
-    Foundation->SetbFoundationEnabled(Enabled);
-}
-
 DWORD MainThread(HMODULE Module)
 {
     AllocConsole();
@@ -52,15 +40,10 @@ DWORD MainThread(HMODULE Module)
     Building::Init();
     Abilities::Init();
 
-    if (GameVersion >= 13.00f) // Stupid 12.41 crashes when going near agency, and i don't even wanna talk about the chapter 1 issues
+    if (GameVersion >= 7.30f)
     {
         UObject::FindFunction(L"/Script/FortniteGame.BuildingFoundation:SetDynamicFoundationEnabled")->Hook(ABuildingFoundation::SetDynamicFoundationEnabledHook);
         UObject::FindFunction(L"/Script/FortniteGame.BuildingFoundation:SetDynamicFoundationTransform")->Hook(ABuildingFoundation::SetDynamicFoundationTransformHook);
-    }
-    else if (GameVersion == 7.30f)
-    {
-        // I'll do other builds tomorrow
-        UObject::FindFunction(L"/Script/FortniteGame.BuildingFoundation:SetDynamicFoundationEnabled")->Hook(SetFoundationEnabled730);
     }
 
     // GIsClient + GIsServer

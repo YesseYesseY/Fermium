@@ -68,40 +68,75 @@ struct FDynamicBuildingFoundationRepData
 
     STRUCT_PROP_REF_REFLECTION(uint8, EnabledState);
     STRUCT_PROP_REF_REFLECTION(FVector, Translation);
-    STRUCT_PROP_REF_REFLECTION(FRotator, Rotation);
+    // STRUCT_PROP_REF_REFLECTION(FRotator, Rotation);
+
+    void SetLocation(FTransform& translivesmatter)
+    {
+        GetTranslation() = translivesmatter.Translation;
+
+        // Favorite part of not using an sdk is when the type of a prop randomly changes at some point without you being aware of it!
+        static int32 RotationOffset = StaticStruct()->GetPropOffset("Rotation");
+        static int32 RotationSize = StaticStruct()->GetPropSize("Rotation");
+        if (RotationSize == 0x10)
+            *(FQuat*)(int64(this) + RotationOffset) = translivesmatter.Rotation;
+        else
+            *(FRotator*)(int64(this) + RotationOffset) = translivesmatter.Rotation.Rotator();
+
+    }
 };
 
 class ABuildingFoundation : public ABuildingSMActor
 {
 public:
-    PROP_BIT_REFLECTION(bFoundationEnabled);
+    PROP_BIT_REFLECTION_SAFE(bFoundationEnabled);
     PROP_REF_REFLECTION(uint8, DynamicFoundationType);
 
     PROP_BIT_REFLECTION(bServerStreamedInLevel);
 
-    PROP_REF_REFLECTION(uint8, FoundationEnabledState);
+    PROP_REF_REFLECTION_SAFE(uint8, FoundationEnabledState);
     PROP_REF_REFLECTION_SAFE(FDynamicBuildingFoundationRepData, DynamicFoundationRepData);
 
-    PROP_REF_REFLECTION(FTransform, DynamicFoundationTransform);
+    PROP_REF_REFLECTION_SAFE(FTransform, DynamicFoundationTransform);
 
     BASIC_UFUNC(OnRep_LevelToStream);
     BASIC_UFUNC(OnRep_DynamicFoundationRepData);
     BASIC_UFUNC(OnRep_FoundationEnabled);
     BASIC_UFUNC(OnRep_ServerStreamedInLevel);
 
+    static inline void (*SASMBL)(ABuildingFoundation*, int64) = nullptr;
+
+    void SelectAndSetupMyBuildingLevel()
+    {
+        SASMBL(this, 0);
+    }
+
+    // ISSUES: Schrodinger's Agency
+    //         At some point the foundations stop loading in and become stuck as HLOD 
     static void SetDynamicFoundationEnabledHook(ABuildingFoundation* Foundation, FFrame* Stack)
     {
         FRAME_PROP(bool, Enabled);
         FRAME_END();
 
-        if (!Foundation->HasDynamicFoundationRepData())
+        // I understand why midas blew up the agency now
+        if (std::floor(GameVersion) == 12)
             return;
+
+        if (Enabled)
+            Foundation->SelectAndSetupMyBuildingLevel();
 
         auto EnabledState = Enabled ? 1 : 2;
 
-        Foundation->GetFoundationEnabledState() = EnabledState;
-        Foundation->GetDynamicFoundationRepData().GetEnabledState() = EnabledState;
-        Foundation->OnRep_DynamicFoundationRepData();
+        if (Foundation->HasbFoundationEnabled())
+            Foundation->SetbFoundationEnabled(Enabled);
+
+        if (Foundation->HasFoundationEnabledState())
+            Foundation->GetFoundationEnabledState() = EnabledState;
+
+        if (Foundation->HasDynamicFoundationRepData())
+        {
+            Foundation->GetDynamicFoundationRepData().GetEnabledState() = EnabledState;
+            Foundation->OnRep_DynamicFoundationRepData();
+        }
     }
 
     static void SetDynamicFoundationTransformHook(ABuildingFoundation* Foundation, FFrame* Stack)
@@ -109,14 +144,28 @@ public:
         FRAME_PROP(FTransform, NewTransform);
         FRAME_END();
 
-        FRotator Rot;
-        UKismetMathLibrary::BreakTransform(NewTransform, nullptr, &Rot, nullptr);
+        if (Foundation->HasDynamicFoundationTransform())
+            Foundation->GetDynamicFoundationTransform() = NewTransform;
 
-        Foundation->GetDynamicFoundationTransform() = NewTransform;
+        if (Foundation->HasDynamicFoundationRepData())
+        {
+            Foundation->GetDynamicFoundationRepData().SetLocation(NewTransform);
+            Foundation->OnRep_DynamicFoundationRepData();
+        }
+    }
 
-        Foundation->GetDynamicFoundationRepData().GetTranslation() = NewTransform.Translation;
-        Foundation->GetDynamicFoundationRepData().GetRotation() = Rot;
-        Foundation->OnRep_DynamicFoundationRepData();
+    static void Init()
+    {
+        // ABuildingFoundation::SelectAndSetupMyBuildingLevel
+        {
+            auto Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 55 57 41 56 48 8B EC 48 83 EC 60 4C 8B F2 48 8B F9").Get();
+
+            if (!Addr)
+                Addr = Memcury::Scanner::FindStringRef(L"ABuildingFoundation::SelectAndSetupMyBuildingLevel - Cannot get WorldManager!!").ScanForEither({{ 0x48, 0x89, 0x5C, 0x24, 0x08 }, { 0x40, 0x55 }}, false).Get();
+
+            if (Addr)
+                SASMBL = decltype(SASMBL)(Addr);
+        }
     }
 };
 

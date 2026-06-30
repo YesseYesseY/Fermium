@@ -22,6 +22,29 @@ struct FQuat
     float X, Y, Z, W;
 
     FQuat(float x = 0, float y = 0, float z = 0, float w = 0) : X(x), Y(y), Z(z), W(w) { }
+
+    FRotator Rotator()
+    {
+        static auto Obj = UObject::FindObject(L"/Script/Engine.Default__KismetMathLibrary");
+        static auto Func = UObject::FindFunction(L"/Script/Engine.KismetMathLibrary:Quat_Rotator");
+        if (Func)
+        {
+            struct {
+                FQuat Q;
+                FRotator Ret;
+            } args { *this };
+            Obj->ProcessEvent(Func, &args);
+            return args.Ret;
+        }
+
+        static FRotator& (*QuatRotator)(FQuat*, FRotator&) = nullptr;
+        if (!QuatRotator)
+            QuatRotator = decltype(QuatRotator)(Memcury::Scanner::FindStringRef(L"STAT_MathConvertQuatToRotator").ScanFor({ 0x40, 0x53}, false).Get());
+
+        FRotator Ret;
+        QuatRotator(this, Ret);
+        return Ret;
+    }
 };
 
 struct FTransform

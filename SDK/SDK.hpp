@@ -195,5 +195,6 @@ static void InitSDK(bool IsServer)
         AFortPlayerControllerAthena::Init();
         AFortPickup::Init();
         AFortGameModeAthena::Init();
+        ABuildingFoundation::Init();
     }
 }
