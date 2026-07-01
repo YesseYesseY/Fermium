@@ -121,6 +121,24 @@ public:
     }
 
     template <typename T = UObject>
+    static TArray<T*> GetAllObjectsOfClass(UClass* Class = T::StaticClass())
+    {
+        TArray<T*> Ret;
+
+        if (!Class)
+            return Ret;
+
+        for (int i = 0; i < UObject::Objects->Num(); i++)
+        {
+            auto Object = UObject::Objects->Get(i);
+            if (Object && !Object->HasObjectFlag(EObjectFlags::ClassDefaultObject) && Object->IsA(Class))
+                Ret.Add((T*)Object);
+        }
+
+        return Ret;
+    }
+
+    template <typename T = UObject>
     static T* FindFirstObjectOfClass(UClass* Class)
     {
         for (int i = 0; i < UObject::Objects->Num(); i++)

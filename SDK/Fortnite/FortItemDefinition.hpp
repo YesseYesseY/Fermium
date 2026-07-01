@@ -231,3 +231,23 @@ class UFortVehicleItemDefinition : public UFortWorldItemDefinition
     PROP_REF_REFLECTION(FScalableFloat, MinPercentInoperable);
     PROP_REF_REFLECTION(FScalableFloat, MaxPercentInoperable);
 };
+
+class UFortEventItemDefinitionBase : public UFortAccountItemDefinition
+{
+};
+
+struct FAthenaVehicleOverride
+{
+    STATIC_STRUCT(FAthenaVehicleOverride, L"/Script/FortniteGame.AthenaVehicleOverride");
+
+    STRUCT_PROP_REF_REFLECTION(FString, RequiredCalendarEvent);
+    STRUCT_PROP_REF_REFLECTION(TSoftClassPtr, DefaultVehicleClass);
+    STRUCT_PROP_REF_REFLECTION(TSoftClassPtr, OverrideVehicleClass);
+};
+
+class UAthenaSeasonalDecorEvent : public UFortEventItemDefinitionBase
+{
+    STATIC_CLASS(L"/Script/FortniteGame.AthenaSeasonalDecorEvent");
+
+    PROP_REF_REFLECTION_SAFE(TArray<FAthenaVehicleOverride>, VehicleOverrides);
+};

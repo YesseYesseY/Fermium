@@ -19,15 +19,38 @@ namespace Vehicles
 
         auto DagwoodManager = GameState->GetComponentByClass<UFortDagwoodVehicleManager>();
 
+        std::unordered_map<UClass*, UClass*> VehicleOverrides;
+
         auto SpawnerClass = AFortAthenaVehicleSpawner::StaticClass();
         if (SpawnerClass)
         {
+            for (auto Event : UObject::GetAllObjectsOfClass<UAthenaSeasonalDecorEvent>())
+            {
+                if (!Event->HasVehicleOverrides())
+                    break;
+
+                auto& Overrides = Event->GetVehicleOverrides();
+                for (int i = 0; i < Overrides.Num(); i++)
+                {
+                    auto& Override = Overrides.Get(i, FAthenaVehicleOverride::Size());
+                    if (UFortKismetLibrary::IsCalendarEventActive(Override.GetRequiredCalendarEvent()))
+                    {
+                        auto Def1 = Override.GetDefaultVehicleClass().Get();
+                        auto Def2 = Override.GetOverrideVehicleClass().Get();
+                        VehicleOverrides[Def1] = Def2;
+                    }
+                }
+            }
+
             auto Spawners = UGameplayStatics::GetAllActorsOfClass<AFortAthenaVehicleSpawner>(SpawnerClass);
             for (auto Spawner : Spawners)
             {
                 auto VehicleClass = Spawner->GetVehicleClass();
                 if (!VehicleClass)
                     continue;
+
+                if (VehicleOverrides.contains(VehicleClass))
+                    VehicleClass = VehicleOverrides[VehicleClass];
 
                 UFortVehicleItemDefinition* VID = nullptr;
                 if (Spawner->HasCachedFortVehicleItemDef())

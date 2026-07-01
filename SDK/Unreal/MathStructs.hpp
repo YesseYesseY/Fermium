@@ -97,3 +97,8 @@ struct FGuid
         return Ret;
     }
 };
+
+struct FTimespan
+{
+    int64 Time;
+};

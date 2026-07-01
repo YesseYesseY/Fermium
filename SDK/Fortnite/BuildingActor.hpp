@@ -158,7 +158,7 @@ public:
     {
         // ABuildingFoundation::SelectAndSetupMyBuildingLevel
         {
-            auto Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 55 57 41 56 48 8B EC 48 83 EC 60 4C 8B F2 48 8B F9").Get();
+            auto Addr = EngineVersion >= 5.0f ? Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 55 57 41 56 48 8B EC 48 83 EC 60 4C 8B F2 48 8B F9").Get() : 0;
 
             if (!Addr)
                 Addr = Memcury::Scanner::FindStringRef(L"ABuildingFoundation::SelectAndSetupMyBuildingLevel - Cannot get WorldManager!!").ScanForEither({{ 0x48, 0x89, 0x5C, 0x24, 0x08 }, { 0x40, 0x55 }}, false).Get();
